@@ -1,0 +1,34 @@
+PROMPT
+
+Build a standalone HTML page that is an arcade cabinet for an invented 1983 game, "Starcatcher" by Halcyon Amusements (Model HA-83, Free Play). The concept is crt-arcade: CRT scanlines, phosphor glow and a tiny catch-the-stars mini game.
+
+Palette: a near-black arcade room (#09070d) with a soft magenta glow (rgba #ff4fd8) behind the cabinet, a cyan glow near the floor and a faint diagonal carpet texture. The cabinet is matte plum-black (#241f2b to #141118 to #0e0c11) with thin glowing side light strips (magenta to gold to cyan). Screen black-blue #050811. Game colours: cyan cart #4ff0ff, gold stars #ffd54a twinkling to #fff6c9, rare magenta bonus stars #ff4fd8, red rocks #ff5a3c, and a dim blue parallax starfield.
+
+Type: "Courier New" / ui-monospace for the HUD, the instructions and the plate. "Arial Black" / Impact heavy italic for the marquee logo and the screen titles. The marquee logo is filled with a gradient (cream, gold, orange, magenta) through background-clip text, with a magenta neon drop-shadow and one letter that buzzes off and on.
+
+Layout: a centred cabinet up to 720px wide, made of (1) a marquee panel with the logo and a tracked subtitle; (2) a bezel framing a 4:3 screen with curved corners (border-radius 7% / 9%); (3) a control panel with a decorative joystick that tilts with input, two round cyan arcade buttons (left and right) and a gold START button; (4) a key-legend plate below. Under 480px the joystick hides and the buttons fill the row.
+
+Rendering: the game runs at 160x120 logical pixels on an offscreen buffer canvas. Each frame the buffer is blitted with smoothing off onto the main canvas, which is sized to devicePixelRatio (capped at 2) and kept in sync with ResizeObserver and resize events, for crisp chunky pixels. The same buffer is also copied to a second 160x120 canvas stretched over the screen with CSS blur(5px), saturate and mix-blend-mode: screen, which gives a cheap phosphor bloom. Sprites are tiny ASCII-art bitmaps (a 5x5 star, a 7x7 bonus star, a 5x5 rock, a 15x4 cart) drawn with fillRect.
+
+CRT layers over the canvas: an RGB aperture-grille mask (repeating 1px red, green and blue stripes), multiply scanlines every 3px, a slow rolling brightness bar, a vignette with a glass glare that flickers on a stepped keyframe, and a power-on animation in which the screen grows from a bright horizontal line to full size.
+
+Game: catch falling stars (+10) and magenta bonus stars (+50, which also give back a life up to 5), and dodge red rocks (which cost a life and shake the screen). A missed gold star also costs a life. Catching 5 in a row gives a x2 chain and 10 gives x3, shown as a magenta "x2 CHAIN" HUD label and a glowing underline on the cart. Spawn rate, speed and the share of rocks increase over time. Particles burst on every catch. The DOM HUD shows SCORE, lives as gold ✦ glyphs, and a HI score saved in localStorage (wrapped in try/catch). Overlay states: an attract mode with an autopilot cart chasing stars and a blinking "PRESS START", GAME OVER with the final score and a new-high-score line, and PAUSED.
+
+Interaction: arrow keys or A and D move the cart; Space or Enter starts; P pauses; the game pauses automatically when the tab is hidden. A mouse hovering over the glass steers the cart, and touch dragging steers it too (touch-action none). The on-cabinet buttons can be held to move, with a pressed state that sinks the button 5px. The START button starts or restarts.
+
+Reduced motion: the power-on, the roll bar, the flicker, the marquee buzz and the blinking text are all disabled, and the screen shake is skipped.
+
+Title: Starcatcher Arcade Cabinet
+
+Description: A lovingly built arcade cabinet in a dim, neon-lit room. Its curved CRT turns on from a single bright line and hosts a small, fully playable star-catching game rendered in true low-resolution pixels. Scanlines, an aperture-grille mask, a rolling refresh bar and a blurred phosphor bloom make the glass feel physical, while the gradient neon marquee, tactile 3D arcade buttons and a tilting joystick finish the illusion of a cabinet from a 1983 arcade.
+
+Visual techniques:
+- Low-resolution offscreen buffer upscaled with smoothing off onto a devicePixelRatio-sized canvas
+- A second blurred canvas with a screen blend mode for phosphor bloom
+- Stacked CSS overlays for the RGB mask, scanlines, rolling bar, vignette and glare
+- A CRT power-on keyframe that scales up from a bright horizontal line
+- Gradient-clipped neon logo with a drop-shadow glow and a stepped letter buzz
+- ASCII bitmap sprites, particle bursts and screen shake
+- Skeuomorphic arcade buttons with a press depth, and a joystick tilted by a CSS variable
+
+Interaction model: The player presses START (Space, Enter, a tap on the screen or the gold button) to leave attract mode, then slides the cyan cart along the bottom with the arrow keys, A and D, the mouse, touch dragging or the held cabinet buttons. The goal is to catch falling stars, chain catches for multipliers, and avoid the red rocks. Lives, score and a saved high score update live in the glowing HUD, and P pauses the game.

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wet on Wet — A Watercolor Study</title>
+<style>
+:root{
+  --paper:#f6f0e4;
+  --paper2:#efe6d4;
+  --ink:#2b2a33;
+  --soft:#7d7568;
+  --rule:rgba(43,42,51,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+.texture{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.55;mix-blend-mode:multiply}
+main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:clamp(20px,5vw,64px) clamp(16px,4vw,48px) 64px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid var(--rule);padding-bottom:14px;flex-wrap:wrap}
+.top span{font-family:"Gill Sans","Gill Sans MT","Trebuchet MS",sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft)}
+.hero{position:relative;margin:clamp(28px,6vw,72px) 0 clamp(24px,4vw,48px);min-height:clamp(260px,46vw,520px)}
+.hero svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.hero h1{
+  position:relative;z-index:2;font-weight:400;font-style:italic;
+  font-size:clamp(54px,13vw,170px);line-height:.86;letter-spacing:-.03em;
+  padding-top:clamp(30px,8vw,90px);
+  mix-blend-mode:multiply;
+}
+.hero h1 em{display:block;font-style:normal;padding-left:18%;}
+.hero p{
+  position:relative;z-index:2;max-width:380px;margin:24px 0 0 auto;font-size:17px;line-height:1.6;color:#4b4740;
+}
+.legend{font-family:"Gill Sans","Trebuchet MS",sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);margin-bottom:18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.legend b{font-weight:400;color:var(--ink)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:clamp(16px,3vw,32px)}
+.sw{
+  position:relative;aspect-ratio:4/5;cursor:pointer;outline:none;
+  background:none;border:0;text-align:left;font:inherit;color:inherit;padding:0;
+}
+.sw svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.sw .blot{transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.sw:hover .blot,.sw:focus-visible .blot,.sw.wet .blot{transform:scale(1.08)}
+.sw .cap{
+  position:absolute;left:0;right:0;bottom:0;padding:14px 4px 0;border-top:1px solid var(--rule);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;background:linear-gradient(transparent,var(--paper) 30%);
+}
+.sw .cap strong{font-weight:400;font-style:italic;font-size:22px}
+.sw .cap small{font-family:"Gill Sans","Trebuchet MS",sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+.sw .say{position:absolute;left:4px;right:4px;bottom:58px;font-size:14px;line-height:1.5;color:#4b4740;opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease}
+.sw:hover .say,.sw:focus-visible .say,.sw.wet .say{opacity:1;transform:none}
+.sw:focus-visible .cap{border-top-color:var(--ink)}
+.drip{
+  margin-top:clamp(40px,7vw,80px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:clamp(16px,4vw,48px);
+  border-top:1px solid var(--rule);padding-top:24px;
+}
+.drip h2{font-weight:400;font-style:italic;font-size:28px;line-height:1.1}
+.drip p{font-size:16px;line-height:1.7;color:#4b4740;columns:2 260px;column-gap:32px}
+.drip p::first-letter{font-size:3.2em;float:left;line-height:.8;padding:6px 8px 0 0;color:#3d6f8e}
+footer{margin-top:48px;font-family:"Gill Sans","Trebuchet MS",sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);text-align:center}
+@media (max-width:640px){
+  .drip{grid-template-columns:1fr}
+  .hero p{margin-left:0}
+  .hero h1 em{padding-left:10%}
+}
+@media (prefers-reduced-motion:reduce){
+  .sw .blot,.sw .say{transition:none}
+}
+</style>
+</head>
+<body>
+<svg class="texture" aria-hidden="true">
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .55  0 0 0 0 .5  0 0 0 0 .42  0 0 0 .22 0"/></filter>
+  <rect width="100%" height="100%" filter="url(#grain)"/>
+</svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="bleed" x="-30%" y="-30%" width="160%" height="160%">
+      <feTurbulence id="turb" type="fractalNoise" baseFrequency=".012" numOctaves="4" seed="7" result="n"/>
+      <feDisplacementMap id="disp" in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="3" result="b"/>
+      <feComposite in="b" in2="d" operator="arithmetic" k1="0" k2=".6" k3=".7" k4="0" result="c"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="2" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.1 1.25" result="ga"/>
+      <feComposite in="c" in2="ga" operator="in"/>
+    </filter>
+    <filter id="edge" x="-30%" y="-30%" width="160%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="3" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="30" xChannelSelector="G" yChannelSelector="B" result="d"/>
+      <feMorphology in="d" operator="erode" radius="2" result="e"/>
+      <feComposite in="d" in2="e" operator="out"/>
+      <feGaussianBlur stdDeviation=".8"/>
+    </filter>
+  </defs>
+</svg>
+
+<main>
+  <div class="top"><span>Maison Aquarelle · Studio Notes No. 12</span><span>Pigment on cold-pressed cotton</span></div>
+
+  <section class="hero" id="hero">
+    <svg viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g filter="url(#bleed)" style="mix-blend-mode:multiply">
+        <ellipse cx="300" cy="230" rx="260" ry="170" fill="#7fa9c4" opacity=".55"/>
+        <ellipse cx="560" cy="300" rx="230" ry="150" fill="#e6a39a" opacity=".55"/>
+        <ellipse cx="760" cy="190" rx="200" ry="140" fill="#e8c56f" opacity=".5"/>
+        <ellipse cx="430" cy="380" rx="170" ry="90" fill="#8fb39a" opacity=".45"/>
+      </g>
+      <g filter="url(#edge)" opacity=".5">
+        <ellipse cx="300" cy="230" rx="260" ry="170" fill="#3d6f8e"/>
+        <ellipse cx="560" cy="300" rx="230" ry="150" fill="#b8574c"/>
+      </g>
+    </svg>
+    <h1>Wet on<em>wet.</em></h1>
+    <p>Lay down clear water, then touch the brush to it and let go. The pigment wanders where the paper is thirsty and stops where it has had enough. Hover over the page to wet it again.</p>
+  </section>
+
+  <div class="legend"><span>Four washes from the spring palette</span><b id="state">Paper resting</b></div>
+  <section class="swatches" id="sw"></section>
+
+  <section class="drip">
+    <h2>On letting the colour decide</h2>
+    <p>Every watercolourist learns the same lesson twice: once when the wash goes where they meant, and once when it does not. A bloom, the soft cauliflower edge that forms when wet paint runs into a damp patch, was once a mistake to be hidden. Now we chase it. The trick is timing. Too wet and the colour drowns; too dry and it sits like a stamp. Between the two lies a short bright window where the pigment still moves, and the painter's job is mostly to wait inside it, brush lifted, watching what the water wants.</p>
+  </section>
+  <footer>Hover or tap a wash to rewet it · colours settle when left alone</footer>
+</main>
+
+<script>
+(function(){
+  var data=[
+    {n:"Cerulean Tide",k:"PB36 · granulating",c:["#5f93b8","#a9c9dd"],s:"Settles into the tooth of the paper like sand at low water. Best laid quickly and left alone."},
+    {n:"Quinacridone Dusk",k:"PV19 · staining",c:["#d0708a","#efb4b2"],s:"A rose that refuses to lift. It travels far into wet paper and blushes everything it meets."},
+    {n:"Hansa Morning",k:"PY97 · transparent",c:["#e8b94a","#f4dc93"],s:"Clean, bright and thin as light through a curtain. Glazes over cooler washes without muddying them."},
+    {n:"Sap Hollow",k:"PG7 + PY150 · mixed",c:["#5f8d6c","#a8c4a0"],s:"A pond green that separates on the page, gold drifting from teal as it dries."}
+  ];
+  var host=document.getElementById('sw');
+  data.forEach(function(d,i){
+    var b=document.createElement('button');b.type='button';b.className='sw';
+    b.setAttribute('aria-label',d.n+', '+d.k);
+    var fid='sb'+i;
+    b.innerHTML=
+      '<svg viewBox="0 0 400 500" aria-hidden="true"><defs>'+
+      '<filter id="'+fid+'" x="-30%" y="-30%" width="160%" height="160%">'+
+      '<feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="4" seed="'+(i*5+3)+'" result="n"/>'+
+      '<feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" result="d"/>'+
+      '<feGaussianBlur in="d" stdDeviation="2.5"/></filter>'+
+      '<radialGradient id="g'+i+'" cx="40%" cy="40%" r="65%"><stop offset="0" stop-color="'+d.c[1]+'"/><stop offset=".65" stop-color="'+d.c[0]+'" stop-opacity=".85"/><stop offset="1" stop-color="'+d.c[0]+'"/></radialGradient>'+
+      '</defs><g class="blot" style="transform-origin:200px 200px"><g filter="url(#'+fid+')" style="mix-blend-mode:multiply">'+
+      '<path d="M70 120 C110 40 290 50 330 120 C370 190 340 310 250 330 C160 350 60 300 50 220 C45 180 55 150 70 120Z" fill="url(#g'+i+')" opacity=".9"/>'+
+      '<circle cx="'+(150+i*25)+'" cy="'+(170+i*12)+'" r="40" fill="'+d.c[0]+'" opacity=".35"/>'+
+      '</g></g></svg>'+
+      '<span class="say">'+d.s+'</span>'+
+      '<span class="cap"><strong>'+d.n+'</strong><small>'+d.k+'</small></span>';
+    host.appendChild(b);
+    b._disp=b.querySelector('feDisplacementMap');b._wet=0;
+    b.addEventListener('pointerenter',function(){b._target=1});
+    b.addEventListener('pointerleave',function(){b._target=0});
+    b.addEventListener('focus',function(){b._target=1});
+    b.addEventListener('blur',function(){b._target=0});
+    b.addEventListener('click',function(){b._wet=Math.max(b._wet,.6);b._target=1;b.classList.toggle('wet')});
+  });
+  var btns=host.querySelectorAll('.sw');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var disp=document.getElementById('disp'),turb=document.getElementById('turb');
+  var hero=document.getElementById('hero'),state=document.getElementById('state');
+  var heroWet=0,heroT=0,mx=.5,my=.5,last=performance.now();
+  hero.addEventListener('pointermove',function(e){
+    var r=hero.getBoundingClientRect();mx=(e.clientX-r.left)/r.width;my=(e.clientY-r.top)/r.height;heroT=1;
+  });
+  hero.addEventListener('pointerleave',function(){heroT=0});
+  function tick(now){
+    var dt=Math.min(64,now-last)/16.67;last=now;
+    var rate=reduce.matches?.2:1;
+    heroWet+=(heroT-heroWet)*.03*dt;
+    var drift=reduce.matches?0:now*.000012;
+    disp.setAttribute('scale',(38+heroWet*70).toFixed(1));
+    turb.setAttribute('baseFrequency',(.012+heroWet*.004*mx+drift%0.002).toFixed(4)+' '+(.012+heroWet*.004*my).toFixed(4));
+    var anyWet=heroWet>.15;
+    for(var i=0;i<btns.length;i++){
+      var b=btns[i],tg=Math.max(b._target||0,b.classList.contains('wet')?.55:0);
+      b._wet+=(tg-b._wet)*(tg>b._wet?.06:.015)*dt*rate;
+      if(b._wet>.15)anyWet=true;
+      b._disp.setAttribute('scale',(26+b._wet*90).toFixed(1));
+    }
+    state.textContent=anyWet?'Paper wet · pigment moving':'Paper resting';
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

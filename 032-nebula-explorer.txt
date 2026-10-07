@@ -1,0 +1,27 @@
+Prompt
+
+032 nebula-explorer: layered radial-gradient nebula, drag to pan, wheel to zoom.
+
+Build a single standalone HTML page, "The Meridian Complex", a fictional observatory's explorable star-forming nebula (Observatory Halcyon, Plate 7). Palette: void black #04030a with a deep indigo centre glow, starlight cream #f4efe6, rose #ff7a9c, teal #5fe6d2, gold #ffc76a as the selection accent, violet washes, and smoky glass panels rgba(14,10,30,.55) with hairline cream borders. Typography: "Iowan Old Style"/Palatino/Georgia for the title, card headings and prose (title "The Meridian Complex" with "Complex" italic in gold), ui-monospace/Menlo for tiny tracked uppercase instrument labels and readouts.
+
+Scene: a fixed full-screen stage built from stacked layers, each with a parallax factor p. Two infinite starfields are full-viewport divs whose many tiny radial-gradient dots tile via background-repeat; their background-size and background-position are recomputed from the camera (scale z^p, offset cam*p) so they never run out, and the brighter one twinkles with a slow opacity keyframe. Above them, three screen-blended nebula planes made only of large elliptical radial-gradients: a far plane (3200x2200, p 0.45) of violet and navy washes, a mid plane (2400x1600, p 0.75) of magenta, teal, rose, blue and amber clouds, and the main plane (p 1) with four bright features: a rose-gold emission core (the Lantern Veil), a saffron protostar, a blue ring nebula drawn as a transparent-centred radial gradient (the Hollow Bell), and a teal glow. A normal-blend silhouette plane holds three dark rounded dust pillars with teal inset rim light (the Corvid Pillars), plus cross-shaped diffraction-spike stars built from pseudo-elements. A foreground dust plane (p 1.35) of dark lanes moves faster than the camera for depth. A fixed radial vignette darkens the edges.
+
+Camera: x, y, z with targets; each frame eases position exponentially (rate 7/s) and zoom in log space (rate 4.5/s). Each layer gets transform translate(centre) scale(z^p) translate(-cam*p - half size). Bounds clamp pan to the nebula and zoom to 0.6x to 4.5x. Drag pans with inertial drift after release (friction decay), wheel zooms about the cursor, two-finger pinch zooms about the midpoint, arrow keys pan and +/- zoom when the stage is focused. The page opens from a "Calibrating optics" loading screen with a pulsing gold scan line, then glides in from 0.62x to 1x.
+
+HUD: top-left title block; top-right monospace readout of fictional RA, Dec, magnification and field width in light-years that update live; bottom-left glass card (backdrop blur) that starts as a navigator hint and swaps with a rise-in animation to a beacon description with distance and age; "Next beacon" and "Overview" pill buttons; bottom-right a mini map with gradient blobs and a gold viewport rectangle (click to jump), and round +/- zoom buttons. Four beacon markers are HTML buttons positioned in screen space every frame (constant size at any zoom), each a thin ring with a pinging halo and an italic-free serif label that slides in on hover; clicking flies the camera to the feature at its own zoom and turns its ring gold. Mobile: readout hidden, card spans the bottom, mini map moves top-right and shrinks. Reduced motion: no twinkle, ping, intro glide, inertia or easing (camera jumps).
+
+Title: The Meridian Complex
+
+Description: A quiet, premium astronomy explorer in which a whole nebula is painted with nothing but layered radial gradients. Five depth planes and two infinite starfields move at different rates as you drift and magnify, so the cloud feels volumetric: dust lanes slide past in front, faint violet washes hang far behind, and bright cores bloom as you zoom in. Serif typography, gold accents and frosted instrument panels make it feel like an observatory's own interactive plate, and four charted beacons give the wandering a destination, each with a short piece of evocative science writing.
+
+Visual techniques:
+- Multi-plane parallax built from large elliptical radial-gradient layers with mix-blend-mode: screen
+- Infinite procedural starfields via tiled radial-gradient dots with camera-driven background-size and background-position
+- Ring nebula from a transparent-centred radial gradient; dust pillars from rounded gradient divs with inset rim light
+- Diffraction-spike stars using pseudo-element gradient lines
+- Exponential camera smoothing, log-space zoom easing, cursor-anchored zoom maths, inertial panning
+- Screen-space HTML markers with pinging halos, glass cards with backdrop-filter, swap-in card animation
+- Live mini map viewport rectangle and fictional celestial coordinate readouts
+- Loading veil with animated scan line, reduced-motion instant camera
+
+Interaction model: Drag anywhere to pan, and release with momentum to keep drifting; use the mouse wheel or a two-finger pinch to zoom toward the point under the cursor or fingers. With the stage focused, arrow keys pan and plus or minus zoom. Click a beacon marker or the "Next beacon" button to fly smoothly to a feature and read about it in the card; "Overview" returns to the full view. Clicking the mini map jumps the camera to that spot, and the round buttons zoom about the centre.

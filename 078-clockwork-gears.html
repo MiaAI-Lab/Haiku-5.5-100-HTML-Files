@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Patient Train</title>
+<style>
+:root{
+  --wood:#160f0a;--wood2:#24170e;--cream:#efe3c8;--muted:#a8916b;--brass:#c9a14a;--ox:#b0442f;
+  --rule:rgba(201,161,74,.25);--ease:cubic-bezier(.22,1,.36,1);
+  --display:"Didot","Bodoni 72","Bodoni MT","Iowan Old Style",Georgia,serif;
+  --body:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--wood)}
+body{
+  color:var(--cream);font-family:var(--body);font-size:17px;line-height:1.65;overflow-x:hidden;
+  background:
+    repeating-linear-gradient(92deg,rgba(255,220,170,.018) 0 2px,transparent 2px 9px),
+    repeating-linear-gradient(88deg,rgba(0,0,0,.12) 0 1px,transparent 1px 23px),
+    linear-gradient(180deg,var(--wood2),var(--wood) 40%,#0f0a06);
+}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);max-width:1400px;margin:0 auto}
+.stage{
+  position:sticky;top:0;height:100vh;height:100svh;grid-column:2;grid-row:1;align-self:start;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;
+  background:radial-gradient(circle at 55% 48%,rgba(120,72,30,.45),transparent 62%);
+}
+svg#train{width:100%;max-width:720px;height:auto;max-height:82%;overflow:visible;touch-action:none}
+.gear{cursor:grab;outline:none}
+.gear.grab{cursor:grabbing}
+.gear .body{stroke:#3a230e;stroke-width:1;transition:stroke .4s var(--ease),opacity .6s var(--ease)}
+.gear .sheen{pointer-events:none}
+.gear .ring{fill:none;stroke:rgba(60,35,10,.55);stroke-width:.8}
+.gear .hub{fill:url(#steel);stroke:#2a2c30;stroke-width:.8}
+.gear .slot{stroke:#1d1f22;stroke-width:2.2;stroke-linecap:round}
+.gear .rot{transition:opacity .6s var(--ease)}
+.gear.dim .rot{opacity:.38}
+.gear.lit .body,.gear:hover .body,.gear:focus-visible .body{stroke:#ffe7a3;stroke-width:1.6}
+.gear:focus-visible .hub{stroke:#ffe7a3;stroke-width:2}
+.hud{
+  width:min(100%,560px);display:grid;grid-template-columns:1fr auto;gap:4px 18px;align-items:end;
+  border-top:1px solid var(--rule);padding-top:12px;margin-top:8px;font-variant:small-caps;letter-spacing:.12em;font-size:13px;color:var(--muted);
+}
+.hud b{font-family:var(--display);font-variant:normal;letter-spacing:.01em;font-weight:400;color:var(--cream);font-size:21px;display:block;line-height:1.2}
+.hud .num{text-align:right}
+.hud .num b{color:var(--brass);font-variant-numeric:tabular-nums}
+.reserve{position:absolute;left:clamp(10px,2vw,24px);top:18%;bottom:18%;width:2px;background:rgba(201,161,74,.15)}
+.reserve i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(var(--brass),#7a5420);height:100%}
+.reserve span{position:absolute;top:-26px;left:-4px;font-size:10px;letter-spacing:.2em;font-variant:small-caps;color:var(--muted);white-space:nowrap}
+article{grid-column:1;grid-row:1;padding:0 clamp(20px,5vw,72px)}
+section{min-height:88vh;display:flex;flex-direction:column;justify-content:center;padding:12vh 0;max-width:34em;
+  opacity:.35;transform:translateY(18px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+section.on{opacity:1;transform:none}
+.kicker{font-variant:small-caps;letter-spacing:.24em;color:var(--brass);font-size:14px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(52px,8vw,112px);line-height:.9;letter-spacing:-.02em;margin:.25em 0 .3em}
+h1 em{color:var(--brass)}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,4vw,50px);line-height:1;margin:.3em 0 .5em}
+h2 small{display:block;font-family:var(--body);font-size:14px;font-variant:small-caps;letter-spacing:.24em;color:var(--ox);margin-bottom:.6em}
+p+p{margin-top:1em}
+.lede{font-size:clamp(19px,2vw,22px);color:#f6ecd6}
+.meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:1.6em;padding-top:1em;border-top:1px solid var(--rule);font-variant:small-caps;letter-spacing:.14em;font-size:13px;color:var(--muted)}
+.meta b{display:block;font-family:var(--display);font-weight:400;font-size:28px;color:var(--cream);letter-spacing:0;font-variant:normal}
+.hint{margin-top:2em;color:var(--muted);font-style:italic;display:flex;align-items:center;gap:12px}
+.hint i{width:22px;height:34px;border:1px solid var(--muted);border-radius:12px;position:relative;flex:none}
+.hint i::after{content:"";position:absolute;left:50%;top:7px;width:2px;height:7px;margin-left:-1px;background:var(--brass);border-radius:2px;animation:wheel 1.8s var(--ease) infinite}
+@keyframes wheel{60%{transform:translateY(9px);opacity:0}100%{opacity:0}}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85em;color:var(--brass)}
+footer{padding:0 0 18vh;color:var(--muted);font-size:14px}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr}
+  .stage{grid-column:1;grid-row:1;height:54vh;height:54svh;z-index:2;padding:10px 16px 6px;
+    background:radial-gradient(circle at 50% 45%,#3a2414,var(--wood) 70%);box-shadow:0 20px 30px -10px var(--wood)}
+  svg#train{max-height:76%}
+  .hud b{font-size:17px}
+  article{grid-row:2}
+  section{min-height:70vh;padding:8vh 0}
+  .reserve{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  section{transition:none;opacity:1;transform:none}
+  .hint i::after{animation:none}
+  .gear .body,.gear .rot{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage">
+    <div class="reserve" aria-hidden="true"><span>reserve</span><i id="reserve"></i></div>
+    <svg id="train" viewBox="0 100 600 500" role="group" aria-label="Interlocking gear train. Drag a wheel, or focus it and use the arrow keys, to turn the train.">
+      <defs>
+        <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f6da8a"/><stop offset=".45" stop-color="#c4913a"/><stop offset="1" stop-color="#6d4518"/>
+        </linearGradient>
+        <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#eef0f3"/><stop offset=".5" stop-color="#9097a1"/><stop offset="1" stop-color="#44484f"/>
+        </linearGradient>
+        <radialGradient id="glint" cx=".35" cy=".3" r=".75">
+          <stop offset="0" stop-color="#fff6d8" stop-opacity=".55"/><stop offset=".5" stop-color="#fff6d8" stop-opacity=".06"/><stop offset="1" stop-color="#000" stop-opacity=".25"/>
+        </radialGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="5" dy="9" stdDeviation="6" flood-color="#000" flood-opacity=".55"/>
+        </filter>
+      </defs>
+      <g id="gears" filter="url(#shadow)"></g>
+    </svg>
+    <div class="hud" aria-live="polite">
+      <div><span id="hudLabel">great wheel · 48 teeth</span><b id="hudName">The train at rest</b></div>
+      <div class="num"><span id="hudRatio">driver</span><b id="hudTurns">0.00 turns</b></div>
+    </div>
+  </div>
+  <article>
+    <section data-g="" class="on">
+      <span class="kicker">Marrow &amp; Vell · Clerkenwell, est. 1791</span>
+      <h1>The Patient <em>Train</em></h1>
+      <p class="lede">Ten wheels and two hundred and seventy teeth, and not one of them in a hurry. Scroll to wind the great wheel and watch the motion pass from hand to hand, each wheel answering the last in the opposite direction.</p>
+      <div class="meta"><div><b>10</b>wheels</div><div><b>270</b>teeth</div><div><b>m&nbsp;4</b>module</div></div>
+      <p class="hint"><i aria-hidden="true"></i>Scroll to drive the train, or take hold of any wheel and turn it by hand.</p>
+    </section>
+    <section data-g="0">
+      <h2><small>i · the driver</small>The Great Wheel</h2>
+      <p>Forty-eight teeth cut from a single rolled sheet of yellow brass, crossed out with six windows to keep it light. It turns the slowest of all and carries the most weight. Everything else in the train is just this wheel's patience, divided.</p>
+      <p>Your scroll is its mainspring. Each line you read moves it a third of a degree.</p>
+    </section>
+    <section data-g="1,2">
+      <h2><small>ii · the first division</small>Centre Pinion &amp; Wheel</h2>
+      <p>A twenty-leaf pinion of hardened steel takes the great wheel's motion and turns it 2.4 times faster in the opposite sense. Its partner, the thirty-two tooth centre wheel, carries the motion up and to the left, towards the quick end of the train.</p>
+    </section>
+    <section data-g="4,5">
+      <h2><small>iii · the long way round</small>Idler &amp; Fourth Wheel</h2>
+      <p>The idler sets nothing to time. It is there to turn the direction back again, so the broad fourth wheel below runs the same way as the centre pinion that feeds it. Watchmakers call such a part honest: it changes nothing except which way you are facing.</p>
+    </section>
+    <section data-g="3,8,6">
+      <h2><small>iv · where it quickens</small>Third Pinion &amp; Escape</h2>
+      <p>Up at the top of the train the wheels are small and fast. The twelve-tooth escape wheel turns four times for every single turn of the great wheel, which is the speed at which brass starts to sound like a heartbeat.</p>
+    </section>
+    <section data-g="7,9">
+      <h2><small>v · the outriders</small>Motion &amp; Winding Wheels</h2>
+      <p>Two wheels hang off the great wheel's other side. The motion wheel would one day carry the hands, and the winding wheel takes the key. They turn only a little quicker than the great wheel itself, and they ask very little of the wheel they lean on.</p>
+    </section>
+    <section data-g="">
+      <h2><small>a note on meshing</small>Why the Teeth Agree</h2>
+      <p>Every wheel here shares one module, so its pitch radius is simply <code>r = m·N / 2</code>, and two wheels mesh when their centres sit <code>r₁ + r₂</code> apart. Each one turns at <code>−N₁/N₂</code> times its neighbour's speed and starts offset by half a tooth, so that tooth always meets gap.</p>
+      <p>No tooth in this train ever passes through another, however far you scroll.</p>
+    </section>
+    <footer>Drawn in a fictional workshop. The wheels are real arithmetic.</footer>
+  </article>
+</div>
+<script>
+(function(){
+"use strict";
+const NS='http://www.w3.org/2000/svg',M=4,D2R=Math.PI/180;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+const SPEC=[
+  {name:'Great Wheel',N:48,x:230,y:330},
+  {name:'Centre Pinion',N:20,p:0,a:0,steel:1},
+  {name:'Centre Wheel',N:32,p:1,a:-60},
+  {name:'Third Pinion',N:14,p:2,a:-150,steel:1},
+  {name:'Idler',N:24,p:1,a:70},
+  {name:'Fourth Wheel',N:40,p:4,a:40},
+  {name:'Escape Pinion',N:16,p:2,a:20,steel:1},
+  {name:'Motion Wheel',N:36,p:0,a:150},
+  {name:'Escape Wheel',N:12,p:3,a:-100,steel:1},
+  {name:'Winding Wheel',N:28,p:0,a:-120}
+];
+function gearPath(N){
+  const r=M*N/2,ro=r+M,rr=r-1.25*M,p=2*Math.PI/N;let d='';
+  for(let i=0;i<N;i++){
+    const c=i*p;
+    [[rr,c-p/2],[rr,c-p*.27],[ro,c-p*.13],[ro,c+p*.13],[rr,c+p*.27]].forEach(([R,a],j)=>{
+      d+=(i===0&&j===0?'M':'L')+(R*Math.cos(a)).toFixed(2)+' '+(R*Math.sin(a)).toFixed(2);
+    });
+  }
+  d+='Z';
+  if(N>=24){
+    const k=N>=40?6:5,hr=r*.19,hd=r*.55;
+    for(let i=0;i<k;i++){
+      const a=i*2*Math.PI/k+Math.PI/k,x=hd*Math.cos(a),y=hd*Math.sin(a);
+      d+='M'+(x+hr).toFixed(2)+' '+y.toFixed(2)+'a'+hr.toFixed(2)+' '+hr.toFixed(2)+' 0 1 0 '+(-2*hr).toFixed(2)+' 0a'+hr.toFixed(2)+' '+hr.toFixed(2)+' 0 1 0 '+(2*hr).toFixed(2)+' 0Z';
+    }
+  }
+  return d;
+}
+const host=document.getElementById('gears');
+const G=SPEC.map((s,i)=>{
+  const g={...s,i,r:M*s.N/2};
+  if(s.p!==undefined){
+    const P=SPEC[s.p],pr=M*P.N/2,dist=pr+g.r;
+    g.x=P.x+Math.cos(s.a*D2R)*dist;g.y=P.y+Math.sin(s.a*D2R)*dist;
+    s.x=g.x;s.y=g.y;
+  }
+  return g;
+});
+G.forEach(g=>{
+  if(g.p!==undefined){const P=G[g.p];g.ratio=P.N/g.N;g.c0=g.a+180+180/g.N+g.ratio*g.a;g.k=-g.ratio*P.k;}else{g.k=1;}
+  const outer=document.createElementNS(NS,'g');outer.setAttribute('class','gear');
+  outer.setAttribute('transform','translate('+g.x.toFixed(2)+' '+g.y.toFixed(2)+')');
+  outer.setAttribute('tabindex','0');outer.setAttribute('role','button');
+  outer.setAttribute('aria-label',g.name+', '+g.N+' teeth. Arrow keys turn it.');
+  const rot=document.createElementNS(NS,'g');rot.setAttribute('class','rot');
+  const body=document.createElementNS(NS,'path');body.setAttribute('class','body');body.setAttribute('d',gearPath(g.N));
+  body.setAttribute('fill',g.steel?'url(#steel)':'url(#brass)');body.setAttribute('fill-rule','evenodd');
+  const ring=document.createElementNS(NS,'circle');ring.setAttribute('class','ring');ring.setAttribute('r',(g.r-1.25*M-3).toFixed(2));
+  const hubR=Math.max(7,g.r*.16);
+  const hub=document.createElementNS(NS,'circle');hub.setAttribute('class','hub');hub.setAttribute('r',hubR.toFixed(2));
+  const slot=document.createElementNS(NS,'line');slot.setAttribute('class','slot');
+  slot.setAttribute('x1',(-hubR*.6).toFixed(2));slot.setAttribute('x2',(hubR*.6).toFixed(2));slot.setAttribute('y1','0');slot.setAttribute('y2','0');
+  rot.append(body,ring,hub,slot);
+  const sheen=document.createElementNS(NS,'circle');sheen.setAttribute('class','sheen');sheen.setAttribute('r',(g.r+M).toFixed(2));
+  sheen.setAttribute('fill','url(#glint)');sheen.setAttribute('opacity','.7');
+  outer.append(rot,sheen);host.appendChild(outer);
+  g.el=outer;g.rotEl=rot;
+});
+function angles(theta){
+  const out=new Array(G.length);
+  G.forEach(g=>{out[g.i]=g.p===undefined?theta:g.c0-g.ratio*out[g.p];});
+  return out;
+}
+let scrollT=0,drag=0,drift=0,cur=0,active=null,hover=null;
+const hudName=document.getElementById('hudName'),hudLabel=document.getElementById('hudLabel'),
+      hudRatio=document.getElementById('hudRatio'),hudTurns=document.getElementById('hudTurns'),reserve=document.getElementById('reserve');
+function target(){return scrollT+drag+drift;}
+function readScroll(){
+  scrollT=scrollY*.34;
+  const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  reserve.style.height=(100-scrollY/max*100).toFixed(1)+'%';
+}
+addEventListener('scroll',readScroll,{passive:true});
+function hud(){
+  const g=G[hover??active??0],turns=g.k*cur/360;
+  hudName.textContent=(hover===null&&active===null&&Math.abs(cur)<.5)?'The train at rest':g.name;
+  hudLabel.textContent=g.name.toLowerCase()+' · '+g.N+' teeth';
+  hudRatio.textContent=g.p===undefined?'driver · 1 : 1':(Math.abs(g.k).toFixed(2)+'× · '+(g.k>0?'with':'against')+' the driver');
+  hudTurns.textContent=(turns>=0?'':'−')+Math.abs(turns).toFixed(2)+' turns';
+}
+let last=performance.now();
+function frame(t){
+  const dt=Math.min(.05,(t-last)/1000);last=t;
+  if(!reduce.matches)drift+=dt*1.2;
+  const tg=target();
+  cur=reduce.matches?tg:cur+(tg-cur)*(1-Math.pow(.0009,dt));
+  const A=angles(cur);
+  G.forEach(g=>g.rotEl.setAttribute('transform','rotate('+A[g.i].toFixed(3)+')'));
+  hud();
+  requestAnimationFrame(frame);
+}
+const svg=document.getElementById('train');
+function svgPt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+G.forEach(g=>{
+  let held=false,prev=0;
+  const ang=e=>{const p=svgPt(e);return Math.atan2(p.y-g.y,p.x-g.x)/D2R;};
+  g.el.addEventListener('pointerdown',e=>{held=true;prev=ang(e);g.el.setPointerCapture(e.pointerId);g.el.classList.add('grab');hover=g.i;e.preventDefault();});
+  g.el.addEventListener('pointermove',e=>{
+    if(!held)return;let a=ang(e),d=a-prev;if(d>180)d-=360;if(d<-180)d+=360;prev=a;
+    drag+=d/g.k;if(reduce.matches)cur=target();
+  });
+  const up=()=>{held=false;g.el.classList.remove('grab');};
+  g.el.addEventListener('pointerup',up);g.el.addEventListener('pointercancel',up);
+  g.el.addEventListener('pointerenter',()=>{hover=g.i;});
+  g.el.addEventListener('pointerleave',()=>{if(!held)hover=null;});
+  g.el.addEventListener('focus',()=>{hover=g.i;});
+  g.el.addEventListener('blur',()=>{hover=null;});
+  g.el.addEventListener('keydown',e=>{
+    const step=e.shiftKey?30:6;
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){drag+=step/g.k;e.preventDefault();}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){drag-=step/g.k;e.preventDefault();}
+  });
+});
+const sections=[...document.querySelectorAll('section')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(en=>{
+    if(!en.isIntersecting)return;
+    sections.forEach(s=>s.classList.toggle('on',s===en.target));
+    const ids=en.target.dataset.g?en.target.dataset.g.split(',').map(Number):[];
+    active=ids.length?ids[0]:null;
+    G.forEach(g=>{g.el.classList.toggle('lit',ids.includes(g.i));g.el.classList.toggle('dim',ids.length>0&&!ids.includes(g.i));});
+  });
+},{rootMargin:'-45% 0px -45% 0px'});
+sections.forEach(s=>io.observe(s));
+readScroll();cur=target();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

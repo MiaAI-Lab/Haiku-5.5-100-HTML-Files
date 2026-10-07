@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raster 27 · International Symposium on Grid Systems</title>
+<style>
+:root{
+  --paper:#f4f3ef;
+  --ink:#0e0e0e;
+  --grey:#6f6f6b;
+  --red:#e2161b;
+  --gut:clamp(12px,2vw,24px);
+  --pad:clamp(16px,4vw,56px);
+  --sans:"Helvetica Neue",Helvetica,"Nimbus Sans",Arial,sans-serif;
+  --out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden;font-feature-settings:"tnum" 1}
+.g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);padding:0 var(--pad)}
+.top{padding-top:22px;padding-bottom:22px;font-size:12px;line-height:1.35;font-weight:500;border-bottom:2px solid var(--ink);align-items:start}
+.top>div:nth-child(1){grid-column:1/4;font-weight:700}
+.top>div:nth-child(2){grid-column:4/7}
+.top>div:nth-child(3){grid-column:7/10}
+.top>div:nth-child(4){grid-column:10/13;display:flex;justify-content:space-between;gap:10px}
+.gridbtn{font:700 11px/1 var(--sans);letter-spacing:.04em;background:none;border:2px solid var(--ink);padding:6px 9px;cursor:pointer;color:var(--ink);transition:background .2s,color .2s}
+.gridbtn:hover,.gridbtn[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.gridbtn:focus-visible,.stat:focus-visible,.row:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+
+.hero{position:relative;min-height:calc(100vh - 70px);overflow:hidden;padding-top:clamp(24px,5vh,56px);padding-bottom:clamp(24px,5vh,56px);align-content:space-between;row-gap:24px}
+.block{position:absolute;right:calc(var(--pad) + 4%);top:16%;width:38%;aspect-ratio:1;background:var(--red);transform:translate(var(--mx,0),var(--my,0));transition:transform 1.2s var(--out)}
+.big{
+  grid-column:4/13;grid-row:1;justify-self:end;position:relative;z-index:1;
+  font-weight:700;font-size:clamp(200px,40vw,640px);line-height:.74;letter-spacing:-.075em;margin-right:-.04em;cursor:default;
+  mix-blend-mode:multiply;user-select:none
+}
+.intro{grid-column:1/5;grid-row:1;align-self:start;position:relative;z-index:2}
+.intro .label{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--red);margin-bottom:14px}
+.intro h1{font-size:clamp(30px,3.6vw,52px);line-height:.98;letter-spacing:-.035em;font-weight:700}
+.foot{grid-column:1/13;grid-row:2;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);align-items:end;position:relative;z-index:2}
+.foot p{grid-column:1/5;font-size:clamp(15px,1.5vw,19px);line-height:1.38;letter-spacing:-.01em}
+.foot .meta{grid-column:7/10;font-size:12px;line-height:1.5;color:var(--grey)}
+.foot .meta b{color:var(--ink)}
+.foot .ed{grid-column:10/13;font-size:12px;font-weight:700;text-align:right}
+
+.stats{border-top:2px solid var(--ink)}
+.stat{grid-column:span 3;padding:20px 0 48px;border-right:1px solid rgba(14,14,14,.18);padding-right:var(--gut);cursor:default;position:relative;outline:none}
+.stat:last-child{border-right:0}
+.stat .n{font-size:clamp(64px,9vw,144px);font-weight:700;letter-spacing:-.06em;line-height:.85;display:block;transition:color .3s}
+.stat .k{display:block;margin-top:16px;font-size:13px;font-weight:700}
+.stat .d{display:block;margin-top:4px;font-size:13px;color:var(--grey);line-height:1.4;max-width:24ch}
+.stat::after{content:"";position:absolute;left:0;top:-2px;height:6px;width:100%;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--out)}
+.stat:hover::after,.stat:focus-visible::after{transform:scaleX(1)}
+.stat:hover .n{color:var(--red)}
+
+.sec-h{border-top:2px solid var(--ink);padding-top:16px;padding-bottom:28px}
+.sec-h h2{grid-column:1/4;font-size:12px;font-weight:700}
+.sec-h p{grid-column:4/10;font-size:clamp(22px,2.6vw,34px);line-height:1.05;letter-spacing:-.03em;font-weight:700}
+.prog{padding-bottom:clamp(56px,10vh,120px)}
+.row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gut);padding:18px var(--pad);border-top:1px solid rgba(14,14,14,.2);position:relative;cursor:default;overflow:hidden;outline:none}
+.row::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(101%);transition:transform .5s var(--out);z-index:0}
+.row>*{position:relative;z-index:1;transition:color .3s}
+.row:hover::before,.row:focus-visible::before{transform:none}
+.row:hover>*,.row:focus-visible>*{color:var(--paper)}
+.row:hover .t,.row:focus-visible .t{color:var(--red)}
+.row .i{grid-column:1/2;font-size:12px;font-weight:700;color:var(--grey)}
+.row .t{grid-column:2/5;font-size:clamp(28px,3.4vw,48px);font-weight:700;letter-spacing:-.05em;line-height:.9}
+.row .h{grid-column:5/10;font-size:clamp(16px,1.6vw,20px);font-weight:700;letter-spacing:-.015em;line-height:1.2}
+.row .w{grid-column:10/13;font-size:13px;color:var(--grey);line-height:1.4}
+
+.count{background:var(--ink);color:var(--paper);padding-top:clamp(40px,8vh,90px);padding-bottom:clamp(40px,8vh,90px);row-gap:24px;overflow:hidden}
+.count .lbl{grid-column:1/4;font-size:12px;font-weight:700;color:var(--red)}
+.count .days{grid-column:4/13;font-size:clamp(120px,24vw,380px);font-weight:700;letter-spacing:-.07em;line-height:.78;justify-self:start}
+.count .days span{color:var(--red)}
+.count .clock{grid-column:4/13;font-size:clamp(18px,2.4vw,30px);font-weight:700;letter-spacing:-.02em;display:flex;gap:clamp(16px,3vw,40px);flex-wrap:wrap}
+.count .clock small{display:block;font-size:11px;color:#9a9a95;font-weight:500;letter-spacing:.02em;margin-top:6px}
+footer{padding-top:18px;padding-bottom:28px;font-size:12px;color:var(--grey)}
+footer div:nth-child(1){grid-column:1/7}
+footer div:nth-child(2){grid-column:7/13;text-align:right}
+
+.overlay{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:0;transition:opacity .35s}
+.overlay.on{opacity:1}
+.overlay .g{height:100%}
+.overlay i{background:rgba(226,22,27,.09);border-left:1px solid rgba(226,22,27,.35);border-right:1px solid rgba(226,22,27,.35);height:100%}
+
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--out),transform .9s var(--out)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:760px){
+  .top>div:nth-child(1){grid-column:1/7}
+  .top>div:nth-child(2){grid-column:7/13}
+  .top>div:nth-child(3){grid-column:1/7;margin-top:10px}
+  .top>div:nth-child(4){grid-column:7/13;margin-top:10px}
+  .hero{min-height:auto}
+  .intro{grid-column:1/13}
+  .big{grid-column:1/13;grid-row:2;font-size:62vw;justify-self:end}
+  .block{top:auto;bottom:22%;width:58%;right:var(--pad)}
+  .foot{grid-row:3}
+  .foot p{grid-column:1/13}
+  .foot .meta{grid-column:1/8;margin-top:18px}
+  .foot .ed{grid-column:8/13}
+  .stat{grid-column:span 6;border-right:0;border-bottom:1px solid rgba(14,14,14,.18);padding-bottom:28px}
+  .sec-h h2{grid-column:1/13;margin-bottom:10px}
+  .sec-h p{grid-column:1/13}
+  .row .i{grid-column:1/3}
+  .row .t{grid-column:3/13}
+  .row .h{grid-column:3/13;margin-top:8px}
+  .row .w{grid-column:3/13;margin-top:4px}
+  .count .lbl,.count .days,.count .clock{grid-column:1/13}
+  footer div:nth-child(1),footer div:nth-child(2){grid-column:1/13;text-align:left}
+  .overlay .g{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .overlay i:nth-child(n+7){display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  .block{transition:none}
+  .row::before,.stat::after{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="top g">
+  <div>Raster 27</div>
+  <div>International Symposium<br>on Grid Systems</div>
+  <div>12–14 March 2027<br>Halle 9, Lindenquai</div>
+  <div><span>Edition A</span><button class="gridbtn" id="gridBtn" type="button" aria-pressed="false">Grid</button></div>
+</header>
+
+<main>
+<section class="hero g" id="hero">
+  <div class="block" id="block" aria-hidden="true"></div>
+  <div class="intro rv">
+    <div class="label">Poster Nº 27</div>
+    <h1>Order is<br>not a cage.</h1>
+  </div>
+  <div class="big" id="big" aria-label="27">27</div>
+  <div class="foot rv">
+    <p>It is the quiet agreement that lets everything else be loud. Three days of talks, workshops and argument about the invisible lines that hold a page together.</p>
+    <div class="meta"><b>Free for students</b><br>Doors 09:00 · Talks in English<br>Registration closes 28 Feb</div>
+    <div class="ed">12 columns<br>1 red</div>
+  </div>
+</section>
+
+<section class="stats g" aria-label="In numbers">
+  <div class="stat rv" tabindex="0"><span class="n" data-to="3" data-pad="2">00</span><span class="k">Days</span><span class="d">From the first ruled line to the last proof.</span></div>
+  <div class="stat rv" tabindex="0"><span class="n" data-to="48" data-pad="2">00</span><span class="k">Speakers</span><span class="d">Typographers, cartographers, one bridge engineer.</span></div>
+  <div class="stat rv" tabindex="0"><span class="n" data-to="12" data-pad="2">00</span><span class="k">Columns</span><span class="d">The only grid we brought. It divides by 2, 3, 4 and 6.</span></div>
+  <div class="stat rv" tabindex="0"><span class="n" data-to="1440">0</span><span class="k">Seats</span><span class="d">Numbered, aligned and very slightly too close together.</span></div>
+</section>
+
+<section class="sec-h g" aria-labelledby="progH">
+  <h2 id="progH">Programme, Day One</h2>
+  <p class="rv">Every session starts on the minute and ends on a baseline.</p>
+</section>
+<section class="prog" aria-label="Programme">
+  <div class="row rv" tabindex="0"><span class="i">01</span><span class="t">09:30</span><span class="h">The Column as Contract</span><span class="w">Opening lecture · Ilse Brandauer, Lindenquai Press</span></div>
+  <div class="row rv" tabindex="0"><span class="i">02</span><span class="t">11:00</span><span class="h">Measuring Silence: White Space by the Millimetre</span><span class="w">Workshop · Tomas Ferreira-Holm</span></div>
+  <div class="row rv" tabindex="0"><span class="i">03</span><span class="t">13:45</span><span class="h">Timetables, Maps and Other Honest Documents</span><span class="w">Panel · Aino Kettunen, Rafael Oduya, Mei Lindqvist</span></div>
+  <div class="row rv" tabindex="0"><span class="i">04</span><span class="t">15:20</span><span class="h">Breaking the Grid, Politely</span><span class="w">Talk · Jules Marchetti</span></div>
+  <div class="row rv" tabindex="0"><span class="i">05</span><span class="t">17:00</span><span class="h">One Red: A Short History of a Single Ink</span><span class="w">Closing talk · Hanne Vogt</span></div>
+</section>
+
+<section class="count g" aria-label="Countdown to opening">
+  <div class="lbl">Days until the grid opens</div>
+  <div class="days" id="days">000<span>.</span></div>
+  <div class="clock" id="clock" aria-live="off">
+    <div><span id="hh">00</span><small>Hours</small></div>
+    <div><span id="mm">00</span><small>Minutes</small></div>
+    <div><span id="ss">00</span><small>Seconds</small></div>
+  </div>
+</section>
+</main>
+
+<footer class="g">
+  <div>Raster 27 is organised by the Lindenquai Society for Visual Order.</div>
+  <div>Set in one family, two weights, flush left.</div>
+</footer>
+
+<div class="overlay" id="overlay" aria-hidden="true"><div class="g"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var OPEN=new Date(2027,2,12,9,0,0);
+  function expo(t){return t>=1?1:1-Math.pow(2,-10*t)}
+  function fmt(v,pad){var s=String(v);if(pad)while(s.length<pad)s='0'+s;return s.replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+
+  function countTo(el,to,pad,dur,from){
+    if(el._raf)cancelAnimationFrame(el._raf);
+    from=from||0;
+    if(reduce){el.textContent=fmt(to,pad);return}
+    var t0=performance.now();
+    (function step(now){
+      var p=Math.min(1,(now-t0)/dur);
+      el.textContent=fmt(Math.round(from+(to-from)*expo(p)),pad);
+      if(p<1)el._raf=requestAnimationFrame(step);
+    })(t0);
+  }
+
+  var big=document.getElementById('big');
+  countTo(big,27,2,1800);
+  big.addEventListener('mouseenter',function(){countTo(big,27,2,900,0)});
+
+  var nums=[].slice.call(document.querySelectorAll('.stat .n'));
+  var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting)return;
+      e.target.classList.add('in');
+      var n=e.target.querySelector&&e.target.querySelector('.n');
+      if(n&&!n._done){n._done=true;countTo(n,+n.dataset.to,+n.dataset.pad||0,1700)}
+      io.unobserve(e.target);
+    });
+  },{threshold:.2,rootMargin:'0px 0px -6% 0px'}):null;
+  var rvs=[].slice.call(document.querySelectorAll('.rv'));
+  rvs.forEach(function(el,i){
+    el.style.transitionDelay=((i%4)*90)+'ms';
+    if(io&&!reduce)io.observe(el);
+    else{el.classList.add('in');var n=el.querySelector('.n');if(n)n.textContent=fmt(+n.dataset.to,+n.dataset.pad||0)}
+  });
+  if(reduce)nums.forEach(function(n){n.textContent=fmt(+n.dataset.to,+n.dataset.pad||0)});
+  nums.forEach(function(n){
+    var s=n.parentNode;
+    function replay(){if(n._done)countTo(n,+n.dataset.to,+n.dataset.pad||0,1100)}
+    s.addEventListener('mouseenter',replay);
+    s.addEventListener('focus',replay);
+  });
+
+  var daysEl=document.getElementById('days'),hh=document.getElementById('hh'),mm=document.getElementById('mm'),ss=document.getElementById('ss');
+  var daysShown=false;
+  function tick(){
+    var ms=Math.max(0,OPEN-new Date());
+    var d=Math.floor(ms/864e5),h=Math.floor(ms/36e5)%24,m=Math.floor(ms/6e4)%60,s=Math.floor(ms/1e3)%60;
+    if(daysShown){daysEl.firstChild.nodeValue=fmt(d,3)}
+    hh.textContent=fmt(h,2);mm.textContent=fmt(m,2);ss.textContent=fmt(s,2);
+  }
+  var cio=('IntersectionObserver' in window)?new IntersectionObserver(function(es){
+    if(es[0].isIntersecting&&!daysShown){
+      var ms=Math.max(0,OPEN-new Date()),d=Math.floor(ms/864e5);
+      var node=daysEl.firstChild;
+      if(reduce){node.nodeValue=fmt(d,3);daysShown=true}
+      else{
+        var t0=performance.now();
+        (function st(now){var p=Math.min(1,(now-t0)/2000);node.nodeValue=fmt(Math.round(d*expo(p)),3);if(p<1)requestAnimationFrame(st);else daysShown=true})(t0);
+      }
+      cio.disconnect();
+    }
+  },{threshold:.3}):null;
+  if(cio)cio.observe(daysEl);else daysShown=true;
+  tick();setInterval(tick,1000);
+
+  var overlay=document.getElementById('overlay'),gridBtn=document.getElementById('gridBtn');
+  function toggleGrid(){var on=overlay.classList.toggle('on');gridBtn.setAttribute('aria-pressed',on?'true':'false')}
+  gridBtn.addEventListener('click',toggleGrid);
+  window.addEventListener('keydown',function(e){if((e.key==='g'||e.key==='G')&&!e.metaKey&&!e.ctrlKey&&!e.altKey)toggleGrid()});
+
+  var hero=document.getElementById('hero'),block=document.getElementById('block');
+  if(!reduce){
+    hero.addEventListener('pointermove',function(e){
+      var r=hero.getBoundingClientRect();
+      var x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      block.style.setProperty('--mx',(-x*36).toFixed(1)+'px');
+      block.style.setProperty('--my',(-y*36).toFixed(1)+'px');
+    });
+    hero.addEventListener('pointerleave',function(){block.style.setProperty('--mx','0px');block.style.setProperty('--my','0px')});
+  }
+})();
+</script>
+</body>
+</html>

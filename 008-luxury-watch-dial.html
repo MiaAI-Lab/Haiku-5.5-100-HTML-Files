@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maison Aurelle — Calibre Nocturne 38</title>
+<style>
+:root{
+  --bg:#0c0d10;--bg2:#13151a;--gold:#c9a96a;--gold2:#e8d3a2;--ink:#ece6da;--mute:#8d887d;--hair:rgba(201,169,106,.35);
+  --d1:#1b2433;--d2:#0d121b;--dt:#e9e1cf;
+  --display:Didot,"Bodoni 72","Bodoni MT","Big Caslon",Georgia,serif;
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(90% 70% at 70% 40%,#1a1c22 0%,var(--bg) 70%);color:var(--ink);font-family:var(--sans);font-weight:300;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+nav{display:flex;justify-content:space-between;align-items:center;padding:24px clamp(16px,5vw,64px);border-bottom:1px solid var(--hair)}
+.brand{font-family:var(--display);font-size:20px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold2)}
+nav ul{list-style:none;display:flex;gap:28px;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--mute)}
+nav li{position:relative;cursor:default}
+nav li::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .6s var(--ease)}
+nav li:hover{color:var(--ink)}nav li:hover::after{transform:scaleX(1)}
+main{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:clamp(24px,5vw,72px);padding:clamp(32px,6vw,80px) clamp(16px,5vw,64px);max-width:1360px;margin:0 auto}
+.stage{position:relative;display:grid;place-items:center;aspect-ratio:1;max-width:620px;width:100%;margin:0 auto;perspective:1200px}
+.stage::before{content:"";position:absolute;inset:6%;border:1px solid var(--hair);border-radius:50%}
+.stage::after{content:"";position:absolute;inset:0;border:1px solid rgba(201,169,106,.14);border-radius:50%}
+.watch{width:78%;transition:transform .9s var(--ease);transform-style:preserve-3d;filter:drop-shadow(0 40px 50px rgba(0,0,0,.6))}
+.watch svg{display:block;width:100%;height:auto;overflow:visible}
+.label{position:absolute;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.label i{display:inline-block;width:34px;height:1px;background:var(--gold);vertical-align:middle;margin:0 10px}
+.l1{top:9%;right:0}.l2{bottom:12%;left:0}
+.copy .eyebrow{font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,6vw,5rem);line-height:1;letter-spacing:-.01em;margin:16px 0 20px}
+h1 em{font-style:italic;color:var(--gold2)}
+.copy p{color:var(--mute);line-height:1.75;max-width:42ch;font-size:15px}
+.swatches{display:flex;gap:14px;margin:32px 0 10px}
+.sw{width:38px;height:38px;border-radius:50%;border:1px solid var(--hair);cursor:pointer;position:relative;padding:0;background:var(--c);transition:transform .5s var(--ease)}
+.sw::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--gold);opacity:0;transform:scale(.8);transition:all .5s var(--ease)}
+.sw:hover{transform:translateY(-3px)}
+.sw[aria-pressed="true"]::after,.sw:focus-visible::after{opacity:1;transform:none}
+.sw:focus-visible{outline:none}
+.swname{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);min-height:1.2em}
+dl{display:grid;grid-template-columns:1fr 1fr;margin-top:36px;border-top:1px solid var(--hair)}
+dl div{padding:16px 0;border-bottom:1px solid var(--hair)}
+dl div:nth-child(odd){padding-right:16px;border-right:1px solid var(--hair)}
+dl div:nth-child(even){padding-left:16px}
+dt{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+dd{font-family:var(--display);font-size:1.35rem;margin-top:4px;color:var(--ink)}
+.cta{display:flex;align-items:center;gap:22px;margin-top:36px;flex-wrap:wrap}
+.btn{font:inherit;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--bg);background:linear-gradient(120deg,#a8874a,var(--gold2) 45%,#b8955a);border:0;padding:16px 28px;cursor:pointer;background-size:200% 100%;transition:background-position .9s var(--ease),letter-spacing .6s var(--ease)}
+.btn:hover,.btn:focus-visible{background-position:100% 0;letter-spacing:.38em;outline:none}
+.price{font-family:var(--display);font-size:1.6rem;color:var(--gold2)}
+.price small{font-family:var(--sans);font-size:10px;letter-spacing:.3em;color:var(--mute);display:block}
+.time{position:fixed;right:clamp(16px,5vw,64px);bottom:20px;font-size:10px;letter-spacing:.3em;color:var(--mute);font-variant-numeric:tabular-nums}
+@media (max-width:860px){main{grid-template-columns:1fr}nav ul{display:none}.label{display:none}.time{position:static;text-align:center;padding:0 0 24px}}
+</style>
+</head>
+<body>
+<nav><div class="brand">Aurelle</div><ul><li>Collections</li><li>Atelier</li><li>Heritage</li></ul></nav>
+<main>
+  <div class="stage" id="stage">
+    <div class="watch" id="watch">
+      <svg viewBox="-200 -200 400 400" role="img" aria-label="Calibre Nocturne 38 watch showing the current time">
+        <defs>
+          <radialGradient id="dial" cx="40%" cy="35%" r="75%"><stop offset="0" id="dA" stop-color="#1b2433"/><stop offset="1" id="dB" stop-color="#0d121b"/></radialGradient>
+          <linearGradient id="case" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3e2b5"/><stop offset=".35" stop-color="#b38e4f"/><stop offset=".6" stop-color="#6e5428"/><stop offset=".85" stop-color="#d8bb7f"/><stop offset="1" stop-color="#8a6a34"/></linearGradient>
+          <linearGradient id="hand" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f6f3a"/><stop offset=".5" stop-color="#f6e6bd"/><stop offset="1" stop-color="#a5844b"/></linearGradient>
+          <radialGradient id="glare" cx="30%" cy="20%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <pattern id="guil" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="#fff" stroke-opacity=".035" stroke-width="2"/></pattern>
+        </defs>
+        <rect x="-38" y="-205" width="76" height="60" rx="8" fill="#2a1f14"/>
+        <rect x="-38" y="145" width="76" height="60" rx="8" fill="#2a1f14"/>
+        <rect x="186" y="-14" width="16" height="28" rx="4" fill="url(#case)"/>
+        <circle r="186" fill="url(#case)"/>
+        <circle r="174" fill="#0a0a0a"/>
+        <circle r="170" fill="url(#dial)"/>
+        <circle r="170" fill="url(#guil)"/>
+        <g id="ticks"></g>
+        <circle r="126" fill="none" stroke="#c9a96a" stroke-opacity=".5" stroke-width=".6"/>
+        <text y="-72" text-anchor="middle" font-family="Didot,Bodoni 72,Georgia,serif" font-size="17" letter-spacing="6" fill="#e8d3a2">AURELLE</text>
+        <text y="-56" text-anchor="middle" font-family="Helvetica Neue,Arial,sans-serif" font-size="6.5" letter-spacing="3" fill="#c9a96a" opacity=".8">GENÈVE · NOCTURNE</text>
+        <g transform="translate(0,78)">
+          <circle r="30" fill="#000" fill-opacity=".25" stroke="#c9a96a" stroke-opacity=".6" stroke-width=".6"/>
+          <g id="subticks"></g>
+          <line id="sub" y1="4" y2="-25" stroke="#e8d3a2" stroke-width="1"/>
+          <circle r="2" fill="#e8d3a2"/>
+        </g>
+        <g transform="translate(108,0)">
+          <rect x="-15" y="-10" width="30" height="20" fill="#f1ead9" stroke="#c9a96a" stroke-width="1"/>
+          <text id="date" y="5.5" text-anchor="middle" font-family="Helvetica Neue,Arial,sans-serif" font-size="13" fill="#1b1b1b">00</text>
+        </g>
+        <path id="hh" d="M-5 18 L-3.5 -86 L0 -96 L3.5 -86 L5 18 Z" fill="url(#hand)"/>
+        <path id="mh" d="M-3.5 22 L-2.5 -138 L0 -150 L2.5 -138 L3.5 22 Z" fill="url(#hand)"/>
+        <g id="sh"><line y1="34" y2="-156" stroke="#c94a3a" stroke-width="1.3"/><circle cy="-120" r="3.5" fill="none" stroke="#c94a3a" stroke-width="1.2"/></g>
+        <circle r="6" fill="url(#case)"/><circle r="2" fill="#2a1f14"/>
+        <circle r="170" fill="url(#glare)" id="glareC" pointer-events="none"/>
+      </svg>
+    </div>
+    <span class="label l1"><i></i>Sapphire crystal</span>
+    <span class="label l2">18k yellow-gold case<i></i></span>
+  </div>
+  <section class="copy">
+    <div class="eyebrow">New · Haute Horlogerie</div>
+    <h1>Calibre <em>Nocturne</em> 38</h1>
+    <p>A dial engraved by hand in a fine diagonal guilloché, read by the light of a single crimson seconds hand. Hand-wound, quietly complicated, and finished on the side no one will ever see.</p>
+    <div class="swatches" role="group" aria-label="Dial colour">
+      <button class="sw" type="button" style="--c:radial-gradient(circle at 35% 30%,#2b3a52,#0d121b)" data-a="#1b2433" data-b="#0d121b" data-n="Midnight Lacquer" aria-pressed="true" aria-label="Midnight Lacquer"></button>
+      <button class="sw" type="button" style="--c:radial-gradient(circle at 35% 30%,#fbf6ea,#cfc4ab)" data-a="#f6efdf" data-b="#c9bea4" data-n="Opaline Ivory" aria-pressed="false" aria-label="Opaline Ivory"></button>
+      <button class="sw" type="button" style="--c:radial-gradient(circle at 35% 30%,#2f4a3a,#0f1c15)" data-a="#22392c" data-b="#0d1912" data-n="Forest Enamel" aria-pressed="false" aria-label="Forest Enamel"></button>
+      <button class="sw" type="button" style="--c:radial-gradient(circle at 35% 30%,#5a2128,#1e0a0d)" data-a="#43171d" data-b="#170709" data-n="Burgundy Sunray" aria-pressed="false" aria-label="Burgundy Sunray"></button>
+    </div>
+    <div class="swname" id="swname" aria-live="polite">Midnight Lacquer</div>
+    <dl>
+      <div><dt>Diameter</dt><dd>38.5 mm</dd></div>
+      <div><dt>Power reserve</dt><dd>72 hours</dd></div>
+      <div><dt>Movement</dt><dd>AU-21 manual</dd></div>
+      <div><dt>Edition</dt><dd>Of 188 pieces</dd></div>
+    </dl>
+    <div class="cta"><button class="btn" type="button" id="reserve">Request a viewing</button><div class="price"><small>From</small>CHF 28,400</div></div>
+  </section>
+</main>
+<div class="time" id="clock">—</div>
+<script>
+(()=>{
+  const NS="http://www.w3.org/2000/svg";
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ticks=document.getElementById("ticks"),sub=document.getElementById("subticks");
+  for(let i=0;i<60;i++){
+    const l=document.createElementNS(NS,"line"),major=i%5===0;
+    l.setAttribute("y1",-164);l.setAttribute("y2",major?-146:-158);
+    l.setAttribute("stroke",major?"#e8d3a2":"#c9a96a");l.setAttribute("stroke-width",major?(i%15===0?3.4:2):.6);
+    l.setAttribute("transform",`rotate(${i*6})`);ticks.appendChild(l);
+  }
+  for(let i=0;i<12;i++){const l=document.createElementNS(NS,"line");l.setAttribute("y1",-30);l.setAttribute("y2",i%3?-27:-24);l.setAttribute("stroke","#c9a96a");l.setAttribute("stroke-width",".6");l.setAttribute("transform",`rotate(${i*30})`);sub.appendChild(l);}
+  const hh=document.getElementById("hh"),mh=document.getElementById("mh"),sh=document.getElementById("sh"),sb=document.getElementById("sub"),dt=document.getElementById("date"),clk=document.getElementById("clock");
+  let lastSec=-1;
+  function tick(){
+    const d=new Date(),ms=d.getMilliseconds(),s=d.getSeconds()+(reduce?0:ms/1000),m=d.getMinutes()+s/60,h=(d.getHours()%12)+m/60;
+    hh.setAttribute("transform",`rotate(${h*30})`);mh.setAttribute("transform",`rotate(${m*6})`);
+    sh.setAttribute("transform",`rotate(${s*6})`);sb.setAttribute("transform",`rotate(${s*6})`);
+    if(d.getSeconds()!==lastSec){lastSec=d.getSeconds();dt.textContent=String(d.getDate()).padStart(2,"0");
+      clk.textContent="Your local time · "+d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});}
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  const dA=document.getElementById("dA"),dB=document.getElementById("dB"),nm=document.getElementById("swname");
+  document.querySelectorAll(".sw").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(".sw").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+    dA.setAttribute("stop-color",b.dataset.a);dB.setAttribute("stop-color",b.dataset.b);nm.textContent=b.dataset.n;
+    const light=b.dataset.n==="Opaline Ivory";
+    document.querySelector('text[y="-72"]').setAttribute("fill",light?"#7a5c2b":"#e8d3a2");
+  }));
+
+  const stage=document.getElementById("stage"),watch=document.getElementById("watch"),glare=document.getElementById("glare");
+  if(!reduce){
+    stage.addEventListener("pointermove",e=>{
+      const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      watch.style.transform=`rotateY(${x*14}deg) rotateX(${-y*14}deg)`;
+      glare.setAttribute("cx",(30+x*60)+"%");glare.setAttribute("cy",(20+y*60)+"%");
+    });
+    stage.addEventListener("pointerleave",()=>{watch.style.transform="";glare.setAttribute("cx","30%");glare.setAttribute("cy","20%");});
+  }
+  const btn=document.getElementById("reserve");
+  btn.addEventListener("click",()=>{btn.textContent="Atelier will be in touch";btn.disabled=true;btn.style.cursor="default";});
+})();
+</script>
+</body>
+</html>

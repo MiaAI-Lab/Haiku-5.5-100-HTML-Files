@@ -1,0 +1,32 @@
+PROMPT
+
+Build "087 pinball-mini": a playable canvas pinball table with flippers and bumpers, presented as a fictional 1970s pocket machine called "Comet Carnival, Pocket Table No. 7". Standalone and offline.
+
+Palette: room backdrop of plum carnival stripes (repeating conic gradient #2c1426 / #22101d radiating from the top); playfield deep teal #0b2f37 to #13606b with a #1d7d86 centre glow; cream #f6e7c8 rails and flippers; tangerine #f26b21; mustard #f2b134; cherry red #d7263d bumpers; chrome ball (white to #c7ced6 to #4a525b radial). Backglass in plum with a gilt #c9a46a border and a faint mustard sunburst.
+
+Type: Futura, "Avenir Next", "Century Gothic", "Trebuchet MS" for the brand and labels (heavy uppercase, wide tracking, cream-to-mustard-to-tangerine gradient-clipped title). Score shown in ui-monospace / Menlo / "Courier New" as a glowing orange dot-matrix-style readout.
+
+Layout: a centred cabinet column (max 452px): the backglass with title, ball indicators, score and multiplier; then a brushed-chrome frame holding a portrait canvas (logical 400x720, scaled to fit both width and viewport height, sized to devicePixelRatio); then a three-button control pad (Left, a round cherry "Pull" plunger, Right). On desktop a "House rules" card with keyboard shortcuts and the stored best score sits beside the cabinet; on mobile it stacks below. An overlay veil on the table holds the attract and game-over messages and an "Insert coin" pill button with a pressed-down 3D shadow.
+
+Table geometry: an elliptical top arch (24 segments), side walls, a right-hand shooter lane with a spring plunger, angled inlane slopes, two tapered-look flippers (pivots 115/255 at y 612), two orange slingshots that kick, three cherry pop bumpers with star caps, four posts forming three Z-A-P rollover lanes, a static art layer painted once to an offscreen canvas (sunburst rays, scattered stars, a comet, the faint word CARNIVAL, inlane arrows, an apron, a SHOOTER label).
+
+Physics: 8 substeps per frame, gravity 0.32, speed cap 24. Circle-vs-segment and circle-vs-circle collisions with restitution. Flippers are capsules whose angular velocity is added to the ball at the contact point. Bumpers add a 5.5 outward kick, slings 6.5. The plunger charges while held and launches at 15 to 25.
+
+Motion details: bumpers and slings flash and fade; a light halo blooms on bumper hits; a small screen shake; an upward chevron chase in the centre lane; a short golden ball trail; the score pops when it changes; ball indicators shrink and fade as balls are lost.
+
+Scoring: bumper 100, sling 10, each Z/A/P lane 500. Completing ZAP gives 5000 and raises the multiplier, up to x5. Three balls. The best score is saved in localStorage inside try/catch.
+
+Title: Comet Carnival Pinball
+
+Description: A small, warm, retro-carnival pinball machine that really plays. A gilt-framed plum backglass shows a glowing orange score above a chrome-railed teal playfield painted with a sunburst and a comet. Cherry pop bumpers flash and kick, orange slingshots snap, and the Z-A-P lanes light up mustard as they are rolled over. A thumb-friendly control pad and a house-rules card make it easy to play on a phone or a desktop.
+
+Visual techniques:
+- Canvas 2D physics with substepping, segment/circle/capsule collision and moving-flipper impulse transfer
+- Static playfield art pre-rendered to an offscreen canvas at devicePixelRatio, rebuilt on resize
+- Flash-decay hit feedback, radial highlight ball, a fading trail, a sequential chase-light animation
+- Small random screen shake applied through the canvas transform
+- Repeating-conic-gradient carnival backdrop and backglass sunburst
+- Gradient-clipped title text, a glowing monospace score with a keyframe pop
+- Brushed-chrome frame made from a multi-stop linear gradient; a 3D pressed coin button
+
+Interaction model: Press Insert coin, Space, or the Pull button to start. Hold Space, Down or Pull to draw the plunger back and release to launch. Use Left/Z and Right/M (or the on-screen buttons, or tap the left and right halves of the table) to flip. Holding the far-right edge of the table also works the plunger. Lose all three balls and a game-over veil shows the final score and a Play again button. Reduced motion turns off the screen shake, chase lights, trail and score pop. The game still plays normally.

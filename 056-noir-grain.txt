@@ -1,0 +1,19 @@
+Prompt:
+056 noir-grain: black-and-white film look, animated grain, letterbox bars, title card.
+Build a single standalone HTML page that plays like the opening reel of a fictional 1940s noir film, "The Last Tram to Halvard" from the invented studio Vantablack Pictures. Palette is strictly monochrome: near-black #050505, warm silver paper #ecebe6, smoke grey #8d8b86, ash #2a2927; the whole stage is forced through grayscale(1) contrast(1.12). Typography: a high-contrast Didone stack (Didot, "Bodoni 72", "Bodoni MT", Georgia) in italic for the main title, with a tracked-out uppercase subtitle line; all credits, timecode and HUD in "Courier New"/ui-monospace with wide letter-spacing. Layout: a full-viewport scene built only from CSS and one inline SVG: a dark street with a horizon line at 58%, a black silhouette in a trench coat and fedora in the centre, a lamppost on the right with a soft halo, Venetian-blind light stripes (skewed repeating-linear-gradient masked to an elliptical key light), diagonal rain streaks, a wet puddle sheen and a heavy vignette. Black letterbox bars (12vh each) close to a full black screen on load and then part with a slow cubic-bezier(.7,0,.2,1) reveal. Centered in the frame is an intertitle card: thin silver double rule (border + offset outline) on translucent black, a monospace kicker, the italic title, a short rule, an italic line of story copy, and a monospace credit line. Motion: a low-resolution canvas (3px cells) refreshes random grey noise at ~24fps in overlay blend for film grain, a stepped keyframe flicker adds faint exposure pops, occasional vertical film scratches appear at random x positions, the blinds sway slowly, rain slides diagonally, and the key light (radial gradient + blind mask centre) eases toward the pointer. The top bar reads "Reel 4 · Nitrate" and "2.39 : 1"; the bottom bar holds a running SMPTE timecode, reel dots for the five cards, and a "Next card" button. Five cards tell a tiny story (title, three chapters, Fin). Reduced motion: no flicker, sway or rain animation, a single static grain frame, faster plain fades.
+
+Title: The Last Tram to Halvard
+
+Description: A cinematic title sequence rendered entirely in silver and black. Letterbox bars part to reveal a rain-soaked street at midnight, a lone silhouette under a lamppost and slatted window light falling across the scene. Animated film grain, gate flicker and stray scratches give the illusion of projected nitrate stock, while a framed intertitle card carries a short five-card noir story with invented cast and crew credits. The key light drifts after the pointer like a spotlight operator following the viewer.
+
+Visual techniques:
+- Low-resolution canvas noise regenerated at film frame rate, upscaled with pixelated rendering and overlay blending for grain
+- Grayscale + contrast filter on the whole stage for a unified silver-gelatin look
+- Venetian-blind light from a skewed repeating-linear-gradient with an elliptical CSS mask driven by custom properties
+- CSS-only street scene: gradients, pseudo-element lamp halo, inline SVG silhouette
+- Letterbox bars as fixed pseudo-elements animating from closed to 12vh
+- Stepped keyframe exposure flicker and random vertical film scratches
+- Animated diagonal rain via moving repeating gradients
+- Card transitions with opacity, scale and blur cross-fade, live SMPTE timecode
+
+Interaction model: Move the pointer to steer the key light and blind shadows across the scene. Click anywhere, press Space or the Right Arrow, or use the "Next card" button to advance to the next intertitle; Left Arrow goes back. Reel dots in the bottom letterbox show progress through the five cards, and the final card loops back to the title.

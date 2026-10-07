@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Room Between Letters</title>
+<style>
+  :root{
+    --bone:#efe8da;
+    --ink:#121110;
+    --verm:#ff3a1d;
+    --mute:#6d665c;
+    --gut:clamp(16px,3.4vw,44px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--bone)}
+  body{min-height:100vh;color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    background:
+      radial-gradient(circle at 20% 10%,rgba(255,255,255,.55),transparent 40%),
+      repeating-radial-gradient(circle at 37% 61%,rgba(0,0,0,.018) 0 1px,transparent 1px 3px),
+      var(--bone)}
+  .poster{position:relative;max-width:1260px;margin:0 auto;padding:var(--gut)}
+  .bar{display:grid;grid-template-columns:1fr auto;align-items:end;gap:12px;border-bottom:3px solid var(--ink);padding-bottom:10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+  .bar .no{font-size:clamp(28px,5vw,56px);line-height:.8;letter-spacing:-.04em;font-weight:900;font-family:"Arial Black","Helvetica Neue",Helvetica,Arial,sans-serif}
+  .bar span{display:block}
+  .bar .r{text-align:right}
+  .bar .r em{font-style:normal;color:var(--verm)}
+  .stack{position:relative;overflow:hidden;padding:clamp(10px,2vw,22px) 0 clamp(6px,1vw,12px);border-bottom:3px solid var(--ink)}
+  .line{display:block;outline:none;cursor:default;position:relative;line-height:.79;padding:.04em 0 .02em;
+    font-family:"Arial Black","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:900;text-transform:uppercase;white-space:nowrap}
+  .line .inner{display:inline-block;white-space:nowrap;will-change:font-size,letter-spacing}
+  .line:nth-child(2){color:var(--verm)}
+  .line:nth-child(3) .ch{color:transparent;-webkit-text-stroke:2px var(--ink)}
+  .ch{display:inline;transition:color .35s cubic-bezier(.2,.9,.2,1),-webkit-text-stroke-color .35s}
+  .ch.hot{color:var(--verm)}
+  .line:nth-child(2) .ch.hot{color:var(--ink)}
+  .line:nth-child(3) .ch.hot{color:var(--verm);-webkit-text-stroke-color:var(--verm)}
+  .line:focus-visible::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:4px;background:var(--verm)}
+  .line::before{content:attr(data-idx);position:absolute;right:0;top:.35em;font:700 11px/1 ui-monospace,Menlo,"Courier New",monospace;letter-spacing:.1em;color:var(--mute);opacity:0;transition:opacity .3s}
+  .line.on::before{opacity:1}
+  .badge{position:absolute;right:calc(var(--gut) + 2%);top:calc(var(--gut) + clamp(70px,9vw,120px));width:clamp(92px,13vw,150px);height:auto;z-index:3;pointer-events:none;
+    animation:spin 22s linear infinite;mix-blend-mode:multiply}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .readout{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ink);font:700 12px/1.2 ui-monospace,Menlo,"Courier New",monospace;letter-spacing:.08em;text-transform:uppercase}
+  .readout b{color:var(--verm);font-weight:700;display:inline-block;min-width:5ch;text-align:right}
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2.4vw,32px);padding-top:16px;font-size:13px;line-height:1.5}
+  .cols h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;font-weight:700}
+  .cols h2::before{content:"";display:inline-block;width:8px;height:8px;background:var(--verm);margin-right:8px;vertical-align:1px}
+  .cols p{color:#2a2723;max-width:36ch}
+  .cols ol{list-style:none;counter-reset:n}
+  .cols li{counter-increment:n;display:flex;gap:10px;border-top:1px solid rgba(0,0,0,.15);padding:4px 0}
+  .cols li::before{content:counter(n,decimal-leading-zero);font-family:ui-monospace,Menlo,"Courier New",monospace;color:var(--verm);font-size:11px;padding-top:2px}
+  .foot{margin-top:22px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+  @media (max-width:720px){
+    .cols{grid-template-columns:1fr}
+    .line:nth-child(3) .ch{-webkit-text-stroke-width:1.2px}
+    .badge{top:auto;bottom:calc(var(--gut) + 8px);right:var(--gut);position:fixed;width:84px}
+  }
+  @media (prefers-reduced-motion:reduce){.badge{animation:none}.ch{transition:none}}
+</style>
+</head>
+<body>
+<main class="poster">
+  <div class="bar">
+    <div><span class="no">N°09</span><span>Kesselhaus Type Days · A festival of loud letters</span></div>
+    <div class="r"><span>Hall 9, Old Boiler Works</span><span><em>14 — 16</em> March</span></div>
+  </div>
+  <div class="stack" id="stack" aria-label="Make room between letters">
+    <div class="line" data-text="MAKE" data-idx="01" tabindex="0"></div>
+    <div class="line" data-text="ROOM" data-idx="02" tabindex="0"></div>
+    <div class="line" data-text="BETWEEN" data-idx="03" tabindex="0"></div>
+    <div class="line" data-text="LETTERS" data-idx="04" tabindex="0"></div>
+  </div>
+  <div class="readout"><span>Tracking <b id="trk">±0</b></span><span id="state">Hover a line to let it breathe</span></div>
+  <section class="cols">
+    <div>
+      <h2>Manifesto</h2>
+      <p>Space is a material. A word set tight shouts; the same word opened up begins to whisper. For three days we pull letters apart and push them together until the gaps start talking.</p>
+    </div>
+    <div>
+      <h2>Programme</h2>
+      <ol>
+        <li>Counterspace, a lecture in negative shapes</li>
+        <li>The Kerning Table, open workshop</li>
+        <li>Wood type night print, 22:00 until dawn</li>
+        <li>Last word: a poster wall for everyone</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Admission</h2>
+      <p>Free entry, all weights welcome. Bring a word you want to hear louder. Doors open at ten, the presses stop when the ink runs out.</p>
+    </div>
+  </section>
+  <div class="foot"><span>Set in heavy grotesque, tracked by hand</span><span>Poster 09 / 12</span></div>
+  <svg class="badge" viewBox="0 0 200 200" aria-hidden="true">
+    <defs><path id="ring" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+    <circle cx="100" cy="100" r="98" fill="#ff3a1d"/>
+    <text font-family="Arial Black, Helvetica Neue, Arial, sans-serif" font-weight="900" font-size="19" letter-spacing="3" fill="#efe8da">
+      <textPath href="#ring">FREE ENTRY · ALL WEIGHTS WELCOME ·</textPath>
+    </text>
+    <text x="100" y="114" text-anchor="middle" font-family="Arial Black, Helvetica Neue, Arial, sans-serif" font-weight="900" font-size="44" fill="#121110">Aa</text>
+  </svg>
+</main>
+<script>
+(function(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const stack=document.getElementById('stack');
+  const trkEl=document.getElementById('trk'),stateEl=document.getElementById('state');
+  const OPEN=.24,TIGHT=-.055,REST=-.02;
+  const lines=[...stack.querySelectorAll('.line')].map(el=>{
+    const inner=document.createElement('span');inner.className='inner';inner.setAttribute('aria-hidden','true');
+    for(const c of el.dataset.text){const s=document.createElement('span');s.className='ch';s.textContent=c;inner.appendChild(s);}
+    el.appendChild(inner);el.setAttribute('aria-label',el.dataset.text);
+    return {el,inner,n:el.dataset.text.length,s:REST,v:0,w0:1};
+  });
+  let W=0,active=-1,idle=-1,lastTouch=performance.now();
+
+  function measure(){
+    W=stack.clientWidth*.995;
+    for(const o of lines){
+      o.inner.style.fontSize='100px';o.inner.style.letterSpacing='0px';
+      o.w0=o.inner.getBoundingClientRect().width/100;
+    }
+    apply();
+  }
+  function apply(){
+    for(const o of lines){
+      const fs=W/(o.w0+o.n*o.s);
+      o.inner.style.fontSize=fs.toFixed(2)+'px';
+      o.inner.style.letterSpacing=o.s.toFixed(4)+'em';
+    }
+  }
+  function targetFor(i){
+    const a=active>=0?active:idle;
+    if(a<0)return REST;
+    return i===a?OPEN:TIGHT;
+  }
+  function tick(){
+    const now=performance.now();
+    if(active<0&&!reduce.matches&&now-lastTouch>2600){
+      const k=Math.floor((now-lastTouch-2600)/1700)%(lines.length+1);
+      idle=k<lines.length?k:-1;
+    }else idle=-1;
+    let moving=false;
+    lines.forEach((o,i)=>{
+      const t=targetFor(i);
+      if(reduce.matches){o.s=t;o.v=0;}
+      else{o.v+=(t-o.s)*.09;o.v*=.74;o.s+=o.v;}
+      if(Math.abs(o.v)>1e-5||Math.abs(t-o.s)>1e-4)moving=true;
+      o.el.classList.toggle('on',i===(active>=0?active:idle));
+    });
+    if(moving)apply();
+    const a=active>=0?active:idle;
+    const val=Math.round((a>=0?lines[a].s:lines[0].s)*1000);
+    trkEl.textContent=(val>0?'+':val<0?'−':'±')+Math.abs(val);
+    requestAnimationFrame(tick);
+  }
+  function setActive(i){
+    active=i;lastTouch=performance.now();
+    stateEl.textContent=i>=0?'Line '+(i+1)+' opened · the others hold their breath':'Hover a line to let it breathe';
+  }
+  lines.forEach((o,i)=>{
+    o.el.addEventListener('pointerenter',()=>setActive(i));
+    o.el.addEventListener('pointerdown',()=>setActive(i));
+    o.el.addEventListener('focus',()=>setActive(i));
+    o.el.addEventListener('blur',()=>setActive(-1));
+    o.el.addEventListener('keydown',e=>{
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const n=(i+(e.key==='ArrowDown'?1:-1)+lines.length)%lines.length;lines[n].el.focus();}
+    });
+  });
+  stack.addEventListener('pointerleave',()=>{if(document.activeElement&&document.activeElement.classList.contains('line'))return;setActive(-1);});
+  stack.addEventListener('pointerover',e=>{
+    const c=e.target.closest('.ch');if(!c)return;
+    c.classList.add('hot');
+    clearTimeout(c._t);c._t=setTimeout(()=>c.classList.remove('hot'),900);
+  });
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(measure,80);});
+  measure();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

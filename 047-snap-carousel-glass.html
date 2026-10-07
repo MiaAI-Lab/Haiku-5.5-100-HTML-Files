@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Atlas: Seven Rooms of Light</title>
+<style>
+:root{
+  --sans:"Avenir Next","Avenir","Segoe UI",system-ui,-apple-system,sans-serif;
+  --display:"Didot","Bodoni 72","Bodoni MT","Iowan Old Style",Georgia,serif;
+  --card:min(80vw,400px);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:#0b0b14;color:#fff;font-family:var(--sans);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+.backdrop{position:fixed;inset:0;overflow:hidden;z-index:0}
+.blob{position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(70px);opacity:.75;transition:background-color 1.4s var(--ease);will-change:transform}
+.b1{left:-18vmax;top:-20vmax;animation:d1 22s ease-in-out infinite alternate}
+.b2{right:-20vmax;top:-10vmax;animation:d2 26s ease-in-out infinite alternate}
+.b3{left:10vmax;bottom:-30vmax;animation:d3 30s ease-in-out infinite alternate}
+.b4{right:-10vmax;bottom:-26vmax;width:44vmax;height:44vmax;animation:d1 18s ease-in-out infinite alternate-reverse}
+@keyframes d1{to{transform:translate(12vmax,8vmax) scale(1.15)}}
+@keyframes d2{to{transform:translate(-10vmax,14vmax) scale(.9)}}
+@keyframes d3{to{transform:translate(8vmax,-12vmax) scale(1.1)}}
+.backdrop::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(5,5,12,.55),transparent 60%),linear-gradient(180deg,rgba(5,5,12,.25),transparent 30%,transparent 70%,rgba(5,5,12,.45))}
+header,main,footer{position:relative;z-index:1}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:22px clamp(16px,4vw,48px) 0;flex-wrap:wrap}
+.brand{font-family:var(--display);font-size:clamp(26px,4vw,42px);letter-spacing:-.01em;line-height:1}
+.brand i{font-style:italic;opacity:.8}
+.sub{font-size:11px;letter-spacing:.32em;text-transform:uppercase;opacity:.75;margin-top:8px}
+.count{font-family:var(--display);font-size:clamp(20px,3vw,30px);font-variant-numeric:lining-nums tabular-nums}
+.count span{opacity:.5;font-size:.6em;margin-left:4px}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.track{display:flex;gap:clamp(14px,3vw,28px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:28px calc(50% - var(--card)/2);scrollbar-width:none;outline:none;cursor:grab;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.track::-webkit-scrollbar{display:none}
+.track.dragging{cursor:grabbing;scroll-snap-type:none}
+.track:focus-visible .slide.active .glass{box-shadow:0 0 0 2px rgba(255,255,255,.85),0 30px 80px rgba(0,0,0,.35)}
+.slide{flex:0 0 var(--card);scroll-snap-align:center;perspective:900px}
+.glass{position:relative;height:min(62vh,540px);min-height:420px;border-radius:28px;padding:26px 24px 22px;display:flex;flex-direction:column;
+  background:linear-gradient(155deg,rgba(255,255,255,.26),rgba(255,255,255,.07) 45%,rgba(255,255,255,.12));
+  -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);
+  border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -20px 40px rgba(0,0,0,.08),0 30px 80px rgba(0,0,0,.3);
+  transform-origin:center;transition:box-shadow .4s var(--ease);overflow:hidden;user-select:none;-webkit-user-select:none}
+.glass::before{content:"";position:absolute;inset:-40% -60%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%);transform:translateX(var(--sheen,-30%));pointer-events:none}
+.row{display:flex;justify-content:space-between;align-items:center}
+.num{font-family:var(--display);font-size:54px;line-height:.9;letter-spacing:-.03em}
+.time{font-size:11px;letter-spacing:.24em;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3)}
+.orb{width:120px;height:120px;border-radius:50%;margin:auto 0;align-self:center;background:conic-gradient(from 0deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));filter:blur(.5px) saturate(1.2);box-shadow:0 0 60px var(--c2),inset 0 0 30px rgba(255,255,255,.5);animation:spin 18s linear infinite;position:relative}
+.orb::after{content:"";position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(255,255,255,.1) 60%,transparent 70%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.glass h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3.2vw,34px);line-height:1.05;margin:0 0 10px;letter-spacing:-.01em;text-shadow:0 2px 20px rgba(0,0,0,.25)}
+.glass p{margin:0;font-size:14.5px;line-height:1.55;opacity:.92;text-shadow:0 1px 10px rgba(0,0,0,.25)}
+.meta{display:flex;gap:16px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.28);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+.meta b{display:block;font-size:15px;letter-spacing:.02em;font-weight:600;margin-top:3px;text-transform:none}
+.keep{margin-left:auto;align-self:center;font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:9px 14px;cursor:pointer;transition:background .3s var(--ease),transform .3s var(--ease),color .3s}
+.keep:hover{background:rgba(255,255,255,.28);transform:translateY(-1px)}
+.keep:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.keep[aria-pressed="true"]{background:#fff;color:#14142a}
+.keep .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:7px;vertical-align:1px;transition:transform .4s var(--ease)}
+.keep[aria-pressed="true"] .dot{transform:scale(1.5)}
+footer{display:flex;align-items:center;justify-content:center;gap:16px;padding:0 16px 26px;flex-wrap:wrap}
+.arrow{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;cursor:pointer;display:grid;place-items:center;transition:transform .35s var(--ease),background .3s,opacity .3s}
+.arrow:hover{background:rgba(255,255,255,.26);transform:scale(1.07)}
+.arrow:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.arrow:disabled{opacity:.3;cursor:default;transform:none}
+.arrow svg{width:18px;height:18px}
+.dots{display:flex;gap:8px;align-items:center}
+.dots button{width:8px;height:8px;padding:0;border-radius:999px;border:0;background:rgba(255,255,255,.4);cursor:pointer;transition:width .5s var(--ease),background .3s}
+.dots button[aria-current="true"]{width:30px;background:#fff}
+.dots button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.caption{text-align:center;font-family:var(--display);font-style:italic;font-size:clamp(15px,1.8vw,19px);opacity:.9;padding:0 20px 14px;min-height:2.2em;transition:opacity .5s var(--ease)}
+.caption.fade{opacity:0}
+.hint{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.55;white-space:nowrap}
+@media (max-width:520px){.glass{min-height:400px;padding:22px 20px 18px}.num{font-size:44px}.orb{width:96px;height:96px}.meta{gap:12px}}
+@media (prefers-reduced-motion:reduce){.blob,.orb{animation:none}.glass,.dots button,.arrow,.keep,.caption{transition:none}}
+</style>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+<header>
+  <div><div class="brand">Lumen <i>Atlas</i></div><div class="sub">Seven rooms of light &middot; a field guide</div></div>
+  <div class="count" aria-live="polite"><b id="cur">01</b><span>/ 07</span></div>
+</header>
+<main>
+  <div class="track" id="track" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Rooms of light"></div>
+</main>
+<p class="caption" id="caption"></p>
+<footer>
+  <button class="arrow" id="prev" type="button" aria-label="Previous room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <div class="dots" id="dots"></div>
+  <button class="arrow" id="next" type="button" aria-label="Next room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button>
+</footer>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var rooms=[
+    {t:'Dawn at Lake Orra',h:'05:42',p:'Mist lifts off the water in long pale sheets. The first light is the colour of the inside of a shell, and the swimmers are already out.',k:'3200K',w:'2 kn',q:'"The lake keeps the night a little longer than the sky does."',c:['#ffb38a','#ff7aa2','#a58bff','#8fd3ff']},
+    {t:'Noon on the Salt Flats',h:'12:10',p:'No shadows, no horizon, only a white so complete it hums. Every footstep cracks a crust that took a thousand summers to form.',k:'6500K',w:'11 kn',q:'"At noon the flats forget which way is up."',c:['#ffe27a','#ffb347','#5ad7ff','#f4f1ff']},
+    {t:'Greenhouse in Rain',h:'15:30',p:'Water drums the glass roof while ferns breathe out a green you can almost taste. Somebody left a radio on in the potting shed.',k:'5100K',w:'calm',q:'"Rain sounds different when it cannot reach you."',c:['#5ee6a8','#1fa58b','#c6ff8a','#2c6e7f']},
+    {t:'Golden Hour, Vell Harbor',h:'18:55',p:'The ferry windows catch fire one by one. Gulls ride the warm air above the fish market, which smells of lemon and diesel.',k:'2600K',w:'6 kn',q:'"Everything in the harbor turns briefly expensive."',c:['#ff9f43','#ff5e62','#ffd36e','#c0396b']},
+    {t:'Blue Hour in the Library',h:'20:20',p:'The reading lamps come on before the sky gives up. Outside the tall windows the city turns the exact blue of old ink.',k:'9000K',w:'calm',q:'"Blue hour is a bookmark between two kinds of light."',c:['#3a5bff','#7a5cff','#2ec5ff','#1b1f6b']},
+    {t:'Midnight Neon Market',h:'23:58',p:'Steam, signage and sizzling oil. Magenta bleeds into the puddles and the noodle seller has been awake since yesterday.',k:'mixed',w:'1 kn',q:'"Midnight is just noon with the colours turned up."',c:['#ff2fd1','#00e5ff','#7b2cff','#ff6a3d']},
+    {t:'Aurora, Northern Ferry',h:'02:14',p:'The engines idle so nobody misses it. Green curtains fold across the stars and the whole deck goes quiet at once.',k:'4100K',w:'14 kn',q:'"Some light only arrives when you have stopped waiting."',c:['#36ffb0','#2b8cff','#a35cff','#0e2a5a']}
+  ];
+  var track=document.getElementById('track'),dotsEl=document.getElementById('dots'),cur=document.getElementById('cur'),cap=document.getElementById('caption');
+  var blobs=[].slice.call(document.querySelectorAll('.blob'));
+  var slides=[],dots=[],active=-1;
+  function pad(n){return (n<10?'0':'')+n;}
+  rooms.forEach(function(r,i){
+    var s=document.createElement('article');s.className='slide';s.setAttribute('aria-roledescription','slide');s.setAttribute('aria-label',(i+1)+' of '+rooms.length+': '+r.t);
+    s.style.cssText='--c1:'+r.c[0]+';--c2:'+r.c[1]+';--c3:'+r.c[2]+';--c4:'+r.c[3];
+    s.innerHTML='<div class="glass"><div class="row"><span class="num">'+pad(i+1)+'</span><span class="time">'+r.h+'</span></div>'+
+      '<div class="orb" aria-hidden="true"></div><h2>'+r.t+'</h2><p>'+r.p+'</p>'+
+      '<div class="meta"><span>Light<b>'+r.k+'</b></span><span>Wind<b>'+r.w+'</b></span>'+
+      '<button class="keep" type="button" aria-pressed="false"><i class="dot"></i>Keep</button></div></div>';
+    track.appendChild(s);slides.push(s);
+    var d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Go to room '+(i+1)+': '+r.t);
+    d.addEventListener('click',function(){go(i);});dotsEl.appendChild(d);dots.push(d);
+  });
+  track.addEventListener('click',function(e){
+    var b=e.target.closest('.keep');if(!b||moved)return;
+    var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));
+    b.lastChild.textContent=on?'Kept':'Keep';
+  });
+  function setActive(i){
+    if(i===active)return;active=i;var r=rooms[i];
+    blobs.forEach(function(b,j){b.style.backgroundColor=r.c[j];});
+    dots.forEach(function(d,j){d.setAttribute('aria-current',String(j===i));});
+    slides.forEach(function(s,j){s.classList.toggle('active',j===i);});
+    cur.textContent=pad(i+1);
+    document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===rooms.length-1;
+    cap.classList.add('fade');
+    setTimeout(function(){cap.textContent=r.q;cap.classList.remove('fade');},reduce?0:260);
+  }
+  function go(i){
+    i=Math.max(0,Math.min(rooms.length-1,i));var s=slides[i];
+    track.scrollTo({left:s.offsetLeft+s.offsetWidth/2-track.clientWidth/2,behavior:reduce?'auto':'smooth'});
+  }
+  document.getElementById('prev').addEventListener('click',function(){go(active-1);});
+  document.getElementById('next').addEventListener('click',function(){go(active+1);});
+  track.addEventListener('keydown',function(e){
+    if(e.target!==track)return;
+    if(e.key==='ArrowRight'){e.preventDefault();go(active+1);}
+    else if(e.key==='ArrowLeft'){e.preventDefault();go(active-1);}
+    else if(e.key==='Home'){e.preventDefault();go(0);}
+    else if(e.key==='End'){e.preventDefault();go(rooms.length-1);}
+  });
+  /* scroll-linked depth */
+  var ticking=false;
+  function update(){
+    ticking=false;var mid=track.scrollLeft+track.clientWidth/2,best=0,bd=1e9;
+    slides.forEach(function(s,i){
+      var c=s.offsetLeft+s.offsetWidth/2,d=(c-mid)/s.offsetWidth,ad=Math.min(1.5,Math.abs(d));
+      if(Math.abs(c-mid)<bd){bd=Math.abs(c-mid);best=i;}
+      var g=s.firstChild;
+      if(reduce){g.style.transform='scale('+(1-Math.min(1,ad)*.08)+')';g.style.opacity=String(1-Math.min(1,ad)*.35);}
+      else{
+        g.style.transform='rotateY('+(-d*14).toFixed(2)+'deg) scale('+(1-Math.min(1,ad)*.12).toFixed(3)+')';
+        g.style.opacity=String((1-Math.min(1,ad)*.45).toFixed(3));
+        g.style.setProperty('--sheen',(-d*60-10).toFixed(1)+'%');
+      }
+    });
+    setActive(best);
+  }
+  track.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+  window.addEventListener('resize',function(){requestAnimationFrame(update);});
+  /* mouse drag */
+  var down=false,sx=0,sl=0,moved=false;
+  track.addEventListener('pointerdown',function(e){
+    if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('button'))return;
+    down=true;moved=false;sx=e.clientX;sl=track.scrollLeft;track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove',function(e){
+    if(!down)return;var dx=e.clientX-sx;
+    if(Math.abs(dx)>4){moved=true;track.classList.add('dragging');}
+    if(moved)track.scrollLeft=sl-dx;
+  });
+  function end(){
+    if(!down)return;down=false;
+    if(moved){var target=active;track.classList.remove('dragging');go(target);setTimeout(function(){moved=false;},50);}
+  }
+  track.addEventListener('pointerup',end);track.addEventListener('pointercancel',end);
+  track.addEventListener('wheel',function(e){
+    if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&Math.abs(e.deltaY)>2){
+      e.preventDefault();if(wheelLock)return;wheelLock=true;go(active+(e.deltaY>0?1:-1));setTimeout(function(){wheelLock=false;},450);
+    }
+  },{passive:false});
+  var wheelLock=false;
+  update();
+})();
+</script>
+</body>
+</html>

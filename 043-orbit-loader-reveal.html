@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en" class="locked">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Relay · Every Signal Finds Its Way Home</title>
+<style>
+:root{--bg:#0a0c1b;--bg2:#12162e;--peach:#ff8a5b;--ice:#cfe3ff;--lilac:#9d8cff;--text:#e9eefc;--mute:#8e97b8;--line:rgba(207,227,255,.14);--e:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html.locked{overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:"Avenir Next","Helvetica Neue",system-ui,sans-serif;overflow-x:hidden;min-height:100vh;
+  background-image:radial-gradient(1px 1px at 20px 30px,rgba(255,255,255,.5),transparent 2px),radial-gradient(1px 1px at 140px 90px,rgba(207,227,255,.35),transparent 2px),radial-gradient(1.5px 1.5px at 260px 200px,rgba(255,255,255,.4),transparent 2px),radial-gradient(60% 50% at 75% 30%,rgba(255,138,91,.10),transparent 70%),radial-gradient(50% 50% at 10% 90%,rgba(157,140,255,.08),transparent 70%);
+  background-size:300px 260px,220px 240px,340px 320px,100% 100%,100% 100%}
+a,button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ice);outline-offset:4px;border-radius:6px}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,"Courier New",monospace}
+/* loader */
+.loader{position:fixed;inset:0;z-index:50;pointer-events:none}
+.loader-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,var(--bg2),var(--bg) 60%);transition:opacity .9s ease .25s}
+.loader-txt{position:absolute;left:0;right:0;top:calc(50% + 90px);text-align:center;transition:opacity .4s,transform .6s var(--e)}
+.count{font-size:13px;letter-spacing:.4em;color:var(--ice)}
+.count b{font-weight:400;font-size:34px;letter-spacing:.08em;display:block;margin-bottom:6px;color:var(--text)}
+.status{margin-top:8px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+.loader.out .loader-bg{opacity:0}
+.loader.out .loader-txt{opacity:0;transform:translateY(12px)}
+.lp{position:fixed;z-index:60;pointer-events:none;border-radius:50%}
+.l-ring{border:1px dashed rgba(207,227,255,.45)}
+.l-sat{width:10px;height:10px;background:var(--ice);box-shadow:0 0 12px 2px rgba(207,227,255,.8)}
+.planet{background:radial-gradient(circle at 34% 30%,#ffe0cc 0,#ff8a5b 32%,#b2465a 66%,#2a1838 100%);box-shadow:0 0 60px rgba(255,138,91,.35),inset -14px -20px 40px rgba(10,12,27,.55)}
+body.handed .lp{display:none}
+.tgt{visibility:hidden}
+body.handed .tgt{visibility:visible}
+/* page */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .9s var(--e) calc(var(--i,0)*90ms + 350ms),transform 1s var(--e) calc(var(--i,0)*90ms + 350ms)}
+body.revealing .rv{opacity:1;transform:none}
+.rv.still{transform:none}
+nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px clamp(16px,5vw,64px)}
+.logo{display:flex;align-items:center;gap:12px;font-weight:600;font-size:14px;letter-spacing:.26em;text-decoration:none}
+.logo-mark{position:relative;width:26px;height:26px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ice);box-shadow:0 0 12px 2px rgba(207,227,255,.7)}
+.links{display:flex;gap:28px;font-size:14px;color:var(--mute)}
+.links a{text-decoration:none;transition:color .3s}
+.links a:hover{color:var(--text)}
+.replay{background:none;border:1px solid var(--line);padding:9px 16px;border-radius:999px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:border-color .3s,background .3s}
+.replay:hover{border-color:var(--peach);background:rgba(255,138,91,.08)}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:clamp(24px,5vw,72px);min-height:calc(100svh - 78px);padding:24px clamp(16px,5vw,64px) 48px}
+.eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--peach)}
+h1{margin:18px 0 20px;font-weight:600;font-size:clamp(40px,6.2vw,84px);line-height:1.02;letter-spacing:-.025em}
+h1 em{font-style:italic;font-weight:500;background:linear-gradient(90deg,var(--peach),var(--lilac));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{max-width:34em;font-size:clamp(16px,1.5vw,18px);line-height:1.65;color:var(--mute)}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.cta{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;text-decoration:none;font-weight:600;font-size:15px;transition:transform .4s cubic-bezier(.3,1.6,.5,1),box-shadow .4s}
+.cta.p{background:var(--peach);color:#1a0f14;box-shadow:0 10px 30px -10px rgba(255,138,91,.7)}
+.cta.p:hover{transform:translateY(-2px);box-shadow:0 16px 40px -12px rgba(255,138,91,.9)}
+.cta.s{border:1px solid var(--line)}
+.cta.s:hover{border-color:var(--ice)}
+.cta .dot{background:#1a0f14;box-shadow:0 0 0 3px rgba(26,15,20,.15)}
+.stage{position:relative;width:min(38vw,400px);aspect-ratio:1;justify-self:center}
+.h-ring,.h-orbit{position:absolute;inset:-16%;border-radius:50%}
+.h-ring{border:1px dashed rgba(207,227,255,.45)}
+.h-orbit .dot{position:absolute;left:50%;top:-5px;margin-left:-5px}
+body.handed .h-orbit{animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.h-core{position:absolute;inset:0;border-radius:50%;overflow:hidden}
+.h-core::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(-12deg,transparent 0 18px,rgba(255,255,255,.07) 18px 22px,transparent 22px 40px);mix-blend-mode:soft-light}
+.glow{position:absolute;inset:-30%;border-radius:50%;background:radial-gradient(circle,rgba(255,138,91,.18),transparent 60%);z-index:-1}
+.tele{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 clamp(16px,5vw,64px)}
+.tele div{padding:26px 18px;border-left:1px solid var(--line)}
+.tele div:first-child{border-left:0}
+.tele b{display:block;font-weight:400;font-size:clamp(24px,3vw,36px);color:var(--text)}
+.tele span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:72px clamp(16px,5vw,64px)}
+.feat{position:relative;padding:28px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.035),transparent);transition:border-color .4s,transform .5s var(--e)}
+.feat:hover{border-color:rgba(255,138,91,.5);transform:translateY(-4px)}
+.mini{position:relative;width:44px;height:44px;border:1px dashed var(--line);border-radius:50%;margin-bottom:22px}
+.mini::before{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--peach)}
+.mini::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:var(--ice);top:-4px;left:18px;transform-origin:3.5px 26px;animation:spin 6s linear infinite paused}
+.feat:hover .mini::after{animation-play-state:running}
+.feat h3{font-size:19px;font-weight:600;margin-bottom:10px}
+.feat p{color:var(--mute);line-height:1.6;font-size:15px}
+footer{padding:28px clamp(16px,5vw,64px) 40px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase}
+@media (max-width:820px){
+  .links{display:none}
+  .hero{grid-template-columns:1fr;min-height:0;padding-top:12px}
+  .stage{order:-1;width:min(62vw,280px);margin:40px 0 24px}
+  .tele{grid-template-columns:1fr 1fr}
+  .tele div:nth-child(3){border-left:0}
+  .tele div:nth-child(n+3){border-top:1px solid var(--line)}
+  .feats{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .rv{transition:opacity .3s}
+  .rv,body.revealing .rv{transform:none}
+  body.handed .h-orbit,.mini::after{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-bg"></div>
+  <div class="loader-txt mono"><div class="count"><b id="count">000</b>% signal</div><div class="status" id="status">Acquiring carrier</div></div>
+</div>
+<div class="lp l-ring" id="lRing" aria-hidden="true"></div>
+<div class="lp planet" id="lCore" aria-hidden="true"></div>
+<div class="lp l-sat" aria-hidden="true"></div>
+<div class="lp l-sat" aria-hidden="true"></div>
+<div class="lp l-sat" aria-hidden="true"></div>
+
+<nav class="rv still" style="--i:0">
+  <a class="logo" href="#top" id="top"><span class="logo-mark"><span class="dot tgt" id="logoDot"></span></span>LUMEN RELAY</a>
+  <div class="links"><a href="#net">Network</a><a href="#feats">Missions</a><a href="#foot">Signal log</a></div>
+  <button class="replay" id="replay" type="button">Replay sequence</button>
+</nav>
+
+<main>
+  <section class="hero">
+    <div>
+      <p class="eyebrow rv mono" style="--i:1">Deep-space relay network · est. 2041</p>
+      <h1 class="rv" style="--i:2">Every signal finds its way <em>home.</em></h1>
+      <p class="lede rv" style="--i:3">Lumen Relay keeps a patient chain of thirty-eight listening stations strung between the planets. Your words leave Earth, hop from relay to relay through the dark, and arrive intact, however long the light takes.</p>
+      <div class="ctas rv still" style="--i:4">
+        <a class="cta p" href="#feats"><span class="dot tgt" id="ctaDot"></span>Send a transmission</a>
+        <a class="cta s" href="#net">Trace the network</a>
+      </div>
+    </div>
+    <div class="stage" aria-hidden="true">
+      <div class="glow"></div>
+      <div class="h-ring tgt" id="hRing"></div>
+      <div class="h-orbit"><span class="dot tgt" id="hSat"></span></div>
+      <div class="h-core planet tgt" id="hCore"></div>
+    </div>
+  </section>
+
+  <section class="tele mono rv" id="net" style="--i:5" aria-label="Network telemetry">
+    <div><b data-to="38">0</b><span>Relays in orbit</span></div>
+    <div><b data-to="1.4" data-dec="1">0</b><span>Light-hours, furthest link</span></div>
+    <div><b data-to="99.982" data-dec="3" data-suf="%">0</b><span>Packet integrity</span></div>
+    <div><b data-to="0">0</b><span>Messages lost since Cycle 7</span></div>
+  </section>
+
+  <section class="feats" id="feats">
+    <article class="feat"><div class="mini"></div><h3>Patient routing</h3><p>When a planet drifts behind the sun, we hold your message in a warm buffer and route it around the glare. Nothing is dropped. It just waits its turn.</p></article>
+    <article class="feat"><div class="mini"></div><h3>Cold-storage echoes</h3><p>Every relay keeps a quiet copy of what passes through. If a packet arrives bruised, the nearest station sings it again.</p></article>
+    <article class="feat"><div class="mini"></div><h3>Quiet hours</h3><p>Between solar storms the network dims to a whisper, saving power for the long nights when a crew needs to hear a familiar voice.</p></article>
+  </section>
+</main>
+<footer id="foot" class="mono"><span>Lumen Relay · Signal desk, Lagrange Station 4</span><span>Carrier locked · 7.2 GHz</span></footer>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var body=document.body,html=document.documentElement,loader=document.getElementById('loader');
+  var ring=document.getElementById('lRing'),core=document.getElementById('lCore'),sats=[].slice.call(document.querySelectorAll('.l-sat'));
+  var tRing=document.getElementById('hRing'),tCore=document.getElementById('hCore'),tSats=[document.getElementById('hSat'),document.getElementById('logoDot'),document.getElementById('ctaDot')];
+  var countEl=document.getElementById('count'),statusEl=document.getElementById('status');
+  var msgs=['Acquiring carrier','Locking Doppler shift','Decoding frame','Handshake complete'];
+  var cx,cy,R,ang,prog,t0,last,running=false,busy=false;
+  function place(el,x,y,w,h){el.style.left=x+'px';el.style.top=y+'px';el.style.width=w+'px';el.style.height=h+'px';}
+  function layout(){
+    cx=window.innerWidth/2;cy=window.innerHeight*.46;R=Math.min(70,window.innerWidth*.17);
+    place(ring,cx-R,cy-R,R*2,R*2);place(core,cx-22,cy-22,44,44);
+    sats.forEach(function(s,i){var a=ang+i*2.0944;place(s,cx+R*Math.cos(a)-5,cy+R*Math.sin(a)-5,10,10);});
+  }
+  function loop(t){
+    if(!running)return;
+    if(!t0){t0=t;last=t;}
+    var dt=Math.min(50,t-last),el=t-t0;last=t;
+    ang+=dt*.0028*(1+prog/45);
+    if(Math.random()<.22||el>2700)prog=Math.min(100,Math.max(prog,el/2700*100+Math.random()*7));
+    if(el>2700)prog=100;
+    countEl.textContent=('00'+Math.floor(prog)).slice(-3);
+    statusEl.textContent=msgs[Math.min(3,Math.floor(prog/26))];
+    sats.forEach(function(s,i){var a=ang+i*2.0944;s.style.left=(cx+R*Math.cos(a)-5)+'px';s.style.top=(cy+R*Math.sin(a)-5)+'px';});
+    if(prog>=100){running=false;setTimeout(morph,260);return;}
+    requestAnimationFrame(loop);
+  }
+  function fly(el,to,delay){
+    var r=to.getBoundingClientRect();
+    return el.animate([
+      {left:el.style.left,top:el.style.top,width:el.style.width,height:el.style.height},
+      {left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'}
+    ],{duration:1150,delay:delay,easing:'cubic-bezier(.75,0,.2,1)',fill:'forwards'}).finished;
+  }
+  function morph(){
+    loader.classList.add('out');
+    body.classList.add('revealing');
+    var p=[fly(ring,tRing,0),fly(core,tCore,60)];
+    sats.forEach(function(s,i){p.push(fly(s,tSats[i],140+i*110));});
+    Promise.all(p).then(finish).catch(function(){});
+  }
+  function finish(){
+    busy=false;
+    body.classList.add('handed');
+    html.classList.remove('locked');
+    loader.style.display='none';
+    countUp();
+  }
+  function countUp(){
+    var els=[].slice.call(document.querySelectorAll('[data-to]')),s=null;
+    function fmt(e,v){return v.toFixed(+(e.dataset.dec||0))+(e.dataset.suf||'');}
+    if(reduce){els.forEach(function(e){e.textContent=fmt(e,+e.dataset.to);});return;}
+    function step(t){
+      if(!s)s=t;var k=Math.min(1,(t-s)/1600),q=1-Math.pow(1-k,4);
+      els.forEach(function(e){e.textContent=fmt(e,+e.dataset.to*q);});
+      if(k<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  function start(){
+    if(busy)return;
+    window.scrollTo(0,0);
+    body.classList.remove('handed','revealing');
+    if(reduce){
+      loader.style.display='none';html.classList.remove('locked');
+      requestAnimationFrame(function(){body.classList.add('revealing','handed');countUp();});
+      return;
+    }
+    html.classList.add('locked');
+    loader.style.display='';loader.classList.remove('out');
+    [ring,core].concat(sats).forEach(function(el){el.getAnimations().forEach(function(a){a.cancel();});});
+    ang=-Math.PI/2;prog=0;t0=0;layout();running=true;busy=true;
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize',function(){if(running)layout();});
+  document.getElementById('replay').addEventListener('click',start);
+  start();
+})();
+</script>
+</body>
+</html>

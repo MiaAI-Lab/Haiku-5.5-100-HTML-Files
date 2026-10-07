@@ -1,0 +1,27 @@
+Prompt:
+Build a standalone HTML page, "heatmap-year": a dark-theme year heatmap calendar for a fictional observatory, "Kestrel Ridge Observatory, Logbook 2025". Background near-black #0a0d12 with two faint radial washes (magenta top right, violet bottom left). Panels #11161e with #1e2632 hairline borders and 14 to 18px radii. Type: system-ui for headings and body (light 300 weight headline with a bold gradient word "night" running magenta to ember to gold), ui-monospace / SF Mono / Menlo for eyebrows, labels, legend, and tooltip dates. A pulsing gold dot leads the eyebrow.
+Colour scale (six steps): #171d27 empty, #2b2350 indigo, #5a2d82 violet, #a8347a magenta, #ef6640 ember, #ffd27a gold.
+Data: three generated metrics from a seeded PRNG (mulberry32-style) so values are stable: clear-sky hours (seasonal cosine favouring winter, random overcast zero days), meteors logged (Gaussian peaks at the Quadrantids, Perseids, Orionids, and Geminids), and kettles boiled (cold-season curve plus Saturday visitor nights). Each day gets a short invented ledger note.
+Layout: header, then a toolbar with a segmented pill tab control (a gradient pill slides between "Clear-sky hours", "Meteors logged", "Kettles boiled") and a Less-to-More legend. The board is a CSS grid of 365 squares (plus blank lead cells so weeks start Monday), 7 rows with columns flowing by week on desktop, month labels positioned over their starting week, and Mon/Wed/Fri/Sun row labels. Below 760px the grid transposes to 7 columns with weeks as rows (max 360px wide, month starts marked with a gold inset line) so there is never horizontal scroll.
+Motion: on load, squares pop in from scale .2 in a diagonal wave (delay by week and weekday) with a springy cubic-bezier. Switching metric recolours squares in a rolling wave and the stats count up with an ease-out cubic.
+Stats row: year total, best night (with date), longest non-zero streak, and a 12-bar monthly mini chart whose bar heights animate.
+Tooltip: glassy fixed card showing the date in monospace caps, the value large with unit, and the italic ledger note; it clamps to the viewport and flips below near the top.
+Reduced motion: no pop-in wave, no pulsing, instant transitions.
+
+Title: A Year of Night
+
+Description:
+A refined, dark analytics piece that turns a fictional observatory's logbook into a glowing contribution-style calendar. Squares shade from cool indigo to ember and gold, so the year's clear spells and meteor showers burn visibly out of the grid. A sliding pill switches between three invented datasets, the grid re-inks in a rolling wave, and every square carries a small human note from the ledger.
+
+Visual techniques:
+- CSS grid calendar that transposes from week-columns to week-rows at phone width
+- Seeded PRNG data generation with seasonal curves and Gaussian meteor-shower peaks
+- Six-step indigo-to-gold sequential colour scale via CSS custom properties
+- Staggered transition-delay wave reveal and recolour with spring easing
+- Sliding gradient pill tab indicator measured from button offsets
+- Ease-out count-up numbers and an animated monthly bar sparkline
+- Glass tooltip with viewport clamping, backdrop blur, and month-isolation dimming
+- Roving keyboard focus across the grid with arrow, Home, and End keys
+
+Interaction model:
+Hover or tap any square to see that night's date, value, and ledger note. Hover a month label to dim everything except that month. Click or arrow between the tabs to switch metrics; the grid recolours and the stats count to new values. Keyboard users can tab into the grid and move day by day with the arrow keys, with the tooltip following focus.

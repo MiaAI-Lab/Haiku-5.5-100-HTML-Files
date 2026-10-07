@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starlings over Saltmarsh</title>
+<style>
+:root{
+  --cream:#fbe9d6;--ember:#f2a065;--plum:#1d1428;
+  --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+  --sans:"Avenir Next","Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--plum)}
+body{color:var(--cream);font-family:var(--sans)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:none}
+.title{position:fixed;top:clamp(18px,5vh,48px);left:clamp(16px,5vw,64px);pointer-events:none;max-width:calc(100% - 32px)}
+.title small{display:block;font-size:11px;letter-spacing:.38em;text-transform:uppercase;opacity:.7;margin-bottom:10px}
+.title h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(34px,6.4vw,78px);line-height:.95;letter-spacing:-.01em;text-shadow:0 2px 30px rgba(29,20,40,.35)}
+.title p{font-family:var(--serif);font-size:clamp(14px,1.5vw,17px);line-height:1.55;max-width:34ch;margin-top:14px;opacity:.82}
+.panel{position:fixed;right:clamp(16px,4vw,48px);bottom:clamp(16px,4vh,40px);display:flex;align-items:center;gap:18px;padding:12px 16px 12px 20px;border-radius:999px;background:rgba(29,20,40,.38);border:1px solid rgba(251,233,214,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:12px;letter-spacing:.08em;max-width:calc(100% - 32px);flex-wrap:wrap;justify-content:center}
+.count{font-variant-numeric:tabular-nums;white-space:nowrap}
+.count b{font-family:var(--serif);font-weight:400;font-style:italic;font-size:18px;letter-spacing:0;margin-right:4px}
+label{display:flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.2em;font-size:10px;opacity:.9}
+input[type=range]{-webkit-appearance:none;appearance:none;width:110px;height:2px;background:linear-gradient(90deg,var(--ember) var(--p,40%),rgba(251,233,214,.25) var(--p,40%));border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--cream);box-shadow:0 0 0 4px rgba(242,160,101,.25);transition:transform .25s var(--ease)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:var(--cream);box-shadow:0 0 0 4px rgba(242,160,101,.25)}
+input[type=range]:hover::-webkit-slider-thumb,input[type=range]:focus-visible::-webkit-slider-thumb{transform:scale(1.25)}
+input[type=range]:focus-visible{outline:1px dashed var(--cream);outline-offset:8px}
+.btn{all:unset;cursor:pointer;padding:8px 16px;border-radius:999px;background:var(--cream);color:var(--plum);font-weight:600;font-size:11px;letter-spacing:.18em;text-transform:uppercase;transition:transform .3s var(--ease),background .3s}
+.btn:hover{background:#fff;transform:translateY(-1px)}
+.btn:active{transform:scale(.95)}
+.btn:focus-visible{outline:2px solid var(--ember);outline-offset:3px}
+.hint{position:fixed;left:50%;bottom:clamp(86px,13vh,120px);transform:translateX(-50%);font-family:var(--serif);font-style:italic;font-size:15px;opacity:.75;pointer-events:none;transition:opacity 1.2s;white-space:nowrap}
+.hint.gone{opacity:0}
+@media (max-width:560px){.title p{display:none}.panel{left:16px;right:16px;bottom:16px;border-radius:22px;gap:12px}.hint{bottom:150px}}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-label="A flock of starlings wheeling over a saltmarsh at dusk" role="img"></canvas>
+<header class="title">
+  <small>Field note &middot; dusk &middot; the long estuary</small>
+  <h1>Starlings over<br>Saltmarsh</h1>
+  <p>Ten thousand small decisions, each bird watching only its seven nearest neighbours, and somehow the whole sky learns to breathe.</p>
+</header>
+<p class="hint" id="hint">Move through the flock to disturb it. Tap to send a ripple.</p>
+<div class="panel">
+  <span class="count"><b id="n">0</b>starlings</span>
+  <label for="rest">Restless <input id="rest" type="range" min="0" max="100" value="40"></label>
+  <button class="btn" id="scatter" type="button">Scatter</button>
+</div>
+<script>
+(function(){
+  var cv=document.getElementById("sky"),ctx=cv.getContext("2d");
+  var bg=document.createElement("canvas"),bx=bg.getContext("2d");
+  var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var W,H,dpr,hz,N=0,MAX=1100;
+  var X=new Float32Array(MAX),Y=new Float32Array(MAX),VX=new Float32Array(MAX),VY=new Float32Array(MAX),Z=new Float32Array(MAX),PH=new Float32Array(MAX);
+  var CELL=46,cols,rows,head,next=new Int32Array(MAX);
+  var ptr={x:-999,y:-999,on:false},waves=[],rest=.4,t=0,last=performance.now();
+  var rest_in=document.getElementById("rest"),hint=document.getElementById("hint");
+
+  function seeded(s){return function(){s=(s*16807)%2147483647;return(s-1)/2147483646}}
+  function paintBg(){
+    bg.width=W*dpr;bg.height=H*dpr;bx.setTransform(dpr,0,0,dpr,0,0);
+    var g=bx.createLinearGradient(0,0,0,hz);
+    g.addColorStop(0,"#1d1428");g.addColorStop(.32,"#3d1f3f");g.addColorStop(.62,"#8a3b4c");g.addColorStop(.84,"#d9674a");g.addColorStop(1,"#f6b56d");
+    bx.fillStyle=g;bx.fillRect(0,0,W,hz);
+    var r=seeded(7);
+    for(var i=0;i<90;i++){var sy=r()*hz*.4;bx.fillStyle="rgba(251,233,214,"+(.5*(1-sy/(hz*.4))*r()).toFixed(3)+")";bx.fillRect(r()*W,sy,1.2,1.2)}
+    var sx=W*.68,sr=Math.min(W,H)*.075;
+    var glow=bx.createRadialGradient(sx,hz,0,sx,hz,sr*7);
+    glow.addColorStop(0,"rgba(255,214,150,.75)");glow.addColorStop(.25,"rgba(255,160,100,.28)");glow.addColorStop(1,"rgba(255,140,90,0)");
+    bx.fillStyle=glow;bx.fillRect(0,0,W,hz);
+    bx.save();bx.beginPath();bx.rect(0,0,W,hz);bx.clip();
+    bx.fillStyle="#ffe2b0";bx.beginPath();bx.arc(sx,hz+sr*.35,sr,0,Math.PI*2);bx.fill();bx.restore();
+    bx.fillStyle="rgba(90,40,60,.55)";
+    for(var c=0;c<5;c++){bx.beginPath();var cy=hz*(.55+c*.08),cx=r()*W;bx.ellipse(cx,cy,W*(.18+r()*.2),2+r()*3,0,0,Math.PI*2);bx.fill()}
+    var w=bx.createLinearGradient(0,hz,0,H);
+    w.addColorStop(0,"#c76148");w.addColorStop(.25,"#5a2a3e");w.addColorStop(1,"#150f1e");
+    bx.fillStyle=w;bx.fillRect(0,hz,W,H-hz);
+    for(var k=0;k<60;k++){var ky=hz+Math.pow(r(),1.8)*(H-hz)*.8,kl=(1-(ky-hz)/(H-hz))*sr*2.4*r()+6;
+      bx.fillStyle="rgba(255,205,150,"+(.45*(1-(ky-hz)/(H-hz))).toFixed(3)+")";bx.fillRect(sx-kl/2+(r()-.5)*sr,ky,kl,1)}
+    bx.fillStyle="#120c18";bx.beginPath();bx.moveTo(0,H);
+    for(var x=0;x<=W;x+=W/40){bx.lineTo(x,hz+(H-hz)*(.55+.12*Math.sin(x*.01)+r()*.06))}
+    bx.lineTo(W,H);bx.fill();
+    bx.strokeStyle="#120c18";bx.lineCap="round";
+    for(var q=0;q<Math.round(W/5);q++){
+      var rx=r()*W,base=hz+(H-hz)*(.6+r()*.4),hh=(H-hz)*(.25+r()*.55),lean=(r()-.5)*30;
+      bx.lineWidth=.8+r()*1.6;bx.beginPath();bx.moveTo(rx,base);bx.quadraticCurveTo(rx+lean*.3,base-hh*.6,rx+lean,base-hh);bx.stroke();
+      if(r()<.18){bx.beginPath();bx.ellipse(rx+lean,base-hh-5,2.2,7,lean*.01,0,Math.PI*2);bx.fillStyle="#120c18";bx.fill()}
+    }
+  }
+  function spawn(i){
+    X[i]=Math.random()*W;Y[i]=Math.random()*hz*.7;var a=Math.random()*6.28;VX[i]=Math.cos(a)*2;VY[i]=Math.sin(a)*2;
+    Z[i]=.55+Math.random()*.75;PH[i]=Math.random()*6.28;
+  }
+  function resize(){
+    var oldW=W||0;
+    dpr=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+    hz=H*(W<560?.7:.76);
+    cols=Math.ceil(W/CELL)+1;rows=Math.ceil(H/CELL)+1;head=new Int32Array(cols*rows);
+    var target=Math.max(180,Math.min(MAX,Math.round(W*H/1250)));
+    if(reduce)target=Math.round(target*.6);
+    for(var i=N;i<target;i++)spawn(i);
+    N=target;document.getElementById("n").textContent=N.toLocaleString("en-US");
+    if(oldW)for(var j=0;j<N;j++){if(X[j]>W)X[j]=Math.random()*W;if(Y[j]>hz)Y[j]=hz*.5}
+    paintBg();
+  }
+  function step(dt){
+    var spd=reduce?.35:1,maxS=(2.4+rest*2.2)*spd,minS=1.3*spd,jit=(.03+rest*.18)*spd;
+    head.fill(-1);
+    for(var i=0;i<N;i++){var c=(Math.max(0,Math.min(cols-1,X[i]/CELL|0)))+(Math.max(0,Math.min(rows-1,Y[i]/CELL|0)))*cols;next[i]=head[c];head[c]=i}
+    var tx=W*.5+Math.cos(t*.11)*W*.28+Math.sin(t*.29)*W*.08,ty=hz*.42+Math.sin(t*.17)*hz*.2;
+    var R2=CELL*CELL,S2=15*15,FLEE=W<560?95:135;
+    for(i=0;i<N;i++){
+      var x=X[i],y=Y[i],ci=x/CELL|0,cj=y/CELL|0,ax=0,ay=0,cx=0,cy=0,sx=0,sy=0,n=0;
+      for(var oj=-1;oj<=1&&n<14;oj++){var rr=cj+oj;if(rr<0||rr>=rows)continue;
+        for(var oi=-1;oi<=1&&n<14;oi++){var cc=ci+oi;if(cc<0||cc>=cols)continue;
+          for(var j=head[cc+rr*cols];j!==-1;j=next[j]){if(j===i)continue;
+            var dx=X[j]-x,dy=Y[j]-y,d2=dx*dx+dy*dy;if(d2>R2)continue;
+            n++;ax+=VX[j];ay+=VY[j];cx+=X[j];cy+=Y[j];
+            if(d2<S2){var w=1/Math.max(d2,1);sx-=dx*w;sy-=dy*w}
+            if(n>=14)break;}}}
+      var fx=0,fy=0;
+      if(n){fx+=(ax/n-VX[i])*.06+(cx/n-x)*.0035;fy+=(ay/n-VY[i])*.06+(cy/n-y)*.0035}
+      fx+=sx*1.6;fy+=sy*1.6;
+      fx+=(tx-x)*.00035;fy+=(ty-y)*.00035;
+      if(ptr.on){var px=x-ptr.x,py=y-ptr.y,pd=Math.sqrt(px*px+py*py);
+        if(pd<FLEE&&pd>.1){var k=(1-pd/FLEE);k=k*k*1.6;fx+=px/pd*k;fy+=py/pd*k}}
+      for(var q=0;q<waves.length;q++){var wv=waves[q],wx=x-wv.x,wy=y-wv.y,wd=Math.sqrt(wx*wx+wy*wy)||1,band=Math.abs(wd-wv.r);
+        if(band<34){var f=(1-band/34)*wv.life*1.4;fx+=wx/wd*f;fy+=wy/wd*f}}
+      var m=70;
+      if(x<m)fx+=(m-x)*.012;else if(x>W-m)fx-=(x-(W-m))*.012;
+      if(y<m*.6)fy+=(m*.6-y)*.014;else if(y>hz-50)fy-=(y-(hz-50))*.02;
+      fx+=(Math.random()-.5)*jit;fy+=(Math.random()-.5)*jit;
+      var vx=VX[i]+fx,vy=VY[i]+fy,s=Math.sqrt(vx*vx+vy*vy)||1;
+      if(s>maxS){vx*=maxS/s;vy*=maxS/s}else if(s<minS){vx*=minS/s;vy*=minS/s}
+      VX[i]=vx;VY[i]=vy;X[i]=x+vx*dt*(.7+Z[i]*.4);Y[i]=y+vy*dt*(.7+Z[i]*.4);
+    }
+    for(q=waves.length-1;q>=0;q--){waves[q].r+=7*dt*(reduce?.5:1);waves[q].life-=.012*dt;if(waves[q].life<=0)waves.splice(q,1)}
+  }
+  var buckets=[["rgba(24,12,28,.42)",.55,.8],["rgba(22,11,26,.68)",.8,1.05],["rgba(18,9,22,.92)",1.05,1.4]];
+  function draw(){
+    ctx.drawImage(bg,0,0,W,H);
+    for(var b=0;b<3;b++){
+      var lo=buckets[b][1],hi=buckets[b][2];ctx.fillStyle=buckets[b][0];ctx.beginPath();
+      for(var i=0;i<N;i++){var z=Z[i];if(z<lo||z>=hi)continue;
+        var vx=VX[i],vy=VY[i],s=Math.sqrt(vx*vx+vy*vy)||1,ux=vx/s,uy=vy/s,L=3.4*z,
+            flap=reduce?.8:.55+.45*Math.sin(t*16+PH[i]),wing=L*1.15*flap,x=X[i],y=Y[i];
+        ctx.moveTo(x+ux*L,y+uy*L);
+        ctx.lineTo(x-ux*L*.5-uy*wing,y-uy*L*.5+ux*wing);
+        ctx.lineTo(x-ux*L*.15,y-uy*L*.15);
+        ctx.lineTo(x-ux*L*.5+uy*wing,y-uy*L*.5-ux*wing);
+        ctx.closePath();}
+      ctx.fill();
+    }
+    for(var q=0;q<waves.length;q++){var w=waves[q];ctx.strokeStyle="rgba(255,226,176,"+(w.life*.35).toFixed(3)+")";ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(w.x,w.y,w.r,0,Math.PI*2);ctx.stroke()}
+    if(ptr.on){
+      ctx.strokeStyle="rgba(251,233,214,.55)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(ptr.x,ptr.y,10,0,Math.PI*2);ctx.stroke();
+      ctx.fillStyle="rgba(251,233,214,.9)";ctx.beginPath();ctx.arc(ptr.x,ptr.y,2,0,Math.PI*2);ctx.fill();
+    }
+  }
+  function loop(now){
+    var dt=Math.min(2.5,(now-last)/16.67);last=now;t+=dt*.016;
+    step(dt);draw();requestAnimationFrame(loop);
+  }
+  function ripple(x,y){waves.push({x:x,y:y,r:4,life:1});if(waves.length>6)waves.shift();hint.classList.add("gone")}
+  cv.addEventListener("pointermove",function(e){ptr.x=e.clientX;ptr.y=e.clientY;ptr.on=true});
+  cv.addEventListener("pointerdown",function(e){ptr.x=e.clientX;ptr.y=e.clientY;ptr.on=true;ripple(e.clientX,e.clientY)});
+  cv.addEventListener("pointerleave",function(){ptr.on=false});
+  cv.addEventListener("pointerup",function(e){if(e.pointerType!=="mouse")ptr.on=false});
+  document.getElementById("scatter").addEventListener("click",function(){
+    for(var i=0;i<N;i++){var a=Math.atan2(Y[i]-hz*.45,X[i]-W*.5);VX[i]+=Math.cos(a)*4;VY[i]+=Math.sin(a)*4}
+    ripple(W*.5,hz*.45);
+  });
+  function setRest(){rest=rest_in.value/100;rest_in.style.setProperty("--p",rest_in.value+"%")}
+  rest_in.addEventListener("input",setRest);setRest();
+  setTimeout(function(){hint.classList.add("gone")},9000);
+  var rt;window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(resize,120)});
+  resize();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

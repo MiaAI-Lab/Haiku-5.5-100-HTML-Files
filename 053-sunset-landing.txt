@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML landing page titled "Vesper: End the Day on Purpose" for a fictional evening-ritual app called Vesper, with an animated sunset hero and a strong call to action. Palette: apricot (#ffb88a), coral (#ff7a5c), rose (#e2557a), plum (#5b2a5e), indigo (#1d1638), near-black ink (#130e24) and cream text (#fff4ea). Typography: high-contrast Didone display (Bodoni 72, Didot, Bodoni MT, then Iowan Old Style and Georgia) for headlines with italic emphasis, and system-ui for body and UI. Layout: a fixed nav (logo mark of a half sun over two horizon lines, text links that underline from the left, a cream pill "Get Vesper") that turns to blurred glass after the hero; a full-viewport hero built as one inline SVG scene (viewBox 1440x900, xMidYMax slice) with a violet-to-peach sky gradient, a night sky layer and 90 generated stars that fade in, a large radial-gradient sun and halo clipped to the horizon, distant plum headlands, a gradient sea with six shimmering reflection bars, dark foreground shorelines and a small flock of birds crossing the sky. Left-aligned hero copy: kicker, a huge Didone headline "End the day / on purpose.", a short lede, and a glassy pill sign-up form with an email field and a gradient apricot-to-coral CTA button that has a sweeping light sheen on hover. Below: an indigo section with three numbered rituals (big italic gradient numerals, hairline dividers), a centered italic testimonial, a final CTA section with a coral glow rising from the bottom and the price, and a small footer. Motion: scrolling drives a --set variable from 0 to 1 over the first viewport, which sinks the sun below the horizon, fades the halo and water reflection, and crossfades the sky to night as the stars emerge; pointer movement eases a --px/--py parallax on the far and near land layers; reflection bars breathe with staggered scaleX keyframes; sections reveal with IntersectionObserver on an expo-out curve; a dripping line scroll cue. Interaction: the form validates the email, shows a spinner loading state on the button, then a success message with a plausible evening time; invalid input shows a gentle error. The final CTA scrolls back up and focuses the email field. On phones the nav links hide and the form stacks. Reduced motion: no shimmer, birds or cue animation, no parallax, reveals shown immediately, while the scroll-linked sunset still works as a static state change.
+
+Title: Vesper Sunset Landing
+
+Description: A premium marketing page for an imaginary app that helps people wind down in the evening. The hero is a fully illustrated vector sunset over the sea, and scrolling literally sets the sun: it slips below the horizon, the sky shifts to indigo and stars appear, carrying the visitor into the darker content sections below. Elegant Didone headlines, a glowing coral CTA and restrained copy keep it focused on one action: start your first evening.
+
+Visual techniques:
+- Inline SVG landscape with linear and radial gradients, clipPath horizon and generated stars
+- Scroll-linked CSS custom property driving sun position, sky crossfade and star opacity
+- Eased pointer parallax on layered land silhouettes
+- Staggered scaleX keyframes for water reflection shimmer
+- Glassmorphism nav and form with backdrop-filter
+- Gradient CTA with sweeping sheen pseudo-element and spinner loading state
+- Gradient-clipped italic numerals and IntersectionObserver reveals
+
+Interaction model:
+Scrolling sets the sun and turns day into night; moving the pointer gently shifts the landscape layers. The email form validates input, shows a short loading state and then confirms with a friendly message. The closing CTA returns to the top and puts focus in the email field.

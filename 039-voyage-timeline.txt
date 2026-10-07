@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page, "voyage-timeline": an interactive infographic of a fictional 1871 to 1872 survey voyage, "The Voyage of the Halcyon Wren", seven stops across an invented northern archipelago. Palette: paper white #f6f3ea page, sea-glass chart #d9e8e4, navy ink #13294b with a softer #3d5878, sand-colored islands #efe6d2 edged #b7a684 with a diagonal hatch overlay, and one signal orange #e8562a for the route and the current stop. Type: Iowan Old Style / Palatino / Georgia for headlines and body (italic for the ship's name and active stop), ui-monospace for coordinates, day counts and labels. Header: orange letter-spaced kicker, a large serif title, a short paragraph about the crew of nineteen and the brass chronometer, and on the right two live tallies (Distance logged in nautical miles, Day at sea) that count up as the ship sails. Layout: a two-column grid; left is an inline SVG nautical chart (graticule lines with latitude labels, dashed depth contours, hand-drawn island blobs, a compass rose), a faint dotted "ghost" route, the solid orange route drawn with stroke-dashoffset up to the selected stop, waypoint markers that become filled when passed and orange with an expanding pulse ring when current, and a small ship glyph that travels along the path via getPointAtLength and rotates to the tangent. The route is a Catmull-Rom curve converted to cubic Beziers, with per-stop cumulative lengths measured so the ship eases exactly to each port (cubic in-out, duration scaled by distance). Right column: a white detail card with an orange spine (stop number and date, big serif port name, a paragraph of log narrative, and a stats row for coordinates, weather and leg distance) that fades and lifts as it swaps; pill controls Previous, Next port, and Sail the route (autoplay, toggles to Drop anchor); and a vertical timeline of numbered dots joined by a connector line whose orange fill grows to the current stop. On narrow screens the columns stack. Reduced motion: no pulse, instant transitions, the ship jumps instead of sailing.
+
+Title: Halcyon Wren Voyage
+
+Description: A calm, cartographic infographic that reads like a beautifully kept ship's logbook. A sea-glass chart with sandy islands and a compass rose carries an orange route that draws itself as a tiny ship sails from port to port, while a timeline and a narrative card beside it tell the story of each landfall, with distance and days at sea ticking upward as the voyage advances.
+
+Visual techniques:
+- Inline SVG chart with graticule, dashed contours, hatched island fills, and compass rose
+- Catmull-Rom spline converted to cubic Bezier segments for a smooth route
+- stroke-dasharray and stroke-dashoffset to progressively draw the route
+- getPointAtLength and tangent math to move and rotate the ship marker
+- Eased requestAnimationFrame tweens with live counters for miles and days
+- Animated vertical timeline connector whose fill height tracks the active stop
+- Card content swap with opacity and translate transitions; pulsing current-stop ring
+
+Interaction model:
+Click a waypoint on the chart, a row in the timeline, or use the Previous and Next buttons or the left and right arrow keys to move between stops. The ship sails along the route to the chosen port, the counters tick, the connector fills, and the card swaps to that stop's log entry. "Sail the route" plays the whole voyage automatically and can be stopped at any time with "Drop anchor". Waypoints are keyboard focusable and respond to Enter or Space.

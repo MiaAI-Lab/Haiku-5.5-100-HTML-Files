@@ -1,0 +1,20 @@
+Prompt:
+Build a standalone HTML page that works as a huge typographic festival poster, "Make Room Between Letters", for a fictional event, Kesselhaus Type Days N°09. The letter-spacing of the poster reacts to hover. Palette: warm bone paper (#efe8da) with a faint dotted grain made from repeating radial gradients, near-black ink (#121110), one vermilion accent (#ff3a1d) and a muted taupe (#6d665c) for small print. Type: a heavy grotesque display stack ("Arial Black", "Helvetica Neue", Helvetica, Arial) in uppercase for the giant words; Helvetica Neue for the body text; ui-monospace for the tracking readout and the line indices.
+Layout: a centred poster up to 1260 px wide. At the top, a header bar with a big "N°09" and the festival name on the left and the venue and dates on the right (dates in vermilion), over a 3 px black rule. Then the main stack of four words, MAKE / ROOM / BETWEEN / LETTERS, one per line. Each line is justified to the full stack width by computing its font size from its measured natural width: fontSize = width / (w0 + n * tracking). The lines are treated differently: black solid, vermilion solid, outlined with -webkit-text-stroke, and black solid. Under the stack, a monospace readout shows the current tracking value in thousandths of an em (for example +240 or −55) and a status line. Below that, three columns (Manifesto, a numbered Programme list with vermilion leading-zero counters, Admission), then a small footer. A circular vermilion badge with "FREE ENTRY · ALL WEIGHTS WELCOME" set on an SVG textPath and a central "Aa" slowly rotates over the top-right of the stack, blended with multiply. On phones it becomes a small fixed badge in the bottom-right corner and the columns stack into one.
+Motion and interaction: hovering, tapping or focusing a line opens it to +0.24em tracking while the other lines tighten to −0.055em. Each value is driven by a damped spring, so the opened line breathes wider and smaller while its neighbours grow larger and denser, and the stack reflows. Individual letters flash vermilion as the pointer passes over them (the red line flashes black, the outlined line fills red) and fade back after 0.9 s. After 2.6 s of no input, an idle cycle opens each line in turn. The lines are keyboard focusable, the up and down arrow keys move between them, and a vermilion underline marks focus. Reduced motion snaps the tracking with no spring, turns off the idle cycle and stops the badge rotating.
+
+Title: Make Room Between Letters
+
+Description: A Swiss-flavoured festival poster in which four enormous words fill the full width of the sheet. When the visitor hovers one, it exhales: its letters spread apart and shrink to stay justified, while the other lines tighten and swell. The bone paper, vermilion accent, heavy grotesque type, tidy information columns and a spinning admission badge make it read like a printed poster that has learned to breathe.
+
+Visual techniques:
+- JS-measured full-width justification that recomputes font size from letter-spacing every frame
+- Spring-damped letter-spacing animation per line, with reflow
+- Mixed treatments: solid ink, vermilion, and outlined text via -webkit-text-stroke
+- Per-letter hover color flashes with timed decay
+- SVG textPath circular badge with CSS rotation and multiply blending
+- Repeating radial-gradient paper grain, CSS counters for the numbered programme
+- Live tracking readout in typographic thousandths of an em
+- Idle auto-cycle, keyboard navigation and a reduced-motion fallback
+
+Interaction model: Hovering, tapping or focusing a word line opens its tracking while the other lines tighten, and the readout shows the current value. Moving across letters makes them flash in the accent color. When left alone, the poster cycles through the lines by itself. On the keyboard, Tab and the arrow keys move between lines.

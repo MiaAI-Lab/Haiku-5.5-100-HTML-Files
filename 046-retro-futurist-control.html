@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kestrel Relay Control Deck</title>
+<style>
+:root{
+  --bg:#191714;--plate:#d8cdb4;--plate2:#c7b99b;--ink:#2a2620;--muted:#5b5243;
+  --orange:#e2662b;--olive:#6f7a3c;--amber:#ffb23e;--teal:#3f8f8a;--red:#d8392b;
+  --shadow:rgba(0,0,0,.5);
+  --mono:"Courier New",ui-monospace,Menlo,Consolas,monospace;
+  --sans:"Helvetica Neue","Arial Narrow",Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(120% 80% at 50% 0%,#2c2822 0%,var(--bg) 62%);color:var(--ink);font-family:var(--sans);min-height:100vh;padding:20px 16px 40px;overflow-x:hidden}
+.deck{max-width:1180px;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.plate{background:linear-gradient(180deg,var(--plate),var(--plate2));border-radius:6px;position:relative;box-shadow:0 2px 0 #f3ebd7 inset,0 -3px 0 #a3967a inset,0 12px 28px var(--shadow)}
+.plate::before,.plate::after{content:"";position:absolute;top:7px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f1e9d6,#857a64 70%);box-shadow:0 1px 1px rgba(0,0,0,.4)}
+.plate::before{left:7px}.plate::after{right:7px}
+.brand{flex:1 1 320px;padding:16px 22px 14px}
+.brand h1{margin:0;font-size:clamp(21px,3.4vw,36px);font-weight:800;letter-spacing:.01em;text-transform:uppercase;line-height:1}
+.brand h1 span{color:var(--orange)}
+.brand p{margin:7px 0 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stripes{position:absolute;right:26px;top:14px;display:flex;gap:4px}
+.stripes i,.sw i{display:block}
+.stripes i{width:8px;height:38px;transform:skewX(-20deg)}
+.stripes i:nth-child(1){background:var(--orange)}.stripes i:nth-child(2){background:var(--amber)}.stripes i:nth-child(3){background:var(--olive)}.stripes i:nth-child(4){background:var(--teal)}
+@media (max-width:480px){.stripes{display:none}}
+.clock{flex:1 1 220px;max-width:100%;background:#0f0e0c;border-radius:6px;padding:12px 18px;font-family:var(--mono);color:var(--amber);text-shadow:0 0 8px rgba(255,178,62,.6);box-shadow:inset 0 0 0 3px #2f2b25,inset 0 0 30px rgba(255,178,62,.12),0 12px 28px var(--shadow)}
+.clock small{display:block;font-size:10px;letter-spacing:.22em;color:#9c7638;text-shadow:none}
+.clock b{font-size:clamp(22px,3vw,30px);letter-spacing:.08em}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.panel{padding:22px 16px 16px}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#4a4235;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #a3967a;padding:0 6px 7px;margin-bottom:14px}
+.label em{font-style:normal;color:var(--orange)}
+.p-dials{grid-column:span 5}.p-scope{grid-column:span 7}.p-meters{grid-column:span 5}.p-lamps{grid-column:span 4}.p-switch{grid-column:span 3}.p-log{grid-column:span 12}
+@media (max-width:900px){.p-dials,.p-scope,.p-meters{grid-column:span 12}.p-lamps{grid-column:span 7}.p-switch{grid-column:span 5}}
+@media (max-width:600px){.p-lamps,.p-switch{grid-column:span 12}}
+/* dials */
+.dials{display:flex;justify-content:space-around;gap:6px}
+.dial{flex:1 1 0;max-width:132px;text-align:center;outline:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.dial:active{cursor:grabbing}
+.dial svg{width:100%;height:auto;display:block;overflow:visible}
+.dial .knob{transition:transform .08s linear}
+.dial:focus-visible svg .skirt{stroke:var(--orange);stroke-width:3}
+.dname{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.2em;margin-top:2px}
+.dval{display:inline-block;margin-top:4px;font-family:var(--mono);font-size:13px;background:#0f0e0c;color:var(--amber);padding:2px 8px;border-radius:3px;text-shadow:0 0 6px rgba(255,178,62,.7)}
+.tick{stroke:#3a342b;stroke-width:1.4}
+.tick.big{stroke-width:2.4}
+/* scope */
+.bezel{background:#0b0c09;border-radius:10px;padding:10px;box-shadow:inset 0 0 0 4px #2b2822,inset 0 6px 18px rgba(0,0,0,.8)}
+.screen{position:relative;height:200px;border-radius:14px/22px;overflow:hidden;background:radial-gradient(ellipse at center,#141a0e,#070806 75%)}
+.screen canvas{position:absolute;inset:0;width:100%;height:100%}
+.screen::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(rgba(255,178,62,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,178,62,.09) 1px,transparent 1px);background-size:10% 25%}
+.screen::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6))}
+.readout{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.readout b{color:var(--ink)}
+/* meters */
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.meter{background:#efe3c2;border-radius:6px;padding:6px 6px 2px;box-shadow:inset 0 0 0 3px #3b352c,inset 0 8px 16px rgba(0,0,0,.25)}
+.meter svg{width:100%;height:auto;display:block}
+.meter .cap{font-family:var(--mono);font-size:9px;fill:#4a4235;letter-spacing:.15em}
+.needle{transition:none}
+/* lamps */
+.lamps{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.lamp{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7d6e57,#3d362c 70%);box-shadow:inset 0 0 0 2px #2a2620;transition:background .12s,box-shadow .12s}
+.lamp.on{background:radial-gradient(circle at 35% 30%,#fff3d0,var(--lc) 45%,#4b2a10 100%);box-shadow:inset 0 0 0 2px #2a2620,0 0 10px var(--lc)}
+.lamp-legend{margin-top:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--muted);line-height:1.5}
+/* switches */
+.switches{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px}
+.sw{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sw .slot{width:34px;height:58px;border-radius:17px;background:linear-gradient(180deg,#1a1814,#3a352d);position:relative;box-shadow:inset 0 2px 6px #000,0 1px 0 #f3ebd7}
+.sw .lever{position:absolute;left:7px;width:20px;height:28px;border-radius:9px;background:linear-gradient(90deg,#9a9488,#f2efe8 45%,#8c8579);top:26px;transition:top .28s cubic-bezier(.3,1.6,.5,1);box-shadow:0 3px 4px rgba(0,0,0,.6)}
+.sw[aria-pressed="true"] .lever{top:4px}
+.sw .led{width:10px;height:10px;border-radius:50%;background:#4a1d14;box-shadow:inset 0 0 0 1px #2a2620}
+.sw[aria-pressed="true"] .led{background:var(--ledc,#7fe36b);box-shadow:0 0 8px var(--ledc,#7fe36b)}
+.sw span{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em}
+.sw:focus-visible{outline:2px dashed var(--orange);outline-offset:4px;border-radius:6px}
+/* log */
+.logrow{display:flex;flex-wrap:wrap;gap:14px;align-items:stretch}
+.log{flex:1 1 380px;min-width:0;background:#0f0e0c;border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;color:var(--amber);min-height:104px;box-shadow:inset 0 0 0 3px #2f2b25;text-shadow:0 0 6px rgba(255,178,62,.5);overflow:hidden}
+.log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.55}
+.log div:last-child{opacity:1}
+.log div:last-child::after{content:"\2588";animation:blink 1s steps(1) infinite;margin-left:2px}
+.counter{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.digits{display:flex;gap:3px}
+.digits b{width:26px;height:38px;display:grid;place-items:center;background:linear-gradient(180deg,#1b1a17 0 48%,#000 50%,#1b1a17 52%);color:#f2ead6;font-family:var(--mono);font-size:22px;border-radius:3px;box-shadow:inset 0 0 0 1px #3a352d}
+.counter small{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted)}
+@keyframes blink{50%{opacity:0}}
+/* states */
+body.alarm .plate{animation:alarm .7s steps(1) infinite}
+@keyframes alarm{50%{box-shadow:0 2px 0 #f3ebd7 inset,0 -3px 0 #a3967a inset,0 0 0 3px var(--red),0 12px 34px rgba(216,57,43,.55)}}
+body.off .screen,body.off .lamps{filter:brightness(.35) saturate(.3)}
+body.off .dval{color:#5a4a2e;text-shadow:none}
+@media (prefers-reduced-motion:reduce){
+  body.alarm .plate{animation:none;box-shadow:0 0 0 3px var(--red),0 12px 28px var(--shadow)}
+  .log div:last-child::after{animation:none}
+  .sw .lever{transition:none}
+}
+footer{margin-top:18px;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:#80745f;text-transform:uppercase}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gCap" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#5a544b"/><stop offset=".55" stop-color="#2a2722"/><stop offset="1" stop-color="#121110"/></radialGradient>
+    <linearGradient id="gSkirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6efdf"/><stop offset="1" stop-color="#9a8e74"/></linearGradient>
+  </defs>
+</svg>
+<div class="deck">
+  <header class="top">
+    <div class="brand plate">
+      <h1>Kestrel <span>Relay</span> Control</h1>
+      <p>Orbital relay deck 3 &middot; long-haul telemetry &middot; analog backup suite</p>
+      <div class="stripes" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="clock" aria-live="off"><small>Mission elapsed</small><b id="met">000:00:00:00</b></div>
+  </header>
+
+  <main class="grid">
+    <section class="panel plate p-dials" aria-label="Tuning dials">
+      <div class="label"><span>Tuning bank</span><em>drag &uarr;&darr;</em></div>
+      <div class="dials" id="dials"></div>
+    </section>
+
+    <section class="panel plate p-scope" aria-label="Carrier oscilloscope">
+      <div class="label"><span>Carrier scope / CH-A</span><em id="scopeTag">locked</em></div>
+      <div class="bezel"><div class="screen"><canvas id="scope"></canvas></div></div>
+      <div class="readout"><span>F <b id="rF">0.0</b> kHz</span><span>A <b id="rA">0.0</b> V</span><span>DRIFT <b id="rD">0.0</b>%</span><span>SNR <b id="rS">0</b> dB</span></div>
+    </section>
+
+    <section class="panel plate p-meters" aria-label="Signal meters">
+      <div class="label"><span>Signal level</span><em>VU</em></div>
+      <div class="meters" id="meters"></div>
+    </section>
+
+    <section class="panel plate p-lamps" aria-label="Status lamp matrix">
+      <div class="label"><span>Bus matrix</span><em id="busTag">40 ch</em></div>
+      <div class="lamps" id="lamps"></div>
+      <p class="lamp-legend">Each lamp is one relay channel. Drift sets the scan rate; the alarm floods the bank red.</p>
+    </section>
+
+    <section class="panel plate p-switch" aria-label="Master switches">
+      <div class="label"><span>Master</span><em>sw</em></div>
+      <div class="switches" id="switches"></div>
+    </section>
+
+    <section class="panel plate p-log" aria-label="Operations log">
+      <div class="label"><span>Operations teletype</span><em>tape</em></div>
+      <div class="logrow">
+        <div class="log" id="log" aria-live="polite"></div>
+        <div class="counter"><div class="digits" id="digits"></div><small>Tape counter</small></div>
+      </div>
+    </section>
+  </main>
+  <footer>Kestrel Dynamics &middot; built to be repaired with a screwdriver</footer>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS = 'http://www.w3.org/2000/svg';
+  var state = {freq:.42, gain:.62, drift:.28};
+  var sw = {power:true, coolant:true, uplink:false, alarm:false};
+  function el(tag, attrs, parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+  function pad(n,l){n=String(n);while(n.length<l)n='0'+n;return n;}
+
+  /* ---------- log ---------- */
+  var logEl = document.getElementById('log'), lines=[];
+  function stamp(){var d=new Date();return pad(d.getHours(),2)+':'+pad(d.getMinutes(),2)+':'+pad(d.getSeconds(),2);}
+  function log(msg){
+    lines.push('['+stamp()+'] '+msg); if(lines.length>4) lines.shift();
+    logEl.innerHTML=''; lines.forEach(function(l){var d=document.createElement('div');d.textContent=l;logEl.appendChild(d);});
+  }
+
+  /* ---------- dials ---------- */
+  var dialDefs=[{k:'freq',n:'FREQ',l:'Carrier frequency'},{k:'gain',n:'GAIN',l:'Signal gain'},{k:'drift',n:'DRIFT',l:'Scan drift'}];
+  var dialWrap=document.getElementById('dials'), dialRefs={};
+  dialDefs.forEach(function(d){
+    var box=document.createElement('div');
+    box.className='dial';box.tabIndex=0;box.setAttribute('role','slider');box.setAttribute('aria-label',d.l);
+    box.setAttribute('aria-valuemin','0');box.setAttribute('aria-valuemax','100');
+    var svg=el('svg',{viewBox:'0 0 100 100','aria-hidden':'true'});
+    for(var i=0;i<=20;i++){
+      var a=(-135+i*13.5)*Math.PI/180, big=i%5===0, r1=big?38:40, r2=45;
+      el('line',{x1:50+Math.sin(a)*r1,y1:50-Math.cos(a)*r1,x2:50+Math.sin(a)*r2,y2:50-Math.cos(a)*r2,'class':'tick'+(big?' big':'')},svg);
+    }
+    el('circle',{cx:50,cy:50,r:33,fill:'url(#gSkirt)',stroke:'#7c705a','stroke-width':1.5,'class':'skirt'},svg);
+    var knob=el('g',{'class':'knob'},svg);
+    el('circle',{cx:50,cy:50,r:25,fill:'url(#gCap)'},knob);
+    for(var j=0;j<24;j++){var b=j*15*Math.PI/180;el('line',{x1:50+Math.sin(b)*22,y1:50-Math.cos(b)*22,x2:50+Math.sin(b)*25,y2:50-Math.cos(b)*25,stroke:'#0a0908','stroke-width':1},knob);}
+    el('rect',{x:48.3,y:27,width:3.4,height:15,rx:1.7,fill:'#e2662b'},knob);
+    box.appendChild(svg);
+    var nm=document.createElement('span');nm.className='dname';nm.textContent=d.n;box.appendChild(nm);
+    var vl=document.createElement('span');vl.className='dval';box.appendChild(vl);
+    dialWrap.appendChild(box);
+    dialRefs[d.k]={box:box,knob:knob,val:vl};
+    var startY=0,startV=0;
+    box.addEventListener('pointerdown',function(e){startY=e.clientY;startV=state[d.k];box.setPointerCapture(e.pointerId);});
+    box.addEventListener('pointermove',function(e){if(!box.hasPointerCapture(e.pointerId))return;setDial(d.k,startV+(startY-e.clientY)/180);});
+    box.addEventListener('pointerup',function(){log(d.n+' set to '+pad(Math.round(state[d.k]*100),3));});
+    box.addEventListener('keydown',function(e){
+      var s=e.shiftKey?.1:.02;
+      if(e.key==='ArrowUp'||e.key==='ArrowRight'){setDial(d.k,state[d.k]+s);e.preventDefault();}
+      else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){setDial(d.k,state[d.k]-s);e.preventDefault();}
+    });
+    box.addEventListener('wheel',function(e){e.preventDefault();setDial(d.k,state[d.k]-e.deltaY/1200);},{passive:false});
+  });
+  function setDial(k,v){
+    v=Math.max(0,Math.min(1,v));state[k]=v;var r=dialRefs[k];
+    r.knob.style.transform='rotate('+(-135+v*270)+'deg)';r.knob.style.transformOrigin='50px 50px';
+    r.val.textContent=pad(Math.round(v*100),3);r.box.setAttribute('aria-valuenow',Math.round(v*100));
+  }
+  for(var k in state) setDial(k,state[k]);
+
+  /* ---------- meters ---------- */
+  var meterWrap=document.getElementById('meters'), needles=[];
+  ['L','R'].forEach(function(side,idx){
+    var m=document.createElement('div');m.className='meter';
+    var svg=el('svg',{viewBox:'0 0 200 120','aria-hidden':'true'});
+    var cx=100,cy=112,R=84;
+    for(var i=0;i<=20;i++){
+      var a=(-50+i*5)*Math.PI/180, red=i>=15, big=i%5===0;
+      el('line',{x1:cx+Math.sin(a)*(R-(big?12:7)),y1:cy-Math.cos(a)*(R-(big?12:7)),x2:cx+Math.sin(a)*R,y2:cy-Math.cos(a)*R,stroke:red?'#c3341f':'#2a2620','stroke-width':big?2:1.2},svg);
+    }
+    var a0=25*Math.PI/180,a1=50*Math.PI/180;
+    el('path',{d:'M'+(cx+Math.sin(a0)*(R+3))+' '+(cy-Math.cos(a0)*(R+3))+' A'+(R+3)+' '+(R+3)+' 0 0 1 '+(cx+Math.sin(a1)*(R+3))+' '+(cy-Math.cos(a1)*(R+3)),stroke:'#c3341f','stroke-width':4,fill:'none'},svg);
+    var t1=el('text',{x:24,y:30,'class':'cap'},svg);t1.textContent='-20';
+    var t2=el('text',{x:162,y:30,'class':'cap'},svg);t2.textContent='+3';
+    var t3=el('text',{x:100,y:84,'class':'cap','text-anchor':'middle'},svg);t3.textContent='VU '+side;
+    var nd=el('line',{x1:cx,y1:cy,x2:cx,y2:cy-R+4,stroke:'#1b1814','stroke-width':1.6,'stroke-linecap':'round','class':'needle'},svg);
+    el('circle',{cx:cx,cy:cy,r:7,fill:'#2a2620'},svg);
+    m.appendChild(svg);meterWrap.appendChild(m);
+    needles.push({el:nd,pos:0,vel:0,cx:cx,cy:cy,phase:idx*1.7});
+  });
+
+  /* ---------- lamps ---------- */
+  var lampWrap=document.getElementById('lamps'), lamps=[], lampCols=['#ffb23e','#ffb23e','#7fe36b','#ff7a3c','#ffb23e','#64d6c9','#ffb23e','#7fe36b'];
+  for(var i=0;i<40;i++){var s=document.createElement('span');s.className='lamp';s.style.setProperty('--lc',lampCols[i%8]);lampWrap.appendChild(s);lamps.push(s);}
+  var scan=0,lampAcc=0;
+  function stepLamps(){
+    scan++;
+    for(var i=0;i<lamps.length;i++){
+      var on;
+      if(!sw.power) on=false;
+      else if(sw.alarm) on=(scan%2===0)===(i%2===0);
+      else { var col=i%8,row=(i/8)|0; on=((col+row*3+scan)%7<2)||((i*37+scan*13)%23===0)||(sw.uplink&&row===((scan>>1)%5)); }
+      lamps[i].classList.toggle('on',on);
+      lamps[i].style.setProperty('--lc',sw.alarm?'#ff3b2a':lampCols[i%8]);
+    }
+  }
+  stepLamps();
+
+  /* ---------- switches ---------- */
+  var swDefs=[{k:'power',n:'PWR BUS',c:'#7fe36b'},{k:'coolant',n:'COOLANT',c:'#64d6c9'},{k:'uplink',n:'UPLINK',c:'#ffb23e'},{k:'alarm',n:'ALARM',c:'#ff3b2a'}];
+  var swWrap=document.getElementById('switches');
+  var msgs={power:['Main bus energised','Main bus cold - running on batteries'],coolant:['Coolant loop nominal','Coolant loop offline - drift rising'],uplink:['Uplink handshake with Relay Kestrel-9','Uplink released'],alarm:['MASTER ALARM raised by operator','Alarm acknowledged and silenced']};
+  swDefs.forEach(function(d){
+    var b=document.createElement('button');b.type='button';b.className='sw';b.setAttribute('aria-pressed',String(sw[d.k]));b.style.setProperty('--ledc',d.c);
+    b.innerHTML='<i class="led"></i><i class="slot"><i class="lever"></i></i><span>'+d.n+'</span>';
+    b.addEventListener('click',function(){
+      sw[d.k]=!sw[d.k];b.setAttribute('aria-pressed',String(sw[d.k]));
+      log(msgs[d.k][sw[d.k]?0:1]);applyBody();stepLamps();
+    });
+    swWrap.appendChild(b);
+  });
+  function applyBody(){
+    document.body.classList.toggle('alarm',sw.alarm);document.body.classList.toggle('off',!sw.power);
+    document.getElementById('scopeTag').textContent=!sw.power?'no signal':sw.uplink?'dual trace':'locked';
+    document.getElementById('busTag').textContent=sw.alarm?'fault':(sw.power?'40 ch':'dark');
+  }
+
+  /* ---------- tape counter ---------- */
+  var digitWrap=document.getElementById('digits'),digits=[];
+  for(var q=0;q<4;q++){var b=document.createElement('b');digitWrap.appendChild(b);digits.push(b);}
+  var tape=1977;
+  function showTape(){var s=pad(Math.floor(tape)%10000,4);for(var i=0;i<4;i++)digits[i].textContent=s[i];}
+  showTape();
+
+  /* ---------- scope ---------- */
+  var cv=document.getElementById('scope'),ctx=cv.getContext('2d'),W=0,H=0,dpr=1;
+  function size(){dpr=Math.min(window.devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070806';ctx.fillRect(0,0,W,H);}
+  size();window.addEventListener('resize',size);
+  function trace(t,color,phase,ampMul,freqMul){
+    var amp=sw.power?(H*.08+state.gain*H*.32)*ampMul:0, k=(0.012+state.freq*0.06)*freqMul;
+    var drift=state.drift*(sw.coolant?1:2.4);
+    ctx.beginPath();
+    for(var x=0;x<=W;x+=3){
+      var y=H/2+Math.sin(x*k+t*2.2+phase)*amp*(1+drift*.35*Math.sin(x*.011+t*.9))+(reduce?0:(Math.random()-.5)*drift*6);
+      if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.shadowColor=color;ctx.shadowBlur=10;ctx.stroke();ctx.shadowBlur=0;
+  }
+
+  /* ---------- main loop ---------- */
+  var t0=performance.now(),last=t0,lampTimer=0,metStart=Date.now()-((3*86400+14*3600+22*60)*1000);
+  var rF=document.getElementById('rF'),rA=document.getElementById('rA'),rD=document.getElementById('rD'),rS=document.getElementById('rS'),met=document.getElementById('met');
+  var readTimer=0;
+  function frame(now){
+    var dt=Math.min(.05,(now-last)/1000);last=now;var t=(now-t0)/1000*(reduce?.25:1);
+    ctx.fillStyle=reduce?'rgba(7,8,6,1)':'rgba(7,8,6,.32)';ctx.fillRect(0,0,W,H);
+    trace(t,'#ffb23e',0,1,1);
+    if(sw.uplink&&sw.power) trace(t*1.3,'#64d6c9',1.4,.6,1.9);
+    needles.forEach(function(n){
+      var target=sw.power?Math.min(1.05,state.gain*.85+(reduce?0:Math.sin(t*3+n.phase)*.08+Math.random()*state.drift*.25)):0;
+      if(sw.alarm&&sw.power) target=1.02;
+      n.vel+=(target-n.pos)*120*dt;n.vel*=Math.pow(.0009,dt);n.pos+=n.vel*dt;
+      n.el.setAttribute('transform','rotate('+(-50+n.pos*100*.95)+' '+n.cx+' '+n.cy+')');
+    });
+    lampTimer+=dt;
+    var interval=reduce?1.6:(.55-state.drift*.45);
+    if(lampTimer>interval){lampTimer=0;stepLamps();}
+    if(sw.power){tape+=dt*(0.6+state.freq*3);showTape();}
+    readTimer+=dt;
+    if(readTimer>.25){readTimer=0;
+      rF.textContent=(4.2+state.freq*38).toFixed(1);rA.textContent=sw.power?(state.gain*12).toFixed(1):'0.0';
+      rD.textContent=(state.drift*(sw.coolant?100:240)).toFixed(1);rS.textContent=sw.power?Math.round(48-state.drift*30-(sw.coolant?0:9)):0;
+      var e=Math.floor((Date.now()-metStart)/1000);
+      met.textContent=pad(Math.floor(e/86400),3)+':'+pad(Math.floor(e/3600)%24,2)+':'+pad(Math.floor(e/60)%60,2)+':'+pad(e%60,2);
+    }
+    requestAnimationFrame(frame);
+  }
+  applyBody();
+  log('Deck 3 warm start complete');
+  log('Analog backup suite on standby');
+  log('Awaiting operator input');
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

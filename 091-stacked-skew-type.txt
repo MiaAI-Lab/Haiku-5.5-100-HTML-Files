@@ -1,0 +1,28 @@
+PROMPT
+
+Build a single standalone HTML page for concept 091, "stacked-skew-type": stacked type whose skew responds to scroll velocity. Frame it as a broadside from a fictional letterpress studio, "Inertia Press". Palette: warm newsprint paper #efe8da, near-black ink #141210, a single vermilion accent #e8401c, and a muted taupe #8b8273 for secondary text. Overlay a very faint fixed horizontal line texture with multiply blend to suggest printed paper.
+
+Typography: "Arial Black" / Impact for the heavy grotesque display type, all caps with tight negative tracking; Georgia / "Iowan Old Style" for body copy and italic marginal notes; ui-monospace for numerals and the speed readout.
+
+Layout: a fixed thin header with the brand wordmark (a red slash) and a velocity meter (an outlined bar that fills red, plus a monospace number). A tall intro with a small kicker, a three-line giant headline ("Words / lean into / speed." with the middle line in red), a serif lede, and an animated "drip" line hint saying "Scroll fast. Then stop." Then the main stack: eight full-bleed rows separated by 2px black rules, each holding an index number and one or more enormous words (Momentum, Shear Force, Lean Back, Velocity, Drag & Drift, Spring, Settle Down, Stillness). Some words are solid black, some red, some outlined with -webkit-text-stroke. Each row also has a hidden italic margin note. After the stack, a 12-column essay section with a heading on the left and two-column serif text on the right with a red drop cap. Footer with credits and a hard-shadow button "Give it a shove".
+
+Motion: every frame, measure scroll velocity (px/ms), map it to a target skew clamped to +/-22deg, and drive the actual skew through a damped spring (stiffness 0.11, damping 0.78) so a sudden stop produces a short wobble. Write the result into a CSS variable --skew on the root; each word multiplies it by its own --k factor (alternating signs and strengths from -1.3 to 1.4) so rows shear in opposing directions like riffled pages. Also scale words vertically up to 14% with skew magnitude via --stretch. The header meter mirrors the magnitude. The footer button injects an impulse into the spring for a shove even without scrolling.
+
+Interaction: hover or keyboard-focus a row to flood it with ink from the bottom (scaleY transition with a sharp ease), reversing the text to paper color and revealing its italic note. Rows are focusable with tabindex.
+
+Responsive: clamp() sizes for all type, notes hidden and essay stacked under 760px, no horizontal scroll (rows clip overflow). Reduced motion: skew and stretch held at zero, drip hint static.
+
+Title: Momentum Stack
+
+Description: A letterpress-flavored typographic broadside in which eight rows of massive grotesque words hang on springs. Scroll velocity, not scroll position, shears the stack: rows lean in alternating directions in proportion to how hard the page is flung, stretch slightly taller under strain, and settle with a damped wobble once motion stops. Newsprint, black ink, and a single vermilion accent keep it austere, while outlined words, italic margin notes, and a live velocity meter add editorial detail.
+
+Visual techniques:
+- Scroll-velocity sampling in requestAnimationFrame fed into a damped spring simulation
+- CSS custom properties (--skew, --stretch, per-word --k) driving skewX and scaleY transforms
+- Outlined display type via -webkit-text-stroke alongside solid and accent fills
+- Ink-flood hover using a scaleY pseudo-element with a custom cubic-bezier
+- Fixed repeating-linear-gradient paper texture with multiply blending
+- Multi-column serif essay with a colored drop cap
+- Animated "drip" scroll hint and live velocity meter
+
+Interaction model: The reader scrolls; the faster they scroll, the more the stacked words shear and stretch, and when they stop the type wobbles back upright. Hovering or tabbing to a row inverts it to paper-on-ink and reveals a marginal note. The "Give it a shove" button kicks the spring so the stack sways without scrolling. With reduced motion enabled, the type stays upright.

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaos Bench — Double Pendulum</title>
+<style>
+:root{
+  --bg:#0d1012;--rail:#13171a;--line:#262c31;--txt:#d7dde0;--dim:#6f7a81;
+  --lime:#d4ff3a;--cyan:#38e1ff;--rose:#ff4f7b;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden}
+.app{display:grid;grid-template-columns:1fr 320px;min-height:100vh}
+.stage{position:relative;min-height:60vh;overflow:hidden;
+  background:
+    linear-gradient(var(--line) 1px,transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/40px 40px,
+    radial-gradient(70% 60% at 50% 35%,#171c20,var(--bg));
+  background-blend-mode:normal;
+}
+.stage::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 40%,transparent 40%,rgba(13,16,18,.9));pointer-events:none}
+canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;z-index:1}
+.hud{position:absolute;left:clamp(16px,3vw,32px);top:clamp(16px,3vw,28px);z-index:2;pointer-events:none}
+.hud .k{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--lime)}
+.hud h1{font-weight:300;font-size:clamp(28px,4.6vw,54px);letter-spacing:-.03em;line-height:1;margin-top:8px}
+.hud h1 b{font-weight:700}
+.hud p{margin-top:10px;max-width:36ch;color:var(--dim);font-size:13px;line-height:1.55}
+.read{position:absolute;left:clamp(16px,3vw,32px);bottom:clamp(14px,3vw,24px);z-index:2;display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);pointer-events:none}
+.read b{display:block;color:var(--txt);font-size:15px;font-weight:400;letter-spacing:0;margin-top:3px}
+.rail{background:var(--rail);border-left:1px solid var(--line);padding:24px 22px;display:flex;flex-direction:column;gap:18px}
+.rail h2{font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.3em;color:var(--dim);display:flex;justify-content:space-between}
+.ctrl{display:flex;flex-direction:column;gap:8px}
+.ctrl label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.04em}
+.ctrl output{font-family:var(--mono);color:var(--lime);font-size:12px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(90deg,var(--lime) var(--p,50%),var(--line) var(--p,50%))}
+input[type=range]::-moz-range-track{height:2px;background:var(--line)}
+input[type=range]::-moz-range-progress{height:2px;background:var(--lime)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-6px;background:var(--bg);border:2px solid var(--lime);border-radius:2px;transform:rotate(45deg);transition:background .2s,box-shadow .2s}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--bg);border:2px solid var(--lime);border-radius:2px;transform:rotate(45deg)}
+input[type=range]:hover::-webkit-slider-thumb{background:var(--lime);box-shadow:0 0 12px var(--lime)}
+input[type=range]:focus-visible{outline:1px dashed var(--lime);outline-offset:4px}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btns button{appearance:none;background:transparent;border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-size:10px;letter-spacing:.2em;padding:11px 4px;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.btns button:hover{border-color:var(--lime);color:var(--lime)}
+.btns button:focus-visible{outline:1px solid var(--lime);outline-offset:2px}
+.btns button[aria-pressed="true"]{background:var(--lime);color:var(--bg);border-color:var(--lime)}
+#twin[aria-pressed="true"]{background:var(--rose);border-color:var(--rose)}
+.phase{border:1px solid var(--line);background:#0b0e10;position:relative}
+.phase canvas{display:block;width:100%;height:150px}
+.phase span{position:absolute;font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:.14em}
+.phase .x{right:6px;bottom:4px}.phase .y{left:6px;top:4px}
+.note{font-size:12px;line-height:1.55;color:var(--dim)}
+.note em{color:var(--rose);font-style:normal}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .stage{min-height:62vh}
+  .rail{border-left:0;border-top:1px solid var(--line)}
+  .hud p{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="stage" id="stage">
+    <canvas id="c" aria-label="Double pendulum simulation. Drag a bob to reposition it."></canvas>
+    <div class="hud">
+      <div class="k">BENCH 04 · NONLINEAR DYNAMICS</div>
+      <h1>Double <b>Pendulum</b></h1>
+      <p>Two rods, two weights, one hinge between them. Small differences in the start become enormous differences a few seconds later. Grab a bob to set it free from a new angle.</p>
+    </div>
+    <div class="read">
+      <span>T<b id="rT">0.00 s</b></span>
+      <span>θ₁<b id="rA">0°</b></span>
+      <span>θ₂<b id="rB">0°</b></span>
+      <span>ENERGY<b id="rE">0 J</b></span>
+    </div>
+  </section>
+  <aside class="rail">
+    <h2><span>PARAMETERS</span><span id="state">RUNNING</span></h2>
+    <div class="ctrl"><label for="l1">Upper arm length<output id="o-l1">1.00 m</output></label><input id="l1" type="range" min="0.4" max="1.6" step="0.01" value="1"></div>
+    <div class="ctrl"><label for="l2">Lower arm length<output id="o-l2">1.00 m</output></label><input id="l2" type="range" min="0.4" max="1.6" step="0.01" value="1"></div>
+    <div class="ctrl"><label for="m">Mass ratio m₂ / m₁<output id="o-m">1.00</output></label><input id="m" type="range" min="0.2" max="3" step="0.05" value="1"></div>
+    <div class="ctrl"><label for="g">Gravity<output id="o-g">9.81 m/s²</output></label><input id="g" type="range" min="1" max="25" step="0.01" value="9.81"></div>
+    <div class="ctrl"><label for="tr">Trail persistence<output id="o-tr">420</output></label><input id="tr" type="range" min="0" max="1200" step="10" value="420"></div>
+    <div class="btns">
+      <button id="run" type="button" aria-pressed="true">PAUSE</button>
+      <button id="reset" type="button">RESET</button>
+      <button id="twin" type="button" aria-pressed="false">TWIN</button>
+    </div>
+    <div class="phase"><canvas id="ph" aria-label="Phase portrait of theta one against theta two"></canvas><span class="y">θ₂</span><span class="x">θ₁</span></div>
+    <p class="note">TWIN releases a second pendulum offset by just <em>0.001 rad</em>. Watch the two trails agree, then part ways completely.</p>
+  </aside>
+</div>
+<script>
+(function(){
+  var cv=document.getElementById('c'),ctx=cv.getContext('2d'),stage=document.getElementById('stage');
+  var ph=document.getElementById('ph'),pctx=ph.getContext('2d');
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W,H,dpr,PW,PH;
+  var P={l1:1,l2:1,m:1,g:9.81,tr:420};
+  var running=!reduced,t=0,twinOn=false;
+  function makePend(a1,a2){return{a1:a1,a2:a2,w1:0,w2:0,trail:[]}}
+  var A=makePend(2.2,2.6),B=null;
+  function acc(s){
+    var m1=1,m2=P.m,l1=P.l1,l2=P.l2,g=P.g,d=s[0]-s[1];
+    var den=2*m1+m2-m2*Math.cos(2*s[0]-2*s[1]);
+    var a1=(-g*(2*m1+m2)*Math.sin(s[0])-m2*g*Math.sin(s[0]-2*s[1])-2*Math.sin(d)*m2*(s[3]*s[3]*l2+s[2]*s[2]*l1*Math.cos(d)))/(l1*den);
+    var a2=(2*Math.sin(d)*(s[2]*s[2]*l1*(m1+m2)+g*(m1+m2)*Math.cos(s[0])+s[3]*s[3]*l2*m2*Math.cos(d)))/(l2*den);
+    return [s[2],s[3],a1,a2];
+  }
+  function rk4(p,h){
+    var s=[p.a1,p.a2,p.w1,p.w2];
+    var k1=acc(s);
+    var k2=acc(s.map(function(v,i){return v+k1[i]*h/2}));
+    var k3=acc(s.map(function(v,i){return v+k2[i]*h/2}));
+    var k4=acc(s.map(function(v,i){return v+k3[i]*h}));
+    for(var i=0;i<4;i++)s[i]+=h/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]);
+    p.a1=s[0];p.a2=s[1];p.w1=s[2];p.w2=s[3];
+  }
+  function energy(p){
+    var m1=1,m2=P.m,l1=P.l1,l2=P.l2,g=P.g;
+    var y1=-l1*Math.cos(p.a1),y2=y1-l2*Math.cos(p.a2);
+    var v1=l1*l1*p.w1*p.w1,v2=v1+l2*l2*p.w2*p.w2+2*l1*l2*p.w1*p.w2*Math.cos(p.a1-p.a2);
+    return .5*m1*v1+.5*m2*v2+m1*g*y1+m2*g*y2;
+  }
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    var r=stage.getBoundingClientRect();W=r.width;H=r.height;
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+    var pr=ph.getBoundingClientRect();PW=pr.width;PH=pr.height;
+    ph.width=Math.round(PW*dpr);ph.height=Math.round(PH*dpr);
+    pctx.setTransform(dpr,0,0,dpr,0,0);pctx.fillStyle='#0b0e10';pctx.fillRect(0,0,PW,PH);
+  }
+  function geom(){
+    var scale=Math.min(W,H)*.4/(P.l1+P.l2);
+    return {ox:W/2,oy:H*.46,s:scale};
+  }
+  function pos(p,G){
+    var x1=G.ox+Math.sin(p.a1)*P.l1*G.s,y1=G.oy+Math.cos(p.a1)*P.l1*G.s;
+    return [x1,y1,x1+Math.sin(p.a2)*P.l2*G.s,y1+Math.cos(p.a2)*P.l2*G.s];
+  }
+  function drawTrail(p,G,hueA,hueB){
+    var tr=p.trail,n=tr.length;if(n<2)return;
+    ctx.lineCap='round';
+    for(var i=1;i<n;i++){
+      var a=tr[i-1],b=tr[i],k=i/n;
+      var sp=Math.min(1,b[2]/14);
+      ctx.strokeStyle='hsla('+(hueA+(hueB-hueA)*sp)+',100%,'+(55+sp*15)+'%,'+(k*k*.9)+')';
+      ctx.lineWidth=.6+k*2.2;
+      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+    }
+  }
+  function drawPend(p,G,col,glow){
+    var q=pos(p,G);
+    ctx.strokeStyle='rgba(215,221,224,.85)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(G.ox,G.oy);ctx.lineTo(q[0],q[1]);ctx.lineTo(q[2],q[3]);ctx.stroke();
+    var r1=6+4*Math.cbrt(1),r2=6+4*Math.cbrt(P.m);
+    ctx.fillStyle='#0d1012';ctx.strokeStyle=col;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(q[0],q[1],r1,0,7);ctx.fill();ctx.stroke();
+    ctx.shadowColor=glow;ctx.shadowBlur=18;ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(q[2],q[3],r2,0,7);ctx.fill();ctx.shadowBlur=0;
+    return q;
+  }
+  function pushTrail(p,G){
+    var q=pos(p,G),sp=Math.abs(p.w2)*P.l2+Math.abs(p.w1)*P.l1;
+    p.trail.push([q[2],q[3],sp]);
+    while(p.trail.length>P.tr)p.trail.shift();
+  }
+  var rT=document.getElementById('rT'),rA=document.getElementById('rA'),rB=document.getElementById('rB'),rE=document.getElementById('rE');
+  function deg(a){var d=((a*180/Math.PI)%360+540)%360-180;return d.toFixed(0)+'°'}
+  function plotPhase(p,col){
+    var x=((p.a1%(2*Math.PI))+3*Math.PI)%(2*Math.PI)/(2*Math.PI)*PW;
+    var y=PH-((p.a2%(2*Math.PI))+3*Math.PI)%(2*Math.PI)/(2*Math.PI)*PH;
+    pctx.fillStyle=col;pctx.fillRect(x,y,1.3,1.3);
+  }
+  var drag=null,last=performance.now(),frameN=0;
+  function frame(now){
+    var dt=Math.min(.033,(now-last)/1000);last=now;
+    var G=geom();
+    if(running&&!drag){
+      var sub=8,h=dt/sub;
+      for(var i=0;i<sub;i++){rk4(A,h);if(B)rk4(B,h)}
+      t+=dt;
+      pushTrail(A,G);if(B)pushTrail(B,G);
+      if(frameN++%2===0){pctx.fillStyle='rgba(11,14,16,.015)';pctx.fillRect(0,0,PW,PH)}
+      plotPhase(A,'rgba(212,255,58,.8)');if(B)plotPhase(B,'rgba(255,79,123,.8)');
+    }
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    drawTrail(A,G,75,190);if(B)drawTrail(B,G,345,380);
+    // pivot mount
+    ctx.fillStyle='#262c31';ctx.fillRect(G.ox-38,G.oy-8,76,4);
+    if(B)drawPend(B,G,'#ff4f7b','#ff4f7b');
+    drawPend(A,G,'#d4ff3a','#d4ff3a');
+    ctx.fillStyle='#d7dde0';ctx.beginPath();ctx.arc(G.ox,G.oy,4,0,7);ctx.fill();
+    rT.textContent=t.toFixed(2)+' s';rA.textContent=deg(A.a1);rB.textContent=deg(A.a2);
+    rE.textContent=energy(A).toFixed(2)+' J';
+    requestAnimationFrame(frame);
+  }
+  // dragging bobs
+  cv.addEventListener('pointerdown',function(e){
+    var r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,G=geom(),q=pos(A,G);
+    var d2=Math.hypot(x-q[2],y-q[3]),d1=Math.hypot(x-q[0],y-q[1]);
+    if(d2<34)drag=2;else if(d1<34)drag=1;else return;
+    cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing';
+  });
+  cv.addEventListener('pointermove',function(e){
+    var r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,G=geom();
+    if(!drag){var q=pos(A,G);cv.style.cursor=(Math.hypot(x-q[2],y-q[3])<34||Math.hypot(x-q[0],y-q[1])<34)?'grab':'default';return}
+    if(drag===1)A.a1=Math.atan2(x-G.ox,y-G.oy);
+    else{var q2=pos(A,G);A.a2=Math.atan2(x-q2[0],y-q2[1])}
+    A.w1=A.w2=0;A.trail=[];if(B){B=makePend(A.a1+.001,A.a2)}
+  });
+  function endDrag(){if(drag){drag=null;cv.style.cursor='default';t=0;clearPhase()}}
+  cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+  function clearPhase(){pctx.fillStyle='#0b0e10';pctx.fillRect(0,0,PW,PH)}
+  // controls
+  function bindRange(id,fmt){
+    var el=document.getElementById(id),out=document.getElementById('o-'+id);
+    function upd(){P[id]=+el.value;out.textContent=fmt(+el.value);el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%')}
+    el.addEventListener('input',upd);upd();
+  }
+  bindRange('l1',function(v){return v.toFixed(2)+' m'});
+  bindRange('l2',function(v){return v.toFixed(2)+' m'});
+  bindRange('m',function(v){return v.toFixed(2)});
+  bindRange('g',function(v){return v.toFixed(2)+' m/s²'});
+  bindRange('tr',function(v){return v===0?'off':String(v)});
+  var runB=document.getElementById('run'),stateEl=document.getElementById('state');
+  function setRun(v){running=v;runB.setAttribute('aria-pressed',v?'true':'false');runB.textContent=v?'PAUSE':'RUN';stateEl.textContent=v?'RUNNING':'HELD'}
+  runB.addEventListener('click',function(){setRun(!running)});
+  document.getElementById('reset').addEventListener('click',function(){
+    A=makePend(2.2,2.6);if(twinOn)B=makePend(2.201,2.6);t=0;clearPhase();
+  });
+  var twinB=document.getElementById('twin');
+  twinB.addEventListener('click',function(){
+    twinOn=!twinOn;twinB.setAttribute('aria-pressed',twinOn?'true':'false');
+    B=twinOn?{a1:A.a1+.001,a2:A.a2,w1:A.w1,w2:A.w2,trail:[]}:null;
+  });
+  document.addEventListener('keydown',function(e){if(e.key===' '&&e.target===document.body){e.preventDefault();setRun(!running)}});
+  window.addEventListener('resize',function(){resize();A.trail=[];if(B)B.trail=[]});
+  resize();setRun(running);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

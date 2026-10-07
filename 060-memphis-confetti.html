@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squiggle Salon — Memphis Confetti</title>
+<style>
+:root{
+  --pink:#ff6fb5;
+  --teal:#19c3b2;
+  --sun:#ffd23f;
+  --cobalt:#3b5bff;
+  --coral:#ff6a3d;
+  --lilac:#b79cff;
+  --ink:#151515;
+  --bone:#fff8ec;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bone);color:var(--ink);font-family:"Arial Black","Helvetica Neue",Futura,Arial,sans-serif;
+  background-image:radial-gradient(var(--ink) 1.3px,transparent 1.6px);background-size:22px 22px;background-position:0 0}
+.stage{position:fixed;inset:0;touch-action:none;cursor:pointer;user-select:none;-webkit-user-select:none}
+.body{position:absolute;left:0;top:0;will-change:transform;filter:drop-shadow(5px 5px 0 var(--ink));cursor:grab;transform-origin:50% 100%}
+.body.grab{cursor:grabbing}
+.body svg{display:block;width:100%;height:100%;overflow:visible}
+.card{position:fixed;z-index:5;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-2deg);width:min(560px,calc(100vw - 32px));background:var(--sun);border:4px solid var(--ink);box-shadow:12px 12px 0 var(--ink);padding:clamp(20px,5vw,40px);text-align:left;
+  animation:pop .9s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:translate(-50%,-40%) rotate(-12deg) scale(.6);opacity:0}}
+.card::before{content:"";position:absolute;inset:10px -18px auto auto;width:76px;height:76px;border-radius:50%;background:var(--pink);border:4px solid var(--ink);z-index:-1;transform:translate(10px,-40px)}
+.label{display:inline-block;font-family:"Courier New",ui-monospace,monospace;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;background:var(--ink);color:var(--bone);padding:6px 10px;transform:rotate(1.5deg)}
+h1{font-size:clamp(42px,11vw,92px);line-height:.88;letter-spacing:-.03em;margin:16px 0 14px;text-transform:uppercase}
+h1 .a{color:var(--cobalt)}
+h1 .b{display:inline-block;background:var(--teal);padding:0 .12em;border:4px solid var(--ink);transform:rotate(-3deg)}
+p{font-family:"Trebuchet MS","Gill Sans","Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(15px,3.6vw,18px);line-height:1.45;max-width:42ch}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.btn{font:900 14px/1 "Arial Black","Helvetica Neue",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:14px 18px;border:3px solid var(--ink);background:var(--bone);color:var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:pointer;transition:transform .18s cubic-bezier(.3,1.8,.5,1),box-shadow .18s,background .2s}
+.btn:hover,.btn:focus-visible{transform:translate(-2px,-2px) rotate(-1.5deg);box-shadow:7px 7px 0 var(--ink);background:var(--pink);outline:none}
+.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
+.btn.alt:hover,.btn.alt:focus-visible{background:var(--teal)}
+.count{position:fixed;z-index:6;right:clamp(12px,3vw,28px);bottom:clamp(12px,3vw,28px);font:700 12px/1 "Courier New",ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;background:var(--bone);border:3px solid var(--ink);padding:10px 12px;box-shadow:4px 4px 0 var(--ink)}
+.tip{position:fixed;z-index:6;left:clamp(12px,3vw,28px);bottom:clamp(12px,3vw,28px);font:700 12px/1.3 "Courier New",ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;max-width:46vw}
+@media (max-width:520px){.card{top:46%}.tip{display:none}}
+@media (prefers-reduced-motion:reduce){
+  .card{animation:none}
+  .btn{transition:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="pDots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="2.4" fill="#151515"/></pattern>
+    <pattern id="pStripes" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="12" fill="#151515"/></pattern>
+  </defs>
+</svg>
+<div class="stage" id="stage" aria-hidden="true"></div>
+<main class="card" id="card">
+  <span class="label">Squiggle Salon &middot; Room 81</span>
+  <h1><span class="a">Serious</span> design, <span class="b">unserious</span> shapes.</h1>
+  <p>A one-night retrospective of loud laminate, polka-dot furniture and zigzags that refuse to sit still. Toss a shape, throw a party, break the grid on purpose.</p>
+  <div class="actions">
+    <button class="btn" type="button" id="burst">Throw confetti</button>
+    <button class="btn alt" type="button" id="shake">Shake the room</button>
+  </div>
+</main>
+<div class="tip">Click to burst &middot; drag to fling</div>
+<div class="count" id="count">0 shapes</div>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage = document.getElementById('stage'), countEl = document.getElementById('count');
+  var COLORS = ['#ff6fb5','#19c3b2','#ffd23f','#3b5bff','#ff6a3d','#b79cff'];
+  var K = '#151515';
+  function pick(a){ return a[(Math.random() * a.length) | 0]; }
+  var SHAPES = [
+    function(c){ return '<path d="M6 50q11-30 22 0t22 0t22 0t22 0" fill="none" stroke="' + c + '" stroke-width="12" stroke-linecap="round"/>'; },
+    function(c){ return '<polyline points="6,68 22,34 38,68 54,34 70,68 86,34" fill="none" stroke="' + c + '" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>'; },
+    function(c){ return '<polygon points="50,8 94,90 6,90" fill="' + c + '" stroke="' + K + '" stroke-width="5" stroke-linejoin="round"/>'; },
+    function(c){ return '<circle cx="50" cy="50" r="42" fill="' + c + '" stroke="' + K + '" stroke-width="5"/><circle cx="50" cy="50" r="42" fill="url(#pDots)" opacity=".85"/>'; },
+    function(c){ return '<path d="M8 78a42 42 0 0 1 84 0z" fill="' + c + '" stroke="' + K + '" stroke-width="5" stroke-linejoin="round"/>'; },
+    function(c){ return '<circle cx="50" cy="50" r="34" fill="none" stroke="' + c + '" stroke-width="16"/>'; },
+    function(c){ return '<rect x="8" y="30" width="84" height="40" rx="20" fill="' + c + '" stroke="' + K + '" stroke-width="5"/><rect x="8" y="30" width="84" height="40" rx="20" fill="url(#pStripes)" opacity=".7"/>'; },
+    function(c){ return '<path d="M38 8h24v30h30v24H62v30H38V62H8V38h30z" fill="' + c + '" stroke="' + K + '" stroke-width="5" stroke-linejoin="round"/>'; },
+    function(c){ return '<rect x="14" y="14" width="72" height="72" fill="' + c + '" stroke="' + K + '" stroke-width="5" transform="rotate(12 50 50)"/><rect x="14" y="14" width="72" height="72" fill="url(#pDots)" transform="rotate(12 50 50)" opacity=".5"/>'; }
+  ];
+  var bodies = [], W = innerWidth, H = innerHeight, MAX = 70;
+  addEventListener('resize', function(){ W = innerWidth; H = innerHeight; });
+  function make(x, y, size, vx, vy, kind, confetti){
+    var el = document.createElement('div'); el.className = 'body';
+    el.style.width = el.style.height = size + 'px';
+    var col = pick(COLORS);
+    el.innerHTML = '<svg viewBox="0 0 100 100">' + SHAPES[kind == null ? (Math.random() * SHAPES.length) | 0 : kind](col) + '</svg>';
+    if (confetti) el.style.filter = 'drop-shadow(3px 3px 0 #151515)';
+    stage.appendChild(el);
+    var b = {el:el, x:x, y:y, vx:vx, vy:vy, r:Math.random() * 360, vr:(Math.random() - .5) * 8, s:size, sq:0, sqv:0, confetti:confetti, drag:false};
+    bodies.push(b);
+    el.addEventListener('pointerdown', function(e){ e.stopPropagation(); grab(b, e); });
+    if (bodies.length > MAX){
+      for (var i = 0; i < bodies.length; i++) if (bodies[i].confetti){ bodies[i].el.remove(); bodies.splice(i, 1); break; }
+      if (bodies.length > MAX){ bodies[0].el.remove(); bodies.shift(); }
+    }
+    countEl.textContent = bodies.length + ' shapes';
+    if (reduce) place(b);
+    return b;
+  }
+  // dragging & flinging
+  var held = null, hx = 0, hy = 0, lx = 0, ly = 0, lt = 0;
+  function grab(b, e){
+    held = b; b.drag = true; b.el.classList.add('grab');
+    hx = e.clientX - b.x; hy = e.clientY - b.y; lx = e.clientX; ly = e.clientY; lt = performance.now();
+    b.vx = b.vy = 0;
+  }
+  addEventListener('pointermove', function(e){
+    if (!held) return;
+    var now = performance.now(), dt = Math.max(8, now - lt) / 16.67;
+    held.vx = (e.clientX - lx) / dt; held.vy = (e.clientY - ly) / dt;
+    held.x = e.clientX - hx; held.y = e.clientY - hy;
+    lx = e.clientX; ly = e.clientY; lt = now;
+    if (reduce) place(held);
+  });
+  addEventListener('pointerup', function(){
+    if (!held) return;
+    held.drag = false; held.el.classList.remove('grab');
+    held.vr = held.vx * 0.6; held.sqv = 0.25; held = null;
+  });
+  function burst(x, y, n){
+    for (var i = 0; i < n; i++){
+      var a = Math.random() * Math.PI * 2, sp = 6 + Math.random() * 10;
+      make(x - 12, y - 12, 18 + Math.random() * 18, Math.cos(a) * sp, Math.sin(a) * sp - 6, null, true);
+    }
+  }
+  stage.addEventListener('pointerdown', function(e){ burst(e.clientX, e.clientY, reduce ? 3 : 14); });
+  document.getElementById('burst').addEventListener('click', function(){
+    var r = document.getElementById('card').getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top, reduce ? 4 : 24);
+  });
+  document.getElementById('shake').addEventListener('click', function(){
+    bodies.forEach(function(b){ b.vx += (Math.random() - .5) * 26; b.vy -= 10 + Math.random() * 16; b.vr += (Math.random() - .5) * 20; b.sqv = .3; });
+    if (reduce) bodies.forEach(function(b){ b.x = Math.random() * (W - b.s); b.y = Math.random() * (H - b.s); place(b); });
+  });
+  // initial cast of big shapes
+  for (var i = 0; i < SHAPES.length + 3; i++){
+    var sz = (W < 600 ? 56 : 80) + Math.random() * (W < 600 ? 40 : 70);
+    make(Math.random() * (W - sz), reduce ? Math.random() * (H - sz) : -sz - Math.random() * H * 0.8, sz, (Math.random() - .5) * 6, 0, i % SHAPES.length, false);
+  }
+  function place(b){
+    var sy = 1 - b.sq, sx = 1 + b.sq * 0.8;
+    b.el.style.transform = 'translate3d(' + b.x.toFixed(1) + 'px,' + b.y.toFixed(1) + 'px,0) rotate(' + b.r.toFixed(1) + 'deg) scale(' + sx.toFixed(3) + ',' + sy.toFixed(3) + ')';
+  }
+  if (reduce) return; // static, hand-placed composition
+  var last = performance.now();
+  function tick(t){
+    var dt = Math.min(2.5, (t - last) / 16.67); last = t;
+    for (var i = 0; i < bodies.length; i++){
+      var b = bodies[i];
+      // squash spring
+      b.sqv += (-b.sq * 0.35) * dt; b.sqv *= Math.pow(0.78, dt); b.sq += b.sqv * dt;
+      if (b.sq > .35) b.sq = .35; if (b.sq < -.25) b.sq = -.25;
+      if (!b.drag){
+        b.vy += 0.55 * dt;
+        b.vx *= Math.pow(0.995, dt);
+        b.x += b.vx * dt; b.y += b.vy * dt; b.r += b.vr * dt;
+        var floor = H - b.s;
+        if (b.y > floor){
+          b.y = floor;
+          if (b.vy > 2){ b.sqv += Math.min(.5, b.vy * 0.03); }
+          b.vy *= -(b.confetti ? 0.55 : 0.72);
+          if (Math.abs(b.vy) < 1.4) b.vy = 0;
+          b.vx *= 0.9; b.vr = b.vr * 0.7 + b.vx * 0.9;
+        }
+        if (b.x < 0){ b.x = 0; b.vx = Math.abs(b.vx) * 0.8; b.sqv -= .1; }
+        if (b.x > W - b.s){ b.x = W - b.s; b.vx = -Math.abs(b.vx) * 0.8; b.sqv -= .1; }
+        // idle hop so the room never fully settles
+        if (b.vy === 0 && b.y >= floor - 0.5 && !b.confetti && Math.random() < 0.0025 * dt){ b.vy = -(9 + Math.random() * 9); b.vx += (Math.random() - .5) * 6; b.sqv = .35; }
+        b.vr *= Math.pow(0.985, dt);
+      }
+      place(b);
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

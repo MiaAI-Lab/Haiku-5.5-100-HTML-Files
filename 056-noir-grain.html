@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Tram to Halvard</title>
+<style>
+:root{
+  --ink:#050505;
+  --paper:#ecebe6;
+  --smoke:#8d8b86;
+  --ash:#2a2927;
+  --bar:12vh;
+  --lx:50%;
+  --ly:42%;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--ink);color:var(--paper);overflow:hidden}
+body{font-family:Didot,"Bodoni 72","Bodoni MT",Georgia,"Times New Roman",serif;-webkit-font-smoothing:antialiased}
+.stage{position:fixed;inset:0;overflow:hidden;filter:grayscale(1) contrast(1.12)}
+.scene{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 55% at var(--lx) var(--ly),rgba(236,235,230,.34),rgba(236,235,230,.08) 45%,transparent 70%),
+    linear-gradient(180deg,#141414 0%,#1d1d1c 58%,#0b0b0b 58.2%,#121211 100%);
+  transition:background-position .6s}
+.blinds{position:absolute;inset:-20%;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.11) 0 18px,transparent 18px 46px);
+  transform:rotate(-14deg) skewX(-18deg);
+  -webkit-mask-image:radial-gradient(ellipse 55% 50% at var(--lx) var(--ly),#000 20%,transparent 70%);
+  mask-image:radial-gradient(ellipse 55% 50% at var(--lx) var(--ly),#000 20%,transparent 70%);
+  mix-blend-mode:screen;animation:sway 14s ease-in-out infinite alternate}
+@keyframes sway{to{transform:rotate(-12deg) skewX(-16deg) translateY(14px)}}
+.figure{position:absolute;left:50%;bottom:30%;width:min(24vw,170px);aspect-ratio:1/2.4;transform:translateX(-50%);opacity:.9}
+.figure svg{width:100%;height:100%;display:block}
+.lamp{position:absolute;right:14%;bottom:30%;width:6px;height:44vh;background:linear-gradient(#0a0a0a,#000)}
+.lamp::before{content:"";position:absolute;top:-10px;left:-14px;width:34px;height:14px;border-radius:50% 50% 4px 4px;background:#0c0c0c;box-shadow:0 10px 60px 30px rgba(255,255,255,.12)}
+.rain{position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent 0 22px,rgba(255,255,255,.05) 22px 23px,transparent 23px 61px);background-size:200% 200%;animation:rain .55s linear infinite;opacity:.6}
+@keyframes rain{to{background-position:-60px 220px}}
+.puddle{position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 60%);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent)}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 40%,rgba(0,0,0,.85) 100%);pointer-events:none}
+.flicker{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;animation:flick 3.7s steps(1) infinite}
+@keyframes flick{0%{opacity:0}12%{opacity:.035}13%{opacity:0}47%{opacity:.05}48%{opacity:.01}71%{opacity:.03}72%{opacity:0}}
+#grain{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:.55;pointer-events:none;image-rendering:pixelated}
+.scratch{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35);opacity:0;pointer-events:none}
+.bars::before,.bars::after{content:"";position:fixed;left:0;right:0;height:var(--bar);background:#000;z-index:5;transition:height 1.6s cubic-bezier(.7,0,.2,1)}
+.bars::before{top:0}.bars::after{bottom:0}
+body.opening .bars::before,body.opening .bars::after{height:50vh}
+.card{position:fixed;inset:var(--bar) 0;z-index:4;display:grid;place-items:center;padding:24px 16px;text-align:center;pointer-events:none}
+.frame{max-width:min(720px,92vw);padding:clamp(22px,5vw,46px) clamp(18px,5vw,56px);border:1px solid rgba(236,235,230,.55);outline:1px solid rgba(236,235,230,.2);outline-offset:6px;background:rgba(0,0,0,.62);
+  transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.7,.1,1),filter .9s;}
+.frame.out{opacity:0;transform:scale(1.04);filter:blur(4px)}
+.kicker{font-family:"Courier New",ui-monospace,monospace;letter-spacing:.42em;text-transform:uppercase;font-size:clamp(9px,2.4vw,12px);color:var(--smoke)}
+h1{font-weight:400;font-style:italic;font-size:clamp(34px,9vw,92px);line-height:.95;margin:.35em 0 .25em;letter-spacing:-.01em}
+h1 span{display:block;font-style:normal;font-size:.36em;letter-spacing:.5em;text-transform:uppercase;margin-top:.6em;padding-left:.5em}
+.rule{width:64px;height:1px;background:var(--paper);margin:14px auto;opacity:.7}
+.line{font-size:clamp(15px,3.6vw,21px);line-height:1.5;font-style:italic;color:#d7d5cf}
+.credits{font-family:"Courier New",ui-monospace,monospace;font-size:clamp(10px,2.6vw,12px);letter-spacing:.24em;text-transform:uppercase;color:var(--smoke);margin-top:18px}
+.hud{position:fixed;z-index:6;left:0;right:0;bottom:0;height:var(--bar);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 clamp(14px,4vw,40px);font-family:"Courier New",ui-monospace,monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#6d6b67}
+.hud button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--paper);background:none;border:1px solid #444;padding:9px 14px;cursor:pointer;transition:border-color .3s,background .3s,color .3s}
+.hud button:hover,.hud button:focus-visible{border-color:var(--paper);background:var(--paper);color:#000;outline:none}
+.reel{display:flex;gap:6px}
+.reel i{width:7px;height:7px;border:1px solid #666;border-radius:50%;transition:background .4s,border-color .4s}
+.reel i.on{background:var(--paper);border-color:var(--paper)}
+.top{position:fixed;z-index:6;top:0;left:0;right:0;height:var(--bar);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,4vw,40px);font-family:"Courier New",ui-monospace,monospace;font-size:11px;letter-spacing:.24em;color:#5f5d59;text-transform:uppercase}
+@media (max-width:520px){.hud .tc,.top .ratio{display:none}}
+@media (prefers-reduced-motion:reduce){
+  .blinds,.rain,.flicker{animation:none}
+  .rain{opacity:.3}
+  .frame{transition:opacity .3s}
+  .bars::before,.bars::after{transition:none}
+}
+</style>
+</head>
+<body class="opening">
+<div class="stage" aria-hidden="true">
+  <div class="scene"></div>
+  <div class="blinds"></div>
+  <div class="lamp"></div>
+  <div class="figure">
+    <svg viewBox="0 0 100 240">
+      <path d="M22 36 Q50 22 78 36 L72 44 Q50 38 28 44Z" fill="#000"/>
+      <ellipse cx="50" cy="52" rx="14" ry="13" fill="#000"/>
+      <path d="M30 70 Q50 60 70 70 L82 190 Q50 200 18 190Z" fill="#000"/>
+      <path d="M38 190 L36 236 L46 236 L49 192Z M62 190 L64 236 L54 236 L51 192Z" fill="#000"/>
+      <path d="M70 92 l18 34 l-6 3 l-16 -26z" fill="#000"/>
+    </svg>
+  </div>
+  <div class="puddle"></div>
+  <div class="rain"></div>
+  <div class="flicker"></div>
+  <canvas id="grain"></canvas>
+  <div class="scratch" id="scratch"></div>
+  <div class="vignette"></div>
+</div>
+<div class="bars" aria-hidden="true"></div>
+<header class="top"><span>Reel 4 &middot; Nitrate</span><span class="ratio">2.39 : 1</span></header>
+<main class="card">
+  <div class="frame" id="frame" aria-live="polite">
+    <p class="kicker" id="kick">Vantablack Pictures presents</p>
+    <h1 id="title">The Last Tram<span>to Halvard</span></h1>
+    <div class="rule"></div>
+    <p class="line" id="line">A city that never learned to sleep. A conductor who never learned to forget.</p>
+    <p class="credits" id="cred">Photographed in glorious silver</p>
+  </div>
+</main>
+<footer class="hud">
+  <span class="tc" id="tc">00:00:00:00</span>
+  <div class="reel" id="reel"></div>
+  <button type="button" id="next">Next card &rarr;</button>
+</footer>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cards = [
+    {k:'Vantablack Pictures presents',t:'The Last Tram<span>to Halvard</span>',l:'A city that never learned to sleep. A conductor who never learned to forget.',c:'Photographed in glorious silver'},
+    {k:'Chapter one',t:'Eleven Minutes<span>past midnight</span>',l:'The rain came sideways off the harbour, and every streetlamp on Kessel Row held its breath.',c:'Starring Margo Venn &middot; Ilya Dask'},
+    {k:'Chapter two',t:'The Ticket<span>with no stop</span>',l:'She paid in brass tokens minted for a line the city had torn up thirty years ago.',c:'Score by the Orrin Quartet'},
+    {k:'Chapter three',t:'Shadows<span>keep the fare</span>',l:'Some passengers ride to arrive. Others ride so that no one can find where they began.',c:'Lighting &middot; Abel Strand'},
+    {k:'Fin',t:'Halvard<span>terminus</span>',l:'The tram still runs, they say. Listen for the bell after the last bell.',c:'Click anywhere to roll again'}
+  ];
+  var i = 0, busy = false;
+  var frame = document.getElementById('frame'), reel = document.getElementById('reel');
+  cards.forEach(function(){ reel.appendChild(document.createElement('i')); });
+  function dots(){ Array.prototype.forEach.call(reel.children,function(d,n){ d.classList.toggle('on', n===i); }); }
+  function go(dir){
+    if (busy) return; busy = true;
+    frame.classList.add('out');
+    setTimeout(function(){
+      i = (i + dir + cards.length) % cards.length;
+      var c = cards[i];
+      document.getElementById('kick').innerHTML = c.k;
+      document.getElementById('title').innerHTML = c.t;
+      document.getElementById('line').innerHTML = c.l;
+      document.getElementById('cred').innerHTML = c.c;
+      dots();
+      frame.classList.remove('out');
+      setTimeout(function(){ busy = false; }, reduce ? 200 : 700);
+    }, reduce ? 250 : 800);
+  }
+  dots();
+  document.getElementById('next').addEventListener('click', function(e){ e.stopPropagation(); go(1); });
+  document.addEventListener('click', function(){ go(1); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+  setTimeout(function(){ document.body.classList.remove('opening'); }, 80);
+
+  // key light follows pointer
+  var root = document.documentElement, tx = 50, ty = 42, cx = 50, cy = 42;
+  window.addEventListener('pointermove', function(e){ tx = e.clientX / innerWidth * 100; ty = e.clientY / innerHeight * 100; });
+
+  // grain
+  var cv = document.getElementById('grain'), ctx = cv.getContext('2d');
+  var gw, gh, img;
+  function size(){
+    var s = 3; // grain cell size in css px, crisp & cheap
+    gw = Math.ceil(innerWidth / s); gh = Math.ceil(innerHeight / s);
+    cv.width = gw; cv.height = gh; img = ctx.createImageData(gw, gh);
+  }
+  size(); addEventListener('resize', size);
+  function grain(){
+    var d = img.data, n = d.length;
+    for (var p = 0; p < n; p += 4){ var v = (Math.random() * 255) | 0; d[p] = d[p+1] = d[p+2] = v; d[p+3] = 255; }
+    ctx.putImageData(img, 0, 0);
+  }
+  var scratch = document.getElementById('scratch');
+  var start = performance.now(), last = 0, tc = document.getElementById('tc');
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function loop(t){
+    cx += (tx - cx) * 0.05; cy += (ty - cy) * 0.05;
+    root.style.setProperty('--lx', cx.toFixed(2) + '%');
+    root.style.setProperty('--ly', cy.toFixed(2) + '%');
+    if (t - last > 42){ // ~24fps, like film
+      last = t; grain();
+      var el = (t - start) / 1000, f = Math.floor(el * 24) % 24;
+      tc.textContent = pad(Math.floor(el/3600)) + ':' + pad(Math.floor(el/60)%60) + ':' + pad(Math.floor(el)%60) + ':' + pad(f);
+      if (Math.random() < 0.06){ scratch.style.left = (Math.random()*100) + '%'; scratch.style.opacity = (0.2 + Math.random()*0.5).toFixed(2); }
+      else scratch.style.opacity = 0;
+    }
+    requestAnimationFrame(loop);
+  }
+  if (reduce){ grain(); root.style.setProperty('--lx','50%'); }
+  else requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

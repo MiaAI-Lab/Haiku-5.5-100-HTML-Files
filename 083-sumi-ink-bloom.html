@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sumi Ink Bloom</title>
+<style>
+:root{
+  --paper:#f3eee3;
+  --ink:#1d1b1f;
+  --mute:#8b8378;
+  --seal:#b8382a;
+  --serif:"Iowan Old Style","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --sans:"Helvetica Neue",Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);overflow:hidden;
+  background-image:
+    radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.7),transparent 60%),
+    radial-gradient(ellipse at 70% 85%,rgba(160,140,110,.14),transparent 60%),
+    repeating-linear-gradient(97deg,rgba(120,100,70,.035) 0 1px,transparent 1px 7px),
+    repeating-linear-gradient(7deg,rgba(120,100,70,.03) 0 1px,transparent 1px 11px)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;mix-blend-mode:multiply;touch-action:none}
+.wash{position:fixed;inset:0;background:var(--paper);opacity:0;pointer-events:none;transition:opacity .9s ease}
+.wash.on{opacity:1}
+.title{position:fixed;top:28px;right:24px;writing-mode:vertical-rl;font-size:clamp(22px,3.4vw,34px);letter-spacing:.35em;font-weight:400;pointer-events:none;line-height:1.3}
+.title small{display:block;font:500 10px/1 var(--sans);letter-spacing:.5em;text-transform:uppercase;color:var(--mute);margin-right:12px}
+.seal{position:fixed;top:30px;right:calc(24px + clamp(64px,8vw,92px));width:34px;height:34px;background:var(--seal);color:var(--paper);display:grid;place-items:center;font:700 11px/1 var(--serif);border-radius:3px;transform:rotate(-4deg);pointer-events:none;box-shadow:inset 0 0 0 2px rgba(243,238,227,.35);opacity:.9}
+.verse{position:fixed;left:24px;bottom:96px;max-width:260px;font-style:italic;font-size:15px;line-height:1.7;color:var(--mute);pointer-events:none;transition:opacity 1.2s ease}
+.verse.gone{opacity:0}
+.tools{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(243,238,227,.82);border:1px solid rgba(29,27,31,.12);border-radius:40px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 30px -18px rgba(0,0,0,.4)}
+.chip{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;position:relative;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.chip::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--ink);opacity:0;transform:scale(.8);transition:opacity .3s,transform .4s cubic-bezier(.3,1.6,.5,1)}
+.chip:hover{transform:scale(1.1)}
+.chip[aria-pressed="true"]::after{opacity:.6;transform:scale(1)}
+.chip:focus-visible{outline:none}.chip:focus-visible::after{opacity:1;transform:scale(1)}
+.sep{width:1px;height:22px;background:rgba(29,27,31,.15)}
+.clear{background:none;border:none;font:500 10px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--ink);padding:10px 12px;cursor:pointer;border-radius:20px;transition:background .3s}
+.clear:hover,.clear:focus-visible{background:rgba(29,27,31,.08);outline:none}
+@media(max-width:520px){.verse{bottom:90px;font-size:13px;max-width:200px}.seal{right:calc(24px + 64px)}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Ink drawing surface. Click or tap to drop ink into water."></canvas>
+<div class="wash" id="wash"></div>
+<h1 class="title">墨 Ink in still water<small>Click to let a drop fall</small></h1>
+<div class="seal" aria-hidden="true">墨</div>
+<p class="verse" id="verse">A single drop<br>forgets its edges,<br>and remembers the water instead.</p>
+<div class="tools" role="toolbar" aria-label="Ink tools">
+  <button class="chip" type="button" data-c="29,27,31" aria-pressed="true" aria-label="Sumi black" style="background:#1d1b1f"></button>
+  <button class="chip" type="button" data-c="38,52,92" aria-pressed="false" aria-label="Indigo" style="background:#26345c"></button>
+  <button class="chip" type="button" data-c="184,56,42" aria-pressed="false" aria-label="Vermilion" style="background:#b8382a"></button>
+  <span class="sep"></span>
+  <button class="clear" id="clear" type="button">Change the water</button>
+</div>
+<script>
+(function(){
+  var cv = document.getElementById('c'), cx = cv.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W, H, dpr, drops = [], color = '29,27,31', first = true;
+
+  function size(){
+    var old = null;
+    if (W) { old = document.createElement('canvas'); old.width = cv.width; old.height = cv.height; old.getContext('2d').drawImage(cv, 0, 0); }
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (old) cx.drawImage(old, 0, 0, old.width / dpr, old.height / dpr);
+  }
+  size();
+  var rt; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(size, 120); });
+
+  function field(x, y, t){
+    return Math.sin(x * 0.012 + t * 0.4) * Math.cos(y * 0.011 - t * 0.3) + Math.sin((x + y) * 0.006 + t * 0.2) * 0.6;
+  }
+
+  function drop(x, y, big){
+    var scale = big || (0.7 + Math.random() * 0.7);
+    var n = reduce ? 90 : 150, ps = [];
+    for (var i = 0; i < n; i++){
+      var a = Math.random() * Math.PI * 2, sp = Math.pow(Math.random(), 1.8) * 3.6 * scale;
+      ps.push({x:x, y:y, vx:Math.cos(a) * sp, vy:Math.sin(a) * sp, life:1, s:0.6 + Math.random() * 1.6, d:0.006 + Math.random() * 0.01});
+    }
+    drops.push({x:x, y:y, ps:ps, t:0, sc:scale, c:color});
+    if (reduce) { while (drops.length) step(); }
+  }
+
+  var T = 0;
+  function step(){
+    T += 0.016;
+    for (var i = drops.length - 1; i >= 0; i--){
+      var d = drops[i]; d.t++;
+      if (d.t < 70){
+        var r = (4 + d.t * 1.3) * d.sc, g = cx.createRadialGradient(d.x, d.y, 0, d.x, d.y, r);
+        g.addColorStop(0, 'rgba(' + d.c + ',' + (0.05 * (1 - d.t / 70)) + ')');
+        g.addColorStop(0.7, 'rgba(' + d.c + ',' + (0.02 * (1 - d.t / 70)) + ')');
+        g.addColorStop(1, 'rgba(' + d.c + ',0)');
+        cx.fillStyle = g; cx.beginPath(); cx.arc(d.x, d.y, r, 0, 6.2832); cx.fill();
+      }
+      var alive = 0;
+      cx.fillStyle = 'rgba(' + d.c + ',0.05)';
+      for (var j = 0; j < d.ps.length; j++){
+        var p = d.ps[j]; if (p.life <= 0) continue; alive++;
+        var f = field(p.x, p.y, T);
+        p.vx = p.vx * 0.965 + Math.cos(f * 3) * 0.06;
+        p.vy = p.vy * 0.965 + Math.sin(f * 3) * 0.06 + 0.004;
+        p.x += p.vx; p.y += p.vy;
+        p.life -= p.d; p.s += 0.035;
+        cx.globalAlpha = Math.max(p.life, 0) * 0.9;
+        cx.beginPath(); cx.arc(p.x, p.y, p.s, 0, 6.2832); cx.fill();
+      }
+      cx.globalAlpha = 1;
+      if (!alive && d.t > 70) drops.splice(i, 1);
+    }
+  }
+
+  function loop(){ if (drops.length) step(); requestAnimationFrame(loop); }
+  if (!reduce) requestAnimationFrame(loop);
+
+  function place(e){
+    var x = e.clientX, y = e.clientY;
+    drop(x, y);
+    if (!reduce) for (var k = 0; k < 2; k++) (function(k){ setTimeout(function(){ drop(x + (Math.random() - .5) * 40, y + (Math.random() - .5) * 40, 0.3 + Math.random() * 0.3); }, 180 + k * 220); })(k);
+    if (first){ first = false; document.getElementById('verse').classList.add('gone'); }
+  }
+  cv.addEventListener('pointerdown', place);
+
+  document.querySelectorAll('.chip').forEach(function(b){
+    b.addEventListener('click', function(){
+      color = b.dataset.c;
+      document.querySelectorAll('.chip').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    });
+  });
+
+  var wash = document.getElementById('wash');
+  document.getElementById('clear').addEventListener('click', function(){
+    wash.classList.add('on');
+    setTimeout(function(){
+      drops.length = 0; cx.clearRect(0, 0, W, H);
+      wash.classList.remove('on');
+      setTimeout(opening, 500);
+    }, reduce ? 50 : 950);
+  });
+
+  function opening(){
+    drop(W * 0.38, H * 0.45, 1.4);
+    if (!reduce){
+      setTimeout(function(){ drop(W * 0.6, H * 0.36, 0.8); }, 900);
+      setTimeout(function(){ drop(W * 0.52, H * 0.62, 0.55); }, 1700);
+    }
+  }
+  setTimeout(opening, 400);
+})();
+</script>
+</body>
+</html>

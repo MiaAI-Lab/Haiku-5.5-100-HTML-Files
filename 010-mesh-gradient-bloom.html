@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloom — Mesh Gradient Studies</title>
+<style>
+@property --c1{syntax:"<color>";inherits:true;initial-value:#ff5e8a}
+@property --c2{syntax:"<color>";inherits:true;initial-value:#ffb36b}
+@property --c3{syntax:"<color>";inherits:true;initial-value:#8b6cff}
+@property --c4{syntax:"<color>";inherits:true;initial-value:#43d6c4}
+@property --base{syntax:"<color>";inherits:true;initial-value:#fde7ea}
+:root{
+  --c1:#ff5e8a;--c2:#ffb36b;--c3:#8b6cff;--c4:#43d6c4;--base:#fde7ea;--fg:#1a0f1f;
+  --ease:cubic-bezier(.65,0,.35,1);
+  transition:--c1 1.6s var(--ease),--c2 1.6s var(--ease),--c3 1.6s var(--ease),--c4 1.6s var(--ease),--base 1.6s var(--ease);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--base);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+.mesh{position:fixed;inset:-20%;filter:blur(60px) saturate(1.25);background:var(--base)}
+.b{position:absolute;border-radius:50%;mix-blend-mode:normal;opacity:.9;will-change:transform}
+.b1{width:60vmax;height:60vmax;left:-5%;top:-10%;background:radial-gradient(circle,var(--c1) 0%,transparent 68%);animation:m1 19s var(--ease) infinite alternate}
+.b2{width:55vmax;height:55vmax;right:-10%;top:5%;background:radial-gradient(circle,var(--c2) 0%,transparent 68%);animation:m2 23s var(--ease) infinite alternate}
+.b3{width:65vmax;height:65vmax;left:20%;bottom:-25%;background:radial-gradient(circle,var(--c3) 0%,transparent 68%);animation:m3 27s var(--ease) infinite alternate}
+.b4{width:40vmax;height:40vmax;right:15%;bottom:0;background:radial-gradient(circle,var(--c4) 0%,transparent 68%);animation:m4 17s var(--ease) infinite alternate}
+@keyframes m1{to{transform:translate(28vw,22vh) scale(1.25)}}
+@keyframes m2{to{transform:translate(-30vw,30vh) scale(.8)}}
+@keyframes m3{to{transform:translate(18vw,-34vh) scale(1.15)}}
+@keyframes m4{to{transform:translate(-38vw,-18vh) scale(1.4)}}
+.ripples{position:fixed;inset:0;pointer-events:none;filter:blur(18px)}
+.rp{position:absolute;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;
+  background:radial-gradient(circle,var(--rc) 0%,transparent 65%);mix-blend-mode:screen;animation:rip 1.8s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rip{from{transform:scale(.2);opacity:.95}to{transform:scale(2.6);opacity:0}}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
+  background-image:repeating-radial-gradient(circle at 17% 32%,rgba(255,255,255,.25) 0 1px,transparent 1px 3px),repeating-radial-gradient(circle at 73% 68%,rgba(0,0,0,.18) 0 1px,transparent 1px 4px)}
+.wrap{position:relative;z-index:2;height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:clamp(16px,4vw,44px)}
+.top,.bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.top span:last-child{opacity:.7}
+.hero{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.big{font-family:"Arial Black","Helvetica Neue",Impact,system-ui,sans-serif;font-weight:900;font-size:clamp(84px,24vw,360px);line-height:.8;letter-spacing:-.065em;
+  color:rgba(255,255,255,.9);mix-blend-mode:overlay;user-select:none;margin-left:-.04em;transition:letter-spacing 1s var(--ease)}
+.big.ghost{position:absolute;color:transparent;-webkit-text-stroke:1.5px rgba(26,15,31,.55);mix-blend-mode:normal}
+.stack{position:relative}
+.hero:hover .big{letter-spacing:-.04em}
+.lede{max-width:30ch;font-size:clamp(15px,1.8vw,19px);line-height:1.5;font-weight:500;margin-top:clamp(16px,3vw,28px)}
+.pal{display:flex;gap:8px;flex-wrap:wrap}
+.pal button{font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--fg);cursor:pointer;
+  background:rgba(255,255,255,.35);border:1px solid rgba(26,15,31,.18);padding:10px 14px;border-radius:999px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:background .4s,transform .5s cubic-bezier(.3,1.5,.5,1)}
+.pal button:hover{background:rgba(255,255,255,.6);transform:translateY(-2px)}
+.pal button[aria-pressed="true"]{background:var(--fg);color:#fff}
+.pal button:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.hint{opacity:.7}
+@media (max-width:560px){.hint{display:none}.top span:last-child{display:none}}
+@media (prefers-reduced-motion:reduce){.b{animation-duration:120s}.rp{animation:none;opacity:0}:root{transition-duration:.01s}}
+</style>
+</head>
+<body>
+<div class="mesh" aria-hidden="true"><div class="b b1"></div><div class="b b2"></div><div class="b b3"></div><div class="b b4"></div></div>
+<div class="ripples" id="ripples" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="wrap">
+  <div class="top"><span>Halcyon Colour Lab</span><span>Gradient Study · Vol. 10</span></div>
+  <main class="hero">
+    <div class="stack"><div class="big ghost" aria-hidden="true">Bloom</div><h1 class="big">Bloom</h1></div>
+    <p class="lede">Colour that refuses to sit still. Four pools of pigment drift and melt into each other, and every movement of your hand leaves a fresh petal of light behind.</p>
+  </main>
+  <div class="bottom">
+    <div class="pal" role="group" aria-label="Palette">
+      <button type="button" data-p="0" aria-pressed="true">Peony</button>
+      <button type="button" data-p="1" aria-pressed="false">Lagoon</button>
+      <button type="button" data-p="2" aria-pressed="false">Ember</button>
+      <button type="button" data-p="3" aria-pressed="false">Dusk</button>
+    </div>
+    <span class="hint">Move to ripple · Click to bloom</span>
+  </div>
+</div>
+<script>
+(()=>{
+  const P=[
+    {c1:"#ff5e8a",c2:"#ffb36b",c3:"#8b6cff",c4:"#43d6c4",base:"#fde7ea",fg:"#1a0f1f"},
+    {c1:"#1fb6c9",c2:"#7cf2c8",c3:"#3a5bff",c4:"#e6ff7a",base:"#e3f6f4",fg:"#06202a"},
+    {c1:"#ff3d2e",c2:"#ffcc33",c3:"#c2185b",c4:"#ff8a3d",base:"#fff0dc",fg:"#2a0b06"},
+    {c1:"#6a3cff",c2:"#ff6fb5",c3:"#1b1446",c4:"#ffa98a",base:"#2a1d4a",fg:"#fff4f8"}
+  ];
+  const root=document.documentElement,rip=document.getElementById("ripples");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let cur=0;
+  function apply(i){
+    cur=i;const p=P[i];for(const k of ["c1","c2","c3","c4","base","fg"])root.style.setProperty("--"+k,p[k]);
+    document.querySelectorAll(".pal button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.p===i)));
+  }
+  document.querySelectorAll(".pal button").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();apply(+b.dataset.p);}));
+  let last=0,lx=0,ly=0,ci=0;
+  function ripple(x,y,size){
+    if(reduce)return;
+    const d=document.createElement("div");d.className="rp";
+    const keys=["c1","c2","c3","c4"];d.style.setProperty("--rc",P[cur][keys[ci++%4]]);
+    d.style.left=x+"px";d.style.top=y+"px";if(size){d.style.width=d.style.height=size+"px";d.style.margin=(-size/2)+"px 0 0 "+(-size/2)+"px";}
+    rip.appendChild(d);d.addEventListener("animationend",()=>d.remove());
+  }
+  addEventListener("pointermove",e=>{
+    const now=performance.now();
+    if(now-last>70&&Math.hypot(e.clientX-lx,e.clientY-ly)>24){last=now;lx=e.clientX;ly=e.clientY;ripple(lx,ly);}
+  },{passive:true});
+  addEventListener("pointerdown",e=>{
+    if(e.target.closest("button"))return;
+    for(let i=0;i<3;i++)setTimeout(()=>ripple(e.clientX,e.clientY,360+i*180),i*120);
+  });
+  addEventListener("keydown",e=>{if(e.key==="ArrowRight")apply((cur+1)%P.length);if(e.key==="ArrowLeft")apply((cur+P.length-1)%P.length);});
+})();
+</script>
+</body>
+</html>

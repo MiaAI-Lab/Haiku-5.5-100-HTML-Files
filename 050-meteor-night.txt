@@ -1,0 +1,27 @@
+Prompt:
+Build a standalone HTML page called "The Perseid Vigil": a full-screen canvas meteor shower seen from a fictional mountain called Hollow Ridge, framed as a quiet field note. The sky is a vertical gradient from near-black indigo #03041a through #0b1240 and #24205a to a dusky mauve #5a3a6a and an ember horizon #c27355, with a warm radial glow low on the left. A diagonal Milky Way band is painted from several faint lavender radial ellipses plus thousands of tiny dust points distributed with a gaussian spread. Stars are scattered more densely toward the top, with a few larger stars and occasional warm or cool tints; 80 extra stars twinkle each frame.
+
+Foreground: two mountain ridges built from summed sines with fixed random seeds (a far ridge in #1c1940 with a thin violet mist above the near ridge, and a near ridge in #090818), a jagged pine treeline of triangles along the near ridge, and a small cabin silhouette with a chimney and a single warm lit window #ffc47a with a soft orange halo. Sky and foreground are pre-rendered to two offscreen canvases on resize so each frame only composites them around the live layer, keeping meteors behind the mountains.
+
+Meteors radiate from a radiant point above the upper right. Each has a speed, life, length and width, a tail drawn as a linear gradient stroke from a bright head to transparent, a radial head glow, and additive "lighter" compositing; colors vary between white, ice blue, faint green and gold. A fade envelope eases them in and out. Fireballs launched by the user are slower, longer, golden and shed small falling sparks.
+
+Typography and UI: "Hoefler Text" / "Iowan Old Style" / Georgia in italic for the large title "The Perseid Vigil" (with a small-caps "A field note on" above it) and for the body copy; "Optima" / Candara / "Segoe UI" for tracked uppercase labels. Text is pale lavender #e9e5f6 with dimmer #a9a3c6 and an ember accent #ffcf8a. Top left: eyebrow, title and a short paragraph about comet dust. Bottom: a tally of "Seen tonight" and "Wishes spent" in large serif tabular numerals (the wish count flashes ember), and a frosted control capsule with a custom "Shower" range slider whose track fills with ember and a glowing white thumb, plus a gradient "Launch a meteor" pill button. A centered italic hint "click anywhere in the sky" fades in and out once. Each click floats an italic ember wish (for example "for slow mornings", "to remember this sky") upward and away from the click point. The UI rises in with a gentle ease on load and stacks into a column on phones.
+
+Reduced motion: no twinkling, a very sparse automatic shower, slower meteors, no sparks, and wishes simply fade without rising.
+
+Title: The Perseid Vigil
+
+Description: A calm, cinematic night sky over a mountain cabin where a meteor shower streams from a single radiant point. The page balances a painterly static scene with a lively additive meteor layer, and turns each click into a golden fireball and a small whispered wish, so watching the sky feels like a personal ritual rather than a demo.
+
+Visual techniques:
+- DPR-aware full-screen canvas with two offscreen canvases for the static sky and the foreground silhouettes
+- Layered gradient sky, radial-gradient Milky Way band and gaussian star dust
+- Procedural mountain ridges from summed sine waves with stable seeds, plus triangle treeline and cabin with glowing window
+- Meteors with gradient-stroked tails, radial head glows, life-based fade envelopes and additive "lighter" compositing
+- Spark particles with gravity for user-launched fireballs
+- Frosted glass control capsule, custom-styled range input with a CSS variable fill, glowing pill button
+- CSS keyframe wish captions, staged intro animations and a one-time hint
+- prefers-reduced-motion mode that thins the shower and removes twinkle and sparks
+
+Interaction model:
+Click or tap anywhere in the sky to launch a golden fireball whose path passes through that point and to release a floating wish; the tallies count meteors seen and wishes spent. Drag the Shower slider to change the rate of the automatic shower from a rare streak to a busy display. The "Launch a meteor" button does the same as a click for keyboard users, and both controls have visible focus states.

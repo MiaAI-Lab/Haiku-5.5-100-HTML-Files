@@ -1,0 +1,18 @@
+Prompt:
+059 spirograph-studio: progressive spirograph drawing with parameter sliders.
+Build a standalone HTML page styled as a drafting-table instrument from an invented maker, "Orbis Drafting Co., Plate No. 7". Palette: warm drafting paper #f6f1e7 with a faint 24px graph-paper grid, ink navy #1d2433, muted brown-grey #7a7262, tan rules #d8ccb4, and five ink colours: vermilion #e2462b, prussian #1f3f78, viridian #1c7d64, saffron #e8a21b and plum #7a2e6b. Typography: geometric sans ("Avenir Next", Avenir, Futura, "Century Gothic") for headings and controls, "Courier New"/ui-monospace for numeric readouts and plate labels. Layout: a header with "Spirograph Studio" (second word in vermilion) over a heavy rule; a two-column grid on desktop with a large circular paper plate on the left (radial-gradient paper with a double ring halo and soft drop shadow) and a specification sheet on the right (off-white card with a hard 6px offset shadow); stacked single column under 820px. The plate holds two stacked canvases sized to devicePixelRatio: a persistent art canvas and a gear overlay canvas redrawn every frame. Under the plate a monospace tag reads the current curve parameters. The sheet has a short explanation, four dashed-divided range fields (ring teeth 40 to 144, wheel teeth 12 to 100, pen hole 0.10 to 1.00, drawing speed 1 to 10) with ruler-tick tracks and target-style thumbs, a row of round ink swatches, four pill buttons (Pause/Resume, New layer, Surprise me, Fresh paper), a progress bar and a loops counter. Motion: the hypotrochoid x = (R-r)cos t + d cos((R-r)/r t), y = (R-r)sin t - d sin((R-r)/r t) is drawn progressively in small 0.015 radian steps per frame with multiply compositing so overlapping inks deepen; the overlay shows the toothed outer ring, the rolling wheel with spokes that counter-rotate, the pen arm and a coloured pen tip. The drawing stops automatically when the curve closes after r/gcd(R,r) loops. Layers persist and are re-rendered on resize. Springy thumb and swatch hovers. Reduced motion: drawing completes almost instantly and transitions are removed.
+
+Title: Spirograph Studio
+
+Description: A tactile, paper-and-ink take on the classic geared drawing toy. A ghosted mechanism of ring, wheel and pen rolls across a circular plate, laying down a hypotrochoid line by line until the rosette closes on itself. Adjusting the teeth or the pen hole retunes the geometry live, and multiple layers in different inks overprint each other with a multiply blend, producing rich, printerly rosettes on warm drafting paper.
+
+Visual techniques:
+- Progressive hypotrochoid plotting on a persistent devicePixelRatio-aware canvas
+- Separate overlay canvas animating the ring teeth, rolling wheel, spokes, pen arm and pen tip
+- Multiply compositing so layered inks darken where they cross
+- Closure detection using the greatest common divisor of ring and wheel teeth
+- Layer history re-rendered on resize so drawings survive layout changes
+- Graph-paper background from crossed linear gradients and a radial-gradient paper plate
+- Custom range inputs with ruler-tick tracks and target thumbs, springy hover easing
+
+Interaction model: Drag the ring, wheel and pen-hole sliders to change the curve; the current layer restarts with the new geometry while earlier layers stay on the paper. Pick an ink swatch to change the pen colour, adjust speed, pause or resume, start a new layer on top, let "Surprise me" choose random settings and ink, or clear everything with "Fresh paper". The progress bar and loop counter show how close the rosette is to closing.

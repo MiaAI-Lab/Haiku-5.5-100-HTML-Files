@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pellucid Archive: Hologram Relics</title>
+<style>
+:root{
+  --void:#02070d;
+  --cy:#5ff6ff;
+  --cy-dim:rgba(95,246,255,.5);
+  --cy-faint:rgba(95,246,255,.14);
+  --mag:#ff4fd8;
+  --warn:#ffcf5a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(90% 70% at 50% 85%,#06202b 0%,var(--void) 70%);
+  color:var(--cy);font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+  overflow:hidden;
+}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+canvas:active{cursor:grabbing}
+.scan{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65))}
+.hud{position:fixed;inset:clamp(12px,2.5vw,28px);pointer-events:none;display:flex;flex-direction:column;justify-content:space-between}
+.hud::before,.hud::after{content:"";position:absolute;width:26px;height:26px;border:1px solid var(--cy-dim)}
+.hud::before{top:0;left:0;border-right:0;border-bottom:0}
+.hud::after{bottom:0;right:0;border-left:0;border-top:0}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:14px 16px}
+.id small{display:block;font-size:10px;letter-spacing:.3em;color:var(--cy-dim);text-transform:uppercase}
+.id h1{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:200;font-size:clamp(24px,4.4vw,48px);letter-spacing:.14em;text-transform:uppercase;margin-top:6px;text-shadow:0 0 18px rgba(95,246,255,.55)}
+.id p{max-width:36ch;font-size:12px;line-height:1.6;color:var(--cy-dim);margin-top:10px}
+.tele{font-size:11px;line-height:1.85;text-align:right;color:var(--cy-dim);font-variant-numeric:tabular-nums}
+.tele b{color:var(--cy);font-weight:400}
+.tele .sig{display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px}
+.tele .sig i{width:3px;background:var(--cy);opacity:.25;transition:opacity .2s}
+.tele .sig i.on{opacity:1}
+.ctrl{pointer-events:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ctrl button{
+  font:inherit;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cy);
+  background:rgba(95,246,255,.04);border:1px solid var(--cy-faint);padding:10px 14px;cursor:pointer;position:relative;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  transition:background .25s,border-color .25s,color .25s,text-shadow .25s;
+}
+.ctrl button:hover{background:rgba(95,246,255,.12);border-color:var(--cy-dim);text-shadow:0 0 8px var(--cy)}
+.ctrl button[aria-pressed=true]{background:var(--cy);color:var(--void);border-color:var(--cy)}
+.ctrl button:focus-visible{outline:1px dashed var(--cy);outline-offset:4px}
+.ctrl .sep{width:1px;height:22px;background:var(--cy-faint);margin:0 4px}
+.status{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cy-dim)}
+.status b{color:var(--warn);font-weight:400}
+.status .blink{animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (max-width:640px){
+  .tele{display:none}
+  .row{padding:10px 8px}
+  .bottom{flex-direction:column;align-items:flex-start}
+  .ctrl button{padding:9px 10px;font-size:10px}
+}
+@media (prefers-reduced-motion:reduce){.status .blink{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="holo" aria-label="Holographic wireframe projection. Drag to rotate, tap to resync."></canvas>
+<div class="scan" aria-hidden="true"></div>
+<div class="vig" aria-hidden="true"></div>
+<div class="hud">
+  <div class="row">
+    <div class="id">
+      <small>Pellucid Archive &middot; Vault 095</small>
+      <h1 id="name">Trefoil Knot</h1>
+      <p id="desc">A single closed filament that crosses itself three times and never comes apart. Recovered intact from the eastern stacks.</p>
+    </div>
+    <div class="tele" aria-live="off">
+      YAW <b id="yaw">000.0&deg;</b><br>
+      PITCH <b id="pitch">00.0&deg;</b><br>
+      VERTICES <b id="vc">0</b><br>
+      EDGES <b id="ec">0</b><br>
+      SIGNAL <span class="sig" id="sig"><i style="height:4px"></i><i style="height:7px"></i><i style="height:10px"></i><i style="height:13px"></i><i style="height:16px"></i></span>
+    </div>
+  </div>
+  <div class="row bottom">
+    <div class="ctrl" role="group" aria-label="Relic selection">
+      <button type="button" data-m="0" aria-pressed="true">Knot</button>
+      <button type="button" data-m="1" aria-pressed="false">Lattice</button>
+      <button type="button" data-m="2" aria-pressed="false">Vessel</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" id="stab" aria-pressed="false">Stabilize</button>
+    </div>
+    <div class="status"><span class="blink">&#9679;</span> Projection <b id="state">materializing</b></div>
+  </div>
+</div>
+<script>
+(function(){
+  var cv=document.getElementById('holo'),ctx=cv.getContext('2d');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W,H,dpr,scale,ox,oy,ey;
+  var yaw=0,pitch=-.32,vyaw=reduce?0:.0055,drag=null,stable=reduce,reveal=0,glitch=0,model=null,proj=null,t0=performance.now();
+
+  var INFO=[
+    ['Trefoil Knot','A single closed filament that crosses itself three times and never comes apart. Recovered intact from the eastern stacks.'],
+    ['Geodesic Lattice','Forty-two nodes in perfect tension. The archivists say it hums at a pitch no instrument has matched.'],
+    ['Votive Vessel','A turned vessel of unknown clay, stored only as light. Its rim is chipped in exactly one place.']
+  ];
+
+  function norm(v){var l=Math.hypot(v[0],v[1],v[2])||1;return [v[0]/l,v[1]/l,v[2]/l];}
+  function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
+
+  function knot(){
+    var S=140,R=8,tube=.32,V=[],E=[],P=[];
+    for(var i=0;i<S;i++){var f=i/S*Math.PI*2,r=Math.cos(3*f)+2;P.push([r*Math.cos(2*f),-Math.sin(3*f),r*Math.sin(2*f)]);}
+    for(i=0;i<S;i++){
+      var a=P[(i+S-1)%S],b=P[i],c=P[(i+1)%S];
+      var T=norm([c[0]-a[0],c[1]-a[1],c[2]-a[2]]);
+      var N=norm([a[0]+c[0]-2*b[0],a[1]+c[1]-2*b[1],a[2]+c[2]-2*b[2]]);
+      var B=norm(cross(T,N));N=cross(B,T);
+      for(var j=0;j<R;j++){var g=j/R*Math.PI*2,cs=Math.cos(g)*tube,sn=Math.sin(g)*tube;
+        V.push([(b[0]+N[0]*cs+B[0]*sn)/3.2,(b[1]+N[1]*cs+B[1]*sn)/3.2,(b[2]+N[2]*cs+B[2]*sn)/3.2]);
+        var k=i*R+j;E.push([k,i*R+(j+1)%R]);E.push([k,((i+1)%S)*R+j]);}
+    }
+    return {V:V,E:E,dots:false};
+  }
+  function lattice(){
+    var p=(1+Math.sqrt(5))/2,V=[[-1,p,0],[1,p,0],[-1,-p,0],[1,-p,0],[0,-1,p],[0,1,p],[0,-1,-p],[0,1,-p],[p,0,-1],[p,0,1],[-p,0,-1],[-p,0,1]].map(norm);
+    var F=[[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
+    var cache={},E={};
+    function mid(a,b){var k=a<b?a+'_'+b:b+'_'+a;if(cache[k]!=null)return cache[k];var m=norm([(V[a][0]+V[b][0])/2,(V[a][1]+V[b][1])/2,(V[a][2]+V[b][2])/2]);V.push(m);return cache[k]=V.length-1;}
+    function edge(a,b){var k=a<b?a+'_'+b:b+'_'+a;E[k]=[a,b];}
+    F.forEach(function(f){var a=mid(f[0],f[1]),b=mid(f[1],f[2]),c=mid(f[2],f[0]);
+      [[f[0],a,c],[f[1],b,a],[f[2],c,b],[a,b,c]].forEach(function(t){edge(t[0],t[1]);edge(t[1],t[2]);edge(t[2],t[0]);});});
+    V=V.map(function(v){return [v[0]*.92,v[1]*.92,v[2]*.92];});
+    var inner=V.length;
+    for(var i=0;i<12;i++){V.push([V[i][0]*.42,V[i][1]*.42,V[i][2]*.42]);E['c'+i]=[i,inner+i];}
+    return {V:V,E:Object.keys(E).map(function(k){return E[k];}),dots:true};
+  }
+  function vessel(){
+    var prof=[[.0,-1],[.34,-1],[.42,-.94],[.5,-.7],[.62,-.38],[.66,-.08],[.6,.22],[.42,.46],[.28,.6],[.25,.76],[.33,.9],[.4,.96]];
+    var S=28,V=[],E=[],L=prof.length;
+    for(var i=0;i<S;i++){var a=i/S*Math.PI*2;
+      for(var j=0;j<L;j++){var r=prof[j][0];if(j===L-1&&i>=3&&i<=5)r*=.86;V.push([Math.cos(a)*r,prof[j][1]*.95,Math.sin(a)*r]);
+        var k=i*L+j;if(j<L-1)E.push([k,k+1]);if(j>0)E.push([k,((i+1)%S)*L+j]);}}
+    return {V:V,E:E,dots:false};
+  }
+  var MODELS=[knot,lattice,vessel];
+
+  function load(i){
+    model=MODELS[i]();proj=new Float32Array(model.V.length*3);reveal=0;
+    document.getElementById('name').textContent=INFO[i][0];document.getElementById('desc').textContent=INFO[i][1];
+    document.getElementById('vc').textContent=model.V.length;document.getElementById('ec').textContent=model.E.length;
+    if(reduce)reveal=1.2;
+  }
+
+  function resize(){
+    dpr=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+    scale=Math.min(W*.36,H*.27);ox=W/2;oy=H*.47;ey=oy+scale*1.45;
+  }
+
+  var buckets=[[],[],[],[]],sigBars=document.querySelectorAll('#sig i'),stateEl=document.getElementById('state'),lastState='';
+  function frame(now){
+    var t=(now-t0)/1000;
+    if(!drag){yaw+=vyaw;vyaw+=((reduce?0:.0055)-vyaw)*.02;}
+    if(reveal<1.2)reveal+=reduce?1:.011;
+    if(!stable&&!reduce&&Math.random()<.008)glitch=8+Math.random()*10;
+    var flick=stable||reduce?1:(Math.random()<.04?.55+Math.random()*.3:1);
+
+    ctx.globalCompositeOperation='source-over';
+    ctx.clearRect(0,0,W,H);
+
+    // emitter and beam
+    var bw=scale*.95;
+    var beam=ctx.createLinearGradient(0,ey,0,oy-scale*1.1);
+    beam.addColorStop(0,'rgba(95,246,255,.22)');beam.addColorStop(1,'rgba(95,246,255,0)');
+    ctx.fillStyle=beam;ctx.beginPath();ctx.moveTo(ox-bw*.32,ey);ctx.lineTo(ox-bw*1.15,oy-scale*1.1);ctx.lineTo(ox+bw*1.15,oy-scale*1.1);ctx.lineTo(ox+bw*.32,ey);ctx.closePath();ctx.fill();
+    for(var r=0;r<3;r++){ctx.strokeStyle='rgba(95,246,255,'+(.55-r*.15)+')';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(ox,ey,bw*(.36+r*.22),bw*(.07+r*.04),0,0,Math.PI*2);ctx.stroke();}
+    var eg=ctx.createRadialGradient(ox,ey,0,ox,ey,bw*.5);eg.addColorStop(0,'rgba(190,255,255,.85)');eg.addColorStop(1,'rgba(95,246,255,0)');
+    ctx.fillStyle=eg;ctx.beginPath();ctx.ellipse(ox,ey,bw*.5,bw*.1,0,0,Math.PI*2);ctx.fill();
+    // rotating tick ring
+    ctx.strokeStyle='rgba(95,246,255,.35)';
+    for(var k=0;k<48;k++){var a=k/48*Math.PI*2+t*.3*(reduce?0:1),cx=Math.cos(a),sy=Math.sin(a);if(sy<0)continue;
+      ctx.beginPath();ctx.moveTo(ox+cx*bw*1.02,ey+sy*bw*.2);ctx.lineTo(ox+cx*bw*1.08,ey+sy*bw*.215);ctx.stroke();}
+
+    // project
+    var cyw=Math.cos(yaw),syw=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),V=model.V,bob=reduce?0:Math.sin(t*1.3)*scale*.025;
+    for(var i=0;i<V.length;i++){var v=V[i],x=v[0]*cyw-v[2]*syw,z=v[0]*syw+v[2]*cyw,y=v[1];
+      var y2=y*cp-z*sp,z2=y*sp+z*cp,pz=1/(1+z2*.28);
+      proj[i*3]=ox+x*scale*pz;proj[i*3+1]=oy-y2*scale*pz+bob;proj[i*3+2]=z2;}
+    for(var b=0;b<4;b++)buckets[b].length=0;
+    var building=reveal<1.2,level=-1.1+reveal*2,E=model.E;
+    for(i=0;i<E.length;i++){var e=E[i];
+      if(building&&Math.max(V[e[0]][1],V[e[1]][1])>level)continue;
+      var dz=(proj[e[0]*3+2]+proj[e[1]*3+2])/2;buckets[Math.max(0,Math.min(3,Math.floor((dz+1)*2)))].push(e);}
+    ctx.globalCompositeOperation='lighter';
+    var passes=[[-1.6,'255,79,216',.18*flick,1],[1.2,'95,246,255',.9*flick,1],[0,'95,246,255',.09*flick,4]];
+    for(var pI=0;pI<passes.length;pI++){var ps=passes[pI];ctx.lineWidth=ps[3];
+      for(b=0;b<4;b++){var arr=buckets[b];if(!arr.length)continue;
+        ctx.strokeStyle='rgba('+ps[1]+','+(ps[2]*(1-b*.21)).toFixed(3)+')';ctx.beginPath();
+        for(var q=0;q<arr.length;q++){var e2=arr[q];ctx.moveTo(proj[e2[0]*3]+ps[0],proj[e2[0]*3+1]);ctx.lineTo(proj[e2[1]*3]+ps[0],proj[e2[1]*3+1]);}
+        ctx.stroke();}}
+    if(model.dots){ctx.fillStyle='rgba(200,255,255,'+(.8*flick)+')';
+      for(i=0;i<V.length;i++){if(building&&V[i][1]>level)continue;var s=proj[i*3+2]<0?2.6:1.6;ctx.fillRect(proj[i*3]-s/2,proj[i*3+1]-s/2,s,s);}}
+    // reveal sweep line
+    if(building&&level<1.05){var ly=oy-level*scale*cp+bob;
+      var lg=ctx.createLinearGradient(ox-scale*1.3,0,ox+scale*1.3,0);lg.addColorStop(0,'rgba(95,246,255,0)');lg.addColorStop(.5,'rgba(220,255,255,.9)');lg.addColorStop(1,'rgba(95,246,255,0)');
+      ctx.fillStyle=lg;ctx.fillRect(ox-scale*1.3,ly-1,scale*2.6,2);}
+    // rolling band
+    if(!reduce){var by=((t*.18)%1.2-.1)*H;var bg=ctx.createLinearGradient(0,by-40,0,by+40);bg.addColorStop(0,'rgba(95,246,255,0)');bg.addColorStop(.5,'rgba(95,246,255,.06)');bg.addColorStop(1,'rgba(95,246,255,0)');ctx.fillStyle=bg;ctx.fillRect(0,by-40,W,80);}
+    ctx.globalCompositeOperation='source-over';
+    // glitch slices
+    if(glitch>0){glitch--;for(var g=0;g<3;g++){var gy=Math.random()*H,gh=4+Math.random()*26,gx=(Math.random()-.5)*40;
+      ctx.drawImage(cv,0,gy*dpr,cv.width,gh*dpr,gx,gy,W,gh);}}
+
+    // telemetry
+    var deg=((yaw*180/Math.PI)%360+360)%360;
+    document.getElementById('yaw').textContent=('00'+deg.toFixed(1)).slice(-5)+'°';
+    document.getElementById('pitch').textContent=(pitch*180/Math.PI).toFixed(1)+'°';
+    var sig=Math.round((flick<1||glitch>0?2:stable?5:4)+(reveal<1.2?-1:0));
+    for(i=0;i<sigBars.length;i++)sigBars[i].classList.toggle('on',i<sig);
+    var st=reveal<1.2?'materializing':glitch>0?'interference':stable?'locked':'stable';
+    if(st!==lastState){stateEl.textContent=st;lastState=st;}
+    requestAnimationFrame(frame);
+  }
+
+  cv.addEventListener('pointerdown',function(e){drag={x:e.clientX,y:e.clientY,yaw:yaw,pitch:pitch,t:performance.now(),moved:false};cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;
+    var ny=drag.yaw+dx*.008;vyaw=ny-yaw;yaw=ny;pitch=Math.max(-1.1,Math.min(1.1,drag.pitch+dy*.006));});
+  function up(){if(!drag)return;if(!drag.moved){if(!reduce)glitch=14;reveal=reduce?1.2:.35;}drag=null;}
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  window.addEventListener('keydown',function(e){if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+    if(e.key==='ArrowLeft')yaw-=.12;else if(e.key==='ArrowRight')yaw+=.12;else if(e.key==='ArrowUp')pitch=Math.max(-1.1,pitch-.08);else if(e.key==='ArrowDown')pitch=Math.min(1.1,pitch+.08);});
+
+  var mBtns=document.querySelectorAll('[data-m]');
+  mBtns.forEach(function(b){b.addEventListener('click',function(){mBtns.forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});if(!reduce)glitch=10;load(+b.dataset.m);});});
+  var stab=document.getElementById('stab');
+  stab.setAttribute('aria-pressed',String(stable));
+  stab.addEventListener('click',function(){stable=!stable;stab.setAttribute('aria-pressed',String(stable));if(stable)glitch=0;});
+
+  window.addEventListener('resize',resize);
+  resize();load(0);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

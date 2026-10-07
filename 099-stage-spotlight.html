@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lamplighter's Daughter — Evening Programme</title>
+<style>
+:root{
+  --stage:#0b0807;
+  --cream:#efe4cc;
+  --gold:#c9a24a;
+  --gold2:#8a6a26;
+  --velvet:#5a0d14;
+  --x:50vw;--y:40vh;--r:170px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--stage);color:var(--cream);overflow-x:hidden;
+  font-family:"Bodoni 72","Didot","Bodoni MT",Georgia,serif;
+  background-image:linear-gradient(180deg,#140d0a,#0b0807 40%,#1a110b);
+}
+/* boards */
+.boards{position:fixed;left:0;right:0;bottom:0;height:18vh;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(90deg,#2a1a10 0 62px,#22150d 62px 64px);
+  transform:perspective(400px) rotateX(55deg);transform-origin:bottom;opacity:.6}
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:clamp(90px,14vh,140px) clamp(20px,6vw,60px) 140px;text-align:center}
+.kicker{font-family:"Gill Sans","Gill Sans MT","Trebuchet MS",sans-serif;font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold)}
+h1{font-weight:400;font-size:clamp(40px,9vw,92px);line-height:.95;margin:22px 0 10px;letter-spacing:-.01em}
+h1 i{display:block;font-size:.42em;letter-spacing:.08em;color:var(--gold);margin:10px 0}
+.orn{display:flex;align-items:center;gap:14px;justify-content:center;color:var(--gold);margin:26px auto;max-width:360px}
+.orn::before,.orn::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.orn::after{background:linear-gradient(270deg,transparent,var(--gold))}
+.lede{font-family:Georgia,serif;font-style:italic;font-size:clamp(17px,2.4vw,21px);line-height:1.6;color:#d9cdb3;max-width:560px;margin:0 auto}
+section{margin-top:70px}
+h2{font-weight:400;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;font-family:"Gill Sans","Trebuchet MS",sans-serif}
+.cast{list-style:none;max-width:520px;margin:0 auto;text-align:left}
+.cast li{display:flex;align-items:baseline;gap:8px;padding:9px 0;font-size:clamp(16px,2.2vw,19px);transition:color .4s ease}
+.cast li::after{content:"";order:2;flex:1;border-bottom:1px dotted rgba(201,162,74,.45);transform:translateY(-4px)}
+.cast li span{order:1}
+.cast li b{order:3;font-weight:400;font-style:italic;font-family:Georgia,serif;color:#cdbf9f}
+.cast li:hover{color:#fff6dd}
+.acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:rgba(201,162,74,.3);border:1px solid rgba(201,162,74,.3)}
+.acts div{background:#0e0a08;padding:22px 14px}
+.acts strong{display:block;font-weight:400;font-size:42px;color:var(--gold);line-height:1}
+.acts em{display:block;font-family:"Gill Sans","Trebuchet MS",sans-serif;font-style:normal;font-size:10px;letter-spacing:.3em;text-transform:uppercase;margin:10px 0 8px;color:#bfae88}
+.acts p{font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#d9cdb3}
+.note{font-family:Georgia,serif;font-size:15px;line-height:1.75;color:#d1c4a8;text-align:left;columns:2 240px;column-gap:36px}
+.sign{margin-top:24px;font-style:italic;color:var(--gold)}
+/* spotlight */
+.dark{position:fixed;inset:0;pointer-events:none;z-index:5;
+  background:radial-gradient(circle var(--r) at var(--x) var(--y),rgba(255,236,190,.07) 0,rgba(0,0,0,0) 55%,rgba(5,3,2,.55) 78%,rgba(5,3,2,.93) 100%);
+  transition:opacity 1.2s ease}
+.dark::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse calc(var(--r)*1.15) calc(var(--r)*1.15) at var(--x) var(--y),transparent 60%,rgba(5,3,2,.92) 100%);}
+.cone{position:fixed;inset:0;pointer-events:none;z-index:4;mix-blend-mode:screen;
+  background:radial-gradient(circle calc(var(--r)*.9) at var(--x) var(--y),rgba(255,214,140,.16),transparent 70%)}
+body.house .dark{opacity:0}
+/* curtains */
+.valance{position:fixed;top:0;left:0;right:0;height:clamp(46px,8vh,72px);z-index:8;pointer-events:none;
+  background:
+   radial-gradient(60px 36px at 50% 0,#7a1520 60%,transparent 62%) 0 100%/120px 40px repeat-x,
+   repeating-linear-gradient(90deg,#4a0a10 0 10px,#6e121b 10px 26px,#4a0a10 26px 40px);
+  box-shadow:0 10px 24px rgba(0,0,0,.7)}
+.valance::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;background:repeating-linear-gradient(90deg,var(--gold) 0 3px,var(--gold2) 3px 6px)}
+.curtain{position:fixed;top:0;bottom:0;width:51vw;z-index:7;pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 70%,rgba(0,0,0,.35)),
+    repeating-linear-gradient(90deg,#3d070c 0,#7d1521 3.2vw,#a3222f 4.2vw,#5a0d14 6.4vw,#3d070c 7.4vw);
+  transition:transform 2.6s cubic-bezier(.7,0,.2,1);
+  box-shadow:inset 0 -40px 60px rgba(0,0,0,.6)}
+.curtain::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(90deg,var(--gold) 0 2px,transparent 2px 5px)}
+.curtain.l{left:0;transform-origin:left}
+.curtain.r{right:0;transform-origin:right}
+body.open .curtain.l{transform:translateX(-88%) scaleX(.9)}
+body.open .curtain.r{transform:translateX(88%) scaleX(.9)}
+.house-btn{position:fixed;right:clamp(12px,3vw,28px);bottom:clamp(12px,3vw,28px);z-index:9;
+  appearance:none;cursor:pointer;background:rgba(14,10,8,.75);color:var(--gold);
+  border:1px solid rgba(201,162,74,.55);border-radius:999px;padding:11px 18px;
+  font-family:"Gill Sans","Trebuchet MS",sans-serif;font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  transition:background .35s ease,color .35s ease,transform .35s cubic-bezier(.2,.8,.2,1)}
+.house-btn:hover{background:var(--gold);color:#140d0a;transform:translateY(-2px)}
+.house-btn:focus-visible{outline:2px solid var(--cream);outline-offset:3px}
+.cue{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;pointer-events:none;
+  font-family:"Gill Sans","Trebuchet MS",sans-serif;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);
+  transition:opacity 1s ease .6s;white-space:nowrap}
+body.open .cue{opacity:0}
+@media (max-width:560px){
+  .acts{grid-template-columns:1fr}
+  body.open .curtain.l{transform:translateX(-92%) scaleX(.9)}
+  body.open .curtain.r{transform:translateX(92%) scaleX(.9)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .curtain,.dark,.cue,.house-btn{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="boards" aria-hidden="true"></div>
+<main id="top">
+  <p class="kicker">The Gaslight Playhouse · Autumn Season</p>
+  <h1>The Lamplighter's Daughter<i>a play in three acts</i></h1>
+  <div class="orn" aria-hidden="true">✦</div>
+  <p class="lede">Every evening for forty years, Elias Thorne has walked the length of Merrow Street with a ladder and a flame. Tonight the city switches to electric light, and his daughter must decide whether to follow him up the ladder one last time.</p>
+
+  <section>
+    <h2>Dramatis Personae</h2>
+    <ul class="cast">
+      <li><span>Elias Thorne, the lamplighter</span><b>Osric Vane</b></li>
+      <li><span>Wren Thorne, his daughter</span><b>Imogen Hale</b></li>
+      <li><span>Mr. Calloway, of the Electric Company</span><b>Desmond Ashby</b></li>
+      <li><span>Mrs. Pell, who keeps the corner shop</span><b>Marguerite Lyle</b></li>
+      <li><span>The Night Watchman</span><b>Teodor Brask</b></li>
+      <li><span>A Moth</span><b>Pip Merriweather</b></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Order of Scenes</h2>
+    <div class="acts">
+      <div><strong>I</strong><em>Dusk · Merrow Street</em><p>The last ladder, the first wire. A letter arrives that no one wants to open.</p></div>
+      <div><strong>II</strong><em>Night · The Rooftops</em><p>Wren climbs alone. Somewhere below, the switches are being thrown one by one.</p></div>
+      <div><strong>III</strong><em>Dawn · The Lamp Room</em><p>Every wick in the city remembers who lit it. One of them refuses to go out.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>From the Director</h2>
+    <p class="note">We built this production around a single moving light. Our lamplighter carries his flame from post to post, and the audience sees only what he chooses to illuminate. Everything else waits in the dark, which is where theatre has always kept its best secrets. As you move through this programme, you are holding the lamp. Look closely at what it finds, and notice what it leaves behind. The running time is two hours and ten minutes with one interval. Latecomers will be shown to their seats at a suitable pause, guided, appropriately, by torchlight.</p>
+    <p class="sign">Henrietta Quill, Artistic Director</p>
+  </section>
+</main>
+<div class="cone" aria-hidden="true"></div>
+<div class="dark" aria-hidden="true"></div>
+<div class="curtain l" aria-hidden="true"></div>
+<div class="curtain r" aria-hidden="true"></div>
+<div class="valance" aria-hidden="true"></div>
+<p class="cue" aria-hidden="true">Places, please</p>
+<button class="house-btn" id="house" type="button" aria-pressed="false">Raise house lights</button>
+<script>
+(function(){
+  var root=document.documentElement,body=document.body;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var tx=window.innerWidth/2,ty=window.innerHeight*.4,x=tx,y=ty,r=0,tr=0,active=false,lastMove=0;
+  function baseR(){return Math.max(130,Math.min(window.innerWidth,window.innerHeight)*.27)}
+  tr=baseR();
+  setTimeout(function(){body.classList.add('open')},reduce.matches?0:500);
+
+  window.addEventListener('pointermove',function(e){tx=e.clientX;ty=e.clientY;active=true;lastMove=performance.now()},{passive:true});
+  window.addEventListener('pointerdown',function(e){tx=e.clientX;ty=e.clientY;active=true;lastMove=performance.now();tr=baseR()*1.25},{passive:true});
+  window.addEventListener('pointerup',function(){tr=baseR()});
+  window.addEventListener('resize',function(){tr=baseR()});
+  document.addEventListener('focusin',function(e){
+    var b=e.target.getBoundingClientRect();tx=b.left+b.width/2;ty=b.top+b.height/2;lastMove=performance.now();
+  });
+
+  var btn=document.getElementById('house');
+  btn.addEventListener('click',function(){
+    var on=body.classList.toggle('house');
+    btn.setAttribute('aria-pressed',on?'true':'false');
+    btn.textContent=on?'Dim the house':'Raise house lights';
+  });
+
+  function frame(now){
+    var idle=now-lastMove>3500;
+    if(idle&&!reduce.matches){
+      var t=now*.00025;
+      tx=window.innerWidth*(.5+Math.sin(t*1.3)*.22);
+      ty=window.innerHeight*(.45+Math.sin(t*2.1)*.15);
+    }
+    var k=reduce.matches?1:(idle?.02:.14);
+    x+=(tx-x)*k;y+=(ty-y)*k;
+    r+=(tr-r)*(reduce.matches?1:.08);
+    // gentle carbon-arc shimmer
+    var flick=reduce.matches?0:Math.sin(now*.013)*1.5+Math.sin(now*.031)*1;
+    root.style.setProperty('--x',x.toFixed(1)+'px');
+    root.style.setProperty('--y',y.toFixed(1)+'px');
+    root.style.setProperty('--r',(r+flick).toFixed(1)+'px');
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

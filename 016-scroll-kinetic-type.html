@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tidewords: A Poem in Six Weights</title>
+<style>
+:root{
+  --ink:#0f0e0c;
+  --bone:#efe8da;
+  --ver:#ff4a1c;
+  --sans:"Helvetica Neue","Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink)}
+body{background:var(--ink);color:var(--bone);font-family:var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.track{height:720vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;place-items:center;background:rgb(var(--bg,15,14,12));color:rgb(var(--fg,239,232,218))}
+.stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.2px),radial-gradient(rgba(0,0,0,.25) 1px,transparent 1.2px);
+  background-size:3px 3px,5px 5px;background-position:0 0,1px 2px;mix-blend-mode:overlay}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.35))}
+header{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:22px clamp(16px,4vw,44px);z-index:3;font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.mark b{display:block;font-weight:800;letter-spacing:.32em}
+.mark span{opacity:.55;font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:.02em;font-size:14px}
+.count{font-family:var(--mono);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.count i{font-style:normal;opacity:.45}
+.wordwrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;width:100%;padding:0 16px}
+.word{font-size:min(21vw,30vh);line-height:.9;white-space:nowrap;display:flex;justify-content:center;will-change:transform;transform-origin:50% 60%}
+.word span{display:inline-block;will-change:transform;transform-origin:50% 100%}
+.word span.in{animation:drop .9s var(--ease) both;animation-delay:calc(var(--i) * 55ms)}
+@keyframes drop{from{opacity:0;filter:blur(10px);translate:0 .35em}to{opacity:1;filter:blur(0);translate:0 0}}
+.rule{height:3px;width:min(56vw,520px);margin-top:clamp(18px,4vh,40px);background:rgba(127,127,127,.25);position:relative;overflow:hidden;border-radius:2px}
+.rule i{position:absolute;inset:0;background:var(--ver);transform-origin:0 50%;transform:scaleX(0)}
+.verse{margin-top:clamp(16px,3vh,28px);font-family:var(--serif);font-style:italic;font-size:clamp(17px,2.4vw,26px);line-height:1.35;text-align:center;max-width:30ch;min-height:2.7em;transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.verse.out{opacity:0;transform:translateY(10px)}
+.rail{position:absolute;z-index:3;right:clamp(14px,3vw,36px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;list-style:none}
+.rail button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;justify-content:flex-end;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:inherit;opacity:.45;transition:opacity .3s}
+.rail button::after{content:"";width:8px;height:8px;border-radius:50%;border:1.5px solid currentColor;transition:transform .4s var(--ease),background .3s}
+.rail button span{opacity:0;transform:translateX(6px);transition:.35s var(--ease)}
+.rail button:hover,.rail button:focus-visible,.rail button.on{opacity:1}
+.rail button:hover span,.rail button:focus-visible span,.rail button.on span{opacity:1;transform:none}
+.rail button.on::after{background:var(--ver);border-color:var(--ver);transform:scale(1.35)}
+.rail button:focus-visible{outline:1px dashed currentColor;outline-offset:4px}
+.hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;transition:opacity .6s}
+.hint i{width:1px;height:46px;background:linear-gradient(currentColor,transparent);animation:pour 1.8s var(--ease) infinite;transform-origin:top}
+@keyframes pour{0%{transform:scaleY(0)}60%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+.colophon{min-height:70vh;display:grid;place-items:center;padding:80px 20px;text-align:center;background:var(--ink)}
+.colophon h2{font-weight:200;font-size:clamp(34px,7vw,72px);letter-spacing:-.02em}
+.colophon h2 em{font-family:var(--serif);font-weight:400}
+.colophon p{font-family:var(--serif);opacity:.6;max-width:44ch;margin:18px auto 30px;line-height:1.6;font-size:17px}
+.again{all:unset;cursor:pointer;font-size:12px;letter-spacing:.24em;text-transform:uppercase;padding:14px 24px;border:1px solid rgba(239,232,218,.35);border-radius:999px;transition:background .3s,color .3s,border-color .3s}
+.again:hover,.again:focus-visible{background:var(--ver);border-color:var(--ver);color:var(--ink)}
+@media (max-width:640px){
+  .rail{top:auto;bottom:18px;right:50%;transform:translateX(50%);flex-direction:row;gap:12px}
+  .rail button span{display:none}
+  .hint{bottom:56px}
+}
+@media (prefers-reduced-motion:reduce){
+  .word span.in,.hint i{animation:none}
+  .verse{transition:opacity .2s}
+}
+</style>
+</head>
+<body>
+<main class="track" id="track">
+  <section class="stage" id="stage" aria-live="polite">
+    <header>
+      <div class="mark"><b>Tidewords</b><span>a poem in six weights</span></div>
+      <div class="count" id="count">01 <i>/ 06</i></div>
+    </header>
+    <div class="wordwrap">
+      <h1 class="word" id="word" aria-label="Still"></h1>
+      <div class="rule"><i id="bar"></i></div>
+      <p class="verse" id="verse"></p>
+    </div>
+    <nav aria-label="Stanzas"><ul class="rail" id="rail"></ul></nav>
+    <div class="hint" id="hint" aria-hidden="true">Scroll to read<i></i></div>
+  </section>
+</main>
+<footer class="colophon">
+  <div>
+    <h2>Six weights, <em>one breath.</em></h2>
+    <p>Set entirely in the type already living on your machine. Every stroke you just watched thicken and lean was your own scrolling hand, pressing on the poem.</p>
+    <button class="again" id="again" type="button">Read it again</button>
+  </div>
+</footer>
+<script>
+(function(){
+  var S=[
+    {word:"Still",line:"Before the first word, the page holds its breath.",wt:150,sk:0,tr:.16,sx:.94,ol:0,wave:0,bg:[15,14,12],fg:[239,232,218]},
+    {word:"Lean",line:"Letters tilt toward a wind they cannot see.",wt:460,sk:-18,tr:.04,sx:1,ol:0,wave:.25,bg:[20,17,15],fg:[239,232,218]},
+    {word:"Heavy",line:"Meaning gathers weight the way rain gathers on roofs.",wt:900,sk:0,tr:-.03,sx:1.06,ol:0,wave:.12,bg:[30,17,11],fg:[246,226,204]},
+    {word:"Thin",line:"Then it thins, a hairline of ink across the dusk.",wt:100,sk:7,tr:.28,sx:.86,ol:1,wave:.35,bg:[12,13,16],fg:[214,220,232]},
+    {word:"Rush",line:"Faster now; the sentence outruns its speaker.",wt:820,sk:-24,tr:-.04,sx:1.1,ol:0,wave:1,bg:[255,74,28],fg:[15,14,12]},
+    {word:"Rest",line:"And settles, upright, into the quiet it came from.",wt:300,sk:0,tr:.1,sx:1,ol:0,wave:0,bg:[15,14,12],fg:[239,232,218]}
+  ];
+  var N=S.length;
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)");
+  var track=document.getElementById("track"),stage=document.getElementById("stage"),
+      word=document.getElementById("word"),verse=document.getElementById("verse"),
+      bar=document.getElementById("bar"),count=document.getElementById("count"),
+      rail=document.getElementById("rail"),hint=document.getElementById("hint");
+  var keys=["wt","sk","tr","sx","ol","wave"];
+  var cur={},letters=[],idx=-1,lastY=window.scrollY,vel=0,t0=performance.now();
+  keys.forEach(function(k){cur[k]=S[0][k]});
+  cur.bg=S[0].bg.slice();cur.fg=S[0].fg.slice();
+
+  S.forEach(function(s,i){
+    var li=document.createElement("li"),b=document.createElement("button");
+    b.type="button";b.innerHTML="<span>"+s.word+"</span>";
+    b.setAttribute("aria-label","Go to stanza "+(i+1)+": "+s.word);
+    b.addEventListener("click",function(){goTo(i)});
+    li.appendChild(b);rail.appendChild(li);
+  });
+  var dots=rail.querySelectorAll("button");
+
+  function maxScroll(){return track.offsetHeight-window.innerHeight}
+  function goTo(i){
+    var y=track.offsetTop+maxScroll()*(i/(N-1));
+    window.scrollTo({top:y,behavior:reduce.matches?"auto":"smooth"});
+  }
+  document.getElementById("again").addEventListener("click",function(){goTo(0)});
+
+  function setWord(i){
+    idx=i;var s=S[i];
+    word.innerHTML="";letters=[];
+    word.setAttribute("aria-label",s.word);
+    s.word.toUpperCase().split("").forEach(function(ch,j){
+      var sp=document.createElement("span");
+      sp.textContent=ch;sp.className="in";sp.style.setProperty("--i",j);
+      sp.setAttribute("aria-hidden","true");
+      word.appendChild(sp);letters.push(sp);
+    });
+    verse.classList.add("out");
+    setTimeout(function(){verse.textContent=s.line;verse.classList.remove("out")},reduce.matches?60:260);
+    count.innerHTML=("0"+(i+1))+" <i>/ 0"+N+"</i>";
+    dots.forEach(function(d,j){d.classList.toggle("on",j===i);if(j===i)d.setAttribute("aria-current","step");else d.removeAttribute("aria-current")});
+  }
+  function smooth(a,b,x){x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)}
+  function lerp(a,b,t){return a+(b-a)*t}
+
+  function frame(now){
+    var y=window.scrollY,ms=maxScroll();
+    var p=Math.min(1,Math.max(0,(y-track.offsetTop)/ms));
+    var f=p*(N-1),a=Math.floor(f),b=Math.min(a+1,N-1),t=smooth(.22,.78,f-a);
+    var target={};
+    keys.forEach(function(k){target[k]=lerp(S[a][k],S[b][k],t)});
+    var tbg=[0,1,2].map(function(c){return lerp(S[a].bg[c],S[b].bg[c],t)});
+    var tfg=[0,1,2].map(function(c){return lerp(S[a].fg[c],S[b].fg[c],t)});
+    var k=reduce.matches?1:.12;
+    keys.forEach(function(key){cur[key]+= (target[key]-cur[key])*k});
+    for(var c=0;c<3;c++){cur.bg[c]+=(tbg[c]-cur.bg[c])*k;cur.fg[c]+=(tfg[c]-cur.fg[c])*k}
+
+    var dy=y-lastY;lastY=y;
+    vel+=(dy-vel)*.15;
+    var vSk=reduce.matches?0:Math.max(-16,Math.min(16,-vel*.35));
+
+    var i=Math.min(N-1,Math.round(f));
+    if(i!==idx)setWord(i);
+
+    stage.style.setProperty("--bg",cur.bg.map(Math.round).join(","));
+    stage.style.setProperty("--fg",cur.fg.map(Math.round).join(","));
+    word.style.letterSpacing=cur.tr.toFixed(3)+"em";
+    word.style.transform="scaleX("+cur.sx.toFixed(3)+")";
+    var fgc=cur.fg.map(Math.round).join(",");
+    var time=(now-t0)/1000,wave=reduce.matches?0:cur.wave;
+    for(var j=0;j<letters.length;j++){
+      var ph=time*3.2+j*.9;
+      var w=Math.round(Math.max(100,Math.min(900,cur.wt+Math.sin(ph)*160*wave)));
+      var ty=Math.sin(ph*.8)*6*wave;
+      var L=letters[j].style;
+      L.fontWeight=w;
+      L.transform="translateY("+ty.toFixed(2)+"px) skewX("+(cur.sk+vSk*(1+j*.14)).toFixed(2)+"deg)";
+      L.color="rgba("+fgc+","+(1-cur.ol*.98).toFixed(3)+")";
+      L.webkitTextStroke=(cur.ol*.012).toFixed(4)+"em rgb("+fgc+")";
+    }
+    var local=f-Math.floor(f);if(p>=1)local=1;
+    bar.style.transform="scaleX("+(i===N-1&&p>=1?1:local).toFixed(3)+")";
+    hint.style.opacity=p>.02?0:1;
+    requestAnimationFrame(frame);
+  }
+  setWord(0);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casa Sabbia · Terrazzo Atelier</title>
+<style>
+:root{--sand:#e9dcc6;--bone:#f7f1e6;--clay:#c46a4a;--terra:#b5543a;--ink:#2e2823;--mute:#7b6e60;--line:rgba(46,40,35,.14);--e:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.3,1.6,.5,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--sand);color:var(--ink);font-family:"Avenir Next","Gill Sans","Helvetica Neue",Arial,sans-serif;overflow-x:hidden;min-height:100vh}
+.bgz{position:fixed;inset:0;z-index:-1;opacity:.55;pointer-events:none}
+a,button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--terra);outline-offset:3px;border-radius:8px}
+.serif{font-family:Didot,"Bodoni 72","Bodoni MT","Iowan Old Style",Georgia,serif}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,"Courier New",monospace}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px clamp(16px,5vw,64px)}
+.logo{display:flex;align-items:baseline;gap:10px;text-decoration:none}
+.logo b{font-size:26px;font-weight:400;letter-spacing:.02em}
+.logo span{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--mute)}
+.box{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:var(--ink);color:var(--bone);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.box i{font-style:normal;display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;background:var(--clay);font-size:11px;letter-spacing:0}
+.box.bump i{animation:bump .5s var(--spring)}
+@keyframes bump{40%{transform:scale(1.45)}}
+.hero{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,5vw,72px);align-items:center;padding:24px clamp(16px,5vw,64px) 56px}
+.eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--terra)}
+h1{font-weight:400;font-size:clamp(46px,7.4vw,104px);line-height:.94;letter-spacing:-.02em;margin:16px 0 22px}
+h1 em{color:var(--terra)}
+.lede{max-width:30em;line-height:1.7;color:#4c4238;font-size:clamp(15px,1.4vw,17px)}
+.pourwrap{position:relative}
+.pour{position:relative;aspect-ratio:5/4;border-radius:28px 28px 28px 120px;overflow:hidden;box-shadow:0 40px 60px -30px rgba(70,40,20,.45),inset 0 0 0 1px rgba(255,255,255,.4),inset 0 -12px 30px rgba(60,30,10,.12)}
+.pour::after,.slab::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.5) 47%,transparent 62%);transform:translateX(-130%);transition:transform 1.1s var(--e);pointer-events:none}
+.pourwrap:hover .pour::after,.card:hover .slab::after{transform:translateX(130%)}
+.pourbar{position:absolute;right:18px;bottom:18px;display:flex;gap:8px;align-items:center}
+.pill{border:0;cursor:pointer;padding:12px 18px;border-radius:999px;background:var(--bone);font-size:12px;letter-spacing:.16em;text-transform:uppercase;box-shadow:0 10px 24px -12px rgba(46,40,35,.6);transition:transform .35s var(--spring),background .3s}
+.pill:hover{transform:translateY(-2px)}
+.pill:active{transform:scale(.95)}
+.pill.dark{background:var(--ink);color:var(--bone)}
+.tag{position:absolute;left:-14px;top:26px;padding:10px 14px;background:var(--bone);border-radius:6px;transform:rotate(-6deg);box-shadow:0 8px 20px -10px rgba(46,40,35,.5);font-size:11px;letter-spacing:.14em;line-height:1.5}
+.tag b{display:block;font-size:17px;letter-spacing:0;font-weight:400}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 clamp(16px,5vw,64px) 28px}
+.filters h2{font-weight:400;font-size:clamp(28px,3.4vw,40px);margin-right:auto}
+.filters button{border:1px solid var(--line);background:transparent;padding:9px 15px;border-radius:999px;cursor:pointer;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:background .3s,color .3s,border-color .3s}
+.filters button:hover{border-color:var(--ink)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bone);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px 24px;padding:0 clamp(16px,5vw,64px) 80px}
+.card{position:relative;background:var(--bone);border-radius:22px;padding:12px 12px 18px;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 18px 40px -26px rgba(70,40,20,.5);
+  transition:transform .6s var(--e),box-shadow .6s var(--e),opacity .45s var(--e)}
+.card:hover{transform:translateY(-6px) rotate(-.4deg);box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 30px 50px -24px rgba(70,40,20,.55)}
+.card.hide{display:none}
+.card.enter{animation:enter .6s var(--e) both;animation-delay:calc(var(--i)*55ms)}
+@keyframes enter{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.slab{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(46,40,35,.08),inset 0 -10px 24px rgba(60,30,10,.1)}
+.shuf{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(247,241,230,.86);cursor:pointer;font-size:16px;line-height:1;opacity:0;transform:scale(.8);transition:opacity .3s,transform .4s var(--spring);z-index:2}
+.card:hover .shuf,.shuf:focus-visible{opacity:1;transform:scale(1)}
+.shuf:hover{transform:rotate(180deg) scale(1.05)!important;transition:transform .6s var(--e)}
+.meta{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:16px 6px 8px}
+.meta h3{font-weight:400;font-size:23px}
+.meta span{font-size:10px;letter-spacing:.14em;color:var(--mute)}
+.agg{display:flex;gap:5px;margin:0 6px 12px}
+.agg i{width:14px;height:14px;border-radius:50% 40% 55% 45%;box-shadow:inset 0 -2px 3px rgba(0,0,0,.15)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 6px;font-size:13px;color:var(--mute)}
+.row b{color:var(--ink);font-weight:600}
+.req{border:1px solid var(--line);background:transparent;padding:8px 12px;border-radius:999px;cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;transition:background .3s,color .3s,border-color .3s,transform .35s var(--spring)}
+.req:hover{border-color:var(--ink)}
+.req:active{transform:scale(.94)}
+.req[aria-pressed="true"]{background:var(--clay);border-color:var(--clay);color:var(--bone)}
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:28px clamp(16px,5vw,64px) 40px;border-top:1px solid var(--line);font-size:12px;color:var(--mute);letter-spacing:.06em}
+@media (min-width:1000px){.grid{grid-template-columns:repeat(3,1fr);align-items:start}.grid .card.off{margin-top:40px}}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  .pour{border-radius:22px 22px 22px 80px}
+  .tag{left:10px;top:-14px}
+  .logo span{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .card,.card:hover{transition:none;transform:none}
+  .card.enter{animation:none}
+  .pour::after,.slab::after{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bgz" id="bgz" aria-hidden="true"></div>
+<header>
+  <a class="logo" href="#top" id="top"><b class="serif">Casa Sabbia</b><span>Terrazzo atelier · est. 1962</span></a>
+  <div class="box" id="box" aria-live="polite">Sample box <i id="boxN">0</i></div>
+</header>
+
+<section class="hero">
+  <div>
+    <p class="eyebrow">Collection Nº 7 · Poured in Ravenna Vecchia</p>
+    <h1 class="serif">Stone, poured <em>slowly.</em></h1>
+    <p class="lede">Every slab begins as a warm bed of lime and sand, scattered by hand with chips of marble, brick and river glass, then ground and honed for three days until the fragments rise like islands. No two pours agree, and we would not want them to.</p>
+  </div>
+  <div class="pourwrap">
+    <div class="pour" id="pour" role="img" aria-label="A large terrazzo slab with scattered stone chips"></div>
+    <div class="tag mono"><b class="serif" id="pourName">Siena Dusk</b>Pour nº <span id="pourN">1</span></div>
+    <div class="pourbar"><button class="pill" id="mix" type="button">Change blend</button><button class="pill dark" id="pourBtn" type="button">Pour again</button></div>
+  </div>
+</section>
+
+<div class="filters" role="toolbar" aria-label="Filter by tone">
+  <h2 class="serif">The sample library</h2>
+  <button type="button" data-f="all" aria-pressed="true">All</button>
+  <button type="button" data-f="warm" aria-pressed="false">Warm</button>
+  <button type="button" data-f="neutral" aria-pressed="false">Neutral</button>
+  <button type="button" data-f="cool" aria-pressed="false">Cool</button>
+  <button type="button" data-f="bold" aria-pressed="false">Bold</button>
+</div>
+<section class="grid" id="grid" aria-label="Terrazzo samples"></section>
+
+<footer><span class="serif">Casa Sabbia, Via dei Sassi 14 · ground, honed &amp; sealed by hand</span><span class="mono">All prices per m² · lead time six weeks</span></footer>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var S=[
+    {n:'Siena Dusk',c:'CS-014',t:'warm',f:'Honed',p:148,base:'#efe2cf',ch:['#b5543a','#d7a24a','#2e2823','#fbf6ee']},
+    {n:'Olive Grove',c:'CS-022',t:'neutral',f:'Honed',p:136,base:'#e6dfc8',ch:['#7c7a4f','#a9a36d','#2e2823','#f3ead8']},
+    {n:'Rosa Marina',c:'CS-031',t:'warm',f:'Polished',p:162,base:'#f1dcd2',ch:['#e3a99a','#c46a4a','#fff7f0','#8c4a3c']},
+    {n:'Basalt Salt',c:'CS-040',t:'cool',f:'Honed',p:154,base:'#dad5cc',ch:['#2e2823','#6f6a63','#fbf8f2','#a9a196']},
+    {n:'Saffron Bloom',c:'CS-047',t:'bold',f:'Polished',p:171,base:'#f3e3c4',ch:['#e0a22c','#c2541f','#3b2f25','#fffaf0']},
+    {n:'Lagoon Chip',c:'CS-053',t:'cool',f:'Honed',p:158,base:'#e7e2d6',ch:['#4e7a78','#9cc1b9','#2e2823','#d7a24a']},
+    {n:'Cotto Rust',c:'CS-060',t:'bold',f:'Sandblasted',p:139,base:'#e2c3a8',ch:['#8f3b22','#b5543a','#f6efe3','#3a2a20']},
+    {n:'Ivory Quarry',c:'CS-066',t:'neutral',f:'Polished',p:182,base:'#f6f0e4',ch:['#d8cbb4','#b9a98d','#e4d6bf','#7d6f5c']},
+    {n:'Pomegranate',c:'CS-071',t:'bold',f:'Honed',p:166,base:'#efd9cc',ch:['#8e2b3a','#d16b5d','#2e2823','#f9e9d9']}
+  ];
+  function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  /* returns array of radial-gradient layers: chips are ellipses, big ones get a sibling lobe for irregular outlines */
+  function chips(sw,seed,scale){
+    var r=rng(seed),L=[],i,x,y,w,h,c,k;
+    function e(x,y,w,h,c){L.push('radial-gradient('+w.toFixed(1)+'px '+h.toFixed(1)+'px at '+x.toFixed(1)+'% '+y.toFixed(1)+'%,'+c+' 0 94%,transparent 100%)');}
+    for(i=0;i<16;i++){x=r()*100;y=r()*100;w=(7+r()*13)*scale;h=w*(.5+r()*.6);c=sw[(r()*3)|0];
+      e(x,y,w,h,c);k=(r()-.5)*w*.08;e(x+k+(r()>.5?1:-1)*w*.04,y+(r()-.5)*4,w*.7,h*1.1,c);}
+    for(i=0;i<34;i++){x=r()*100;y=r()*100;w=(2.5+r()*5)*scale;h=w*(.55+r()*.5);e(x,y,w,h,sw[(r()*4)|0]);}
+    for(i=0;i<36;i++){x=r()*100;y=r()*100;w=(.8+r()*1.4)*scale;e(x,y,w,w,sw[(r()*4)|0]);}
+    return L.reverse();
+  }
+  function fine(sw){
+    return ['radial-gradient(circle at 30% 40%,'+sw[2]+' 0 .6px,transparent 1.1px) 0 0/11px 13px','radial-gradient(circle at 70% 60%,'+sw[0]+' 0 .5px,transparent 1px) 3px 5px/17px 15px'];
+  }
+  function paint(el,s,seed,scale){
+    var L=chips(s.ch,seed,scale);
+    el.style.backgroundColor=s.base;
+    el.style.background=L.concat(fine(s.ch)).join(',')+','+s.base;
+  }
+  function pourAnim(el,s,seed,scale){
+    if(reduce){paint(el,s,seed,scale);return;}
+    var L=chips(s.ch,seed,scale).reverse(),n=0,F=fine(s.ch);
+    (function step(){
+      n=Math.min(L.length,n+5);
+      el.style.background=L.slice(0,n).reverse().concat(F).join(',')+','+s.base;
+      if(n<L.length)requestAnimationFrame(step);
+    })();
+  }
+
+  /* backdrop */
+  var bg=document.getElementById('bgz');
+  paint(bg,{base:'#e9dcc6',ch:['#dccbb0','#e3d3ba','#d8c5a8','#efe5d4']},7,2.2);
+
+  /* hero pour */
+  var pour=document.getElementById('pour'),pi=0,pn=1,pseed=101;
+  function pourIt(){pourAnim(pour,S[pi],pseed,2.4);document.getElementById('pourName').textContent=S[pi].n;document.getElementById('pourN').textContent=pn;}
+  pourIt();
+  document.getElementById('pourBtn').addEventListener('click',function(){pseed=(Math.random()*1e9)|0;pn++;pourIt();});
+  document.getElementById('mix').addEventListener('click',function(){pi=(pi+1)%S.length;pseed=(Math.random()*1e9)|0;pn++;pourIt();});
+
+  /* cards */
+  var grid=document.getElementById('grid'),box=0,boxEl=document.getElementById('box'),boxN=document.getElementById('boxN');
+  S.forEach(function(s,i){
+    var a=document.createElement('article');a.className='card';a.dataset.t=s.t;
+    a.innerHTML='<div class="slab"><button class="shuf" type="button" aria-label="Reshuffle the chips of '+s.n+'">↻</button></div>'+
+      '<div class="meta"><h3 class="serif">'+s.n+'</h3><span class="mono">'+s.c+'</span></div>'+
+      '<div class="agg" aria-label="Aggregate colours">'+s.ch.map(function(c){return '<i style="background:'+c+'"></i>';}).join('')+'</div>'+
+      '<div class="row"><span>'+s.f+' · <b>€'+s.p+'</b> /m²</span><button class="req" type="button" aria-pressed="false">Request sample</button></div>';
+    grid.appendChild(a);
+    a.addEventListener('animationend',function(){a.classList.remove('enter');});
+    var slab=a.querySelector('.slab'),seed=1000+i*77;
+    paint(slab,s,seed,1);
+    a.querySelector('.shuf').addEventListener('click',function(){seed=(Math.random()*1e9)|0;pourAnim(slab,s,seed,1);});
+    var rq=a.querySelector('.req');
+    rq.addEventListener('click',function(){
+      var on=rq.getAttribute('aria-pressed')!=='true';
+      rq.setAttribute('aria-pressed',on?'true':'false');rq.textContent=on?'In your box ✓':'Request sample';
+      box+=on?1:-1;boxN.textContent=box;
+      boxEl.classList.remove('bump');void boxEl.offsetWidth;boxEl.classList.add('bump');
+    });
+  });
+  function layout(){
+    var vis=[].slice.call(grid.children).filter(function(c){return !c.classList.contains('hide');});
+    vis.forEach(function(c,i){c.classList.toggle('off',i%3===1);c.style.setProperty('--i',i);c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');});
+  }
+  layout();
+  var fb=document.querySelectorAll('.filters button');
+  fb.forEach(function(b){b.addEventListener('click',function(){
+    fb.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    var f=b.dataset.f;
+    [].forEach.call(grid.children,function(c){c.classList.toggle('hide',f!=='all'&&c.dataset.t!==f);});
+    layout();
+  });});
+})();
+</script>
+</body>
+</html>

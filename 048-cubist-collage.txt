@@ -1,0 +1,25 @@
+Prompt:
+Make a standalone HTML page called "Still Life, Reassembled": an interactive cubist collage in the spirit of early twentieth-century papier colle, presented like a museum room for the fictional Atelier Ferrand and the imaginary Musee des Plans. Palette: warm paper cream #efe6d2 on a slightly darker laid-paper page #e3d8c0 with faint vertical lines, charcoal ink #2b2724, ochre #c8962e, slate blue #4b6a8a, terracotta #b5532f, sage #8a9a74, wood brown #a8743f and night blue #1f3550. Typography: Didot / "Bodoni 72" / Georgia for the headline and body (with a large slate drop cap on the lede), "Gill Sans" / Futura / "Trebuchet MS" in tracked uppercase for kicker, buttons, plaque and hints, and Georgia for a tiny two-column fictional newspaper fragment.
+
+Layout: on desktop a two-column grid, with a narrow text column on the left (kicker "Room IV - Atelier Ferrand" with a terracotta rule, a huge headline "Still Life," with an indented italic terracotta "Reassembled", a lede, a short note about multiply blending, three square-edged outline buttons, and a museum plaque), and a wide collage on the right inside a thick charcoal frame. On phones the columns stack and the board changes from a 5:4 to a 4:5 ratio. Below the frame a tracked caption reads "Drag to recompose - double-click to turn".
+
+The board is an isolated paper surface with a light radial bloom and fine horizontal lines. Fourteen absolutely positioned pieces, each a wrapper (for blend mode, rotation and focus) around a clip-path face: a slate quadrilateral, an ochre wedge, a terracotta table edge, a wood-grain guitar body from a repeating-linear-gradient, a dark sound hole circle, a newspaper fragment titled "La Gazette des Ateliers" with real fictional headlines, a sheet-music staff of stripes, a sage half-circle arc, a charcoal sliver, a dotted bottle silhouette using a radial-gradient dot pattern, a stencil "VIOL" label, a fretted guitar neck, a night-blue diamond in hard-light, and an ivory shard. Most pieces use mix-blend-mode multiply so overlaps create new colors.
+
+Motion: on load the pieces fly in from scattered, rotated positions with a staggered spring-like cubic-bezier(.2,.9,.25,1) ease and fade. Picking a piece lifts it with a drop shadow and slight scale and brings it to the top. Shuffle animates all pieces to new random positions, angles and stacking; Reset glides them home. Buttons fill with a slanted charcoal panel sliding up on hover. A small paper status tag drops in at the board corner to name each action. Reduced motion skips the fly-in and all transitions.
+
+Title: Still Life, Reassembled
+
+Description: A movable cubist still life where a guitar, a newspaper and a bottle are broken into fourteen overlapping cut-paper planes. Because the pieces multiply into one another like translucent paper, every rearrangement produces colors nobody painted, and the museum-plaque framing makes the playful recomposition feel like curating a lost study.
+
+Visual techniques:
+- clip-path polygons and circles to cut each paper plane, on an inner face inside an unclipped wrapper
+- mix-blend-mode multiply, hard-light and a board-wide switch to normal or difference, with isolation on the board
+- Gradient-only textures: wood grain, sheet-music staves, halftone dots, frets and laid paper
+- Pointer Events drag with pointer capture, percentage-based positioning and z-index raising
+- Staggered fly-in, shuffle and reset animations via CSS transitions on left, top and transform
+- Drop-shadow lift while dragging and a terracotta drop-shadow focus ring that follows the clipped shape
+- Slanted fill hover animation on outline buttons and an animated status tag
+- Editorial typography with drop cap and indented italic headline
+
+Interaction model:
+Drag any piece with mouse, pen or touch to move it; double-click to rotate it fifteen degrees. Each piece is keyboard focusable: arrow keys nudge it (Shift for larger steps), R and Shift+R rotate, Enter or Space brings it to the front. Shuffle scatters the composition, Reset restores the original study, and the Blend button cycles the whole board between multiply, normal and difference blending.

@@ -1,0 +1,24 @@
+Prompt:
+Build a standalone HTML page, "stop-motion-cutout": a tiny stop-motion film of a paper cutout harbour, "The Little Tin Harbour", animated in stepped frames rather than smooth tweens. Page background is kraft paper (#c49a6c with a lighter radial centre and fine vertical fibre lines). The title is set in Gill Sans / Gill Sans MT / Trebuchet MS, cream with a stacked tomato and ink hard shadow, each letter wrapped in a span with a random small tilt so it looks hand-cut. A Georgia italic subtitle says it was shot on a kitchen table.
+Stage: a dark brown cardboard frame with two strips of semi-transparent masking tape at the top corners, containing one inline SVG scene (viewBox 800x460, scales to width). Every cutout piece is a group with an feDropShadow paper shadow. Palette: sky #f6d7a7, mustard #e7b33a, ochre hills #d79a3a, teal #2f7f7a and #1f5c5a, light sea #4aa39a, tomato #e0533d, cream #f3e7cf, ink #2a1e14. Elements: a smiling sun with a zigzag ray polygon mounted on a visible wooden stick; a crescent moon on its own stick hidden below the frame; two cream clouds of circles; three flapping ink-line birds with two wing frames; ochre far hills; teal near hill with a cream cottage and lighthouse whose lamp blinks at night; three scalloped wave strips (paths generated in JS, wider than the frame); and a tomato-red boat with cream sail, mustard jib, pennant, and portholes riding between the back waves and the front wave. A grain overlay and a vignette whose opacity flickers per frame sit over the SVG.
+Motion: a requestAnimationFrame loop with a time accumulator advances whole frames at 8 fps (or 12). Each frame: waves shift by fixed steps in alternating directions and hop 2px on odd frames, the boat moves 3 units and takes one of eight quantized bob and tilt poses, clouds and birds step forward, bird wings swap paths every two frames, and every paper piece gets a tiny random translate and rotate (the "boil" of hand-placed cutouts). Day to night happens in nine visible steps: the sun stick lowers out of frame, the moon stick rises, the sky colour steps to #22385c, and cutout stars fade in.
+Slate: below the stage, a black film clapperboard (Courier New, mustard values) shows production, scene (04 DAY / 05 NIGHT), a four-digit frame counter, and the frame rate; its striped clapper flips when any control is used. Controls are torn-paper tabs (clip-path polygons) in cream, mustard, mint, and salmon: Pause / Roll camera, Step frame, Bring the night / morning, Shoot on twos / ones.
+Reduced motion: the film starts paused, the boil and vignette flicker are disabled, and the viewer steps frames by hand.
+
+Title: The Little Tin Harbour
+
+Description:
+A warm, handmade page that behaves like a stop-motion short. Construction-paper hills, a red tin boat, scalloped waves, and a sun on a wooden stick are all cast with paper shadows and jump forward in deliberate stepped frames, trembling slightly between each one as if placed by hand. A clapperboard counts frames, and torn paper buttons let the viewer pause, step, change frame rate, and crank the sun down for night.
+
+Visual techniques:
+- Inline SVG cutout scene with feDropShadow paper shadows on every layer
+- Fixed-rate frame stepping via a requestAnimationFrame time accumulator (8 or 12 fps)
+- Quantized pose tables for the boat bob and two-frame bird wing swaps
+- Per-frame random micro-transforms to simulate stop-motion boil
+- JS-generated scalloped wave paths and star polygons
+- Stepped day-to-night transition with stick-mounted sun and moon and stepped sky colour
+- CSS clip-path torn paper buttons, masking tape pseudo-elements, and a clapperboard with an animated striped clapper
+- Grain overlay and per-frame vignette flicker
+
+Interaction model:
+The film plays on its own. Pause or roll the camera with the first button or the space bar, step a single frame with the Step button, the right arrow, or a click on the scene while paused. "Bring the night" lowers the sun and raises the moon over nine frames, and the rate button switches between 8 and 12 frames per second. Clicking the boat releases a few puffs of paper steam that rise and fade over the next frames.

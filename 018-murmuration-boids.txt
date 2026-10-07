@@ -1,0 +1,32 @@
+PROMPT
+
+Concept 018 murmuration-boids: canvas boids flocking, pointer disturbs the flock, dusk palette.
+
+Build a standalone HTML page titled "Starlings over Saltmarsh": a full-viewport canvas showing a murmuration of starlings wheeling above an estuary at dusk. The canvas is sized to devicePixelRatio (capped at 2) and rebuilt on debounced resize.
+
+Background (painted once per resize to an offscreen canvas, then blitted each frame): a vertical sky gradient from deep plum #1d1428 through #3d1f3f, rose #8a3b4c and ember #d9674a to a pale apricot horizon #f6b56d; a sparse field of faint stars near the top; a low sun (#ffe2b0) clipped by the horizon with a large warm radial glow; thin streaky cloud ellipses; water below the horizon fading from #c76148 to near-black #150f1e with broken horizontal sun-glints; and a near-black (#120c18) marsh bank with a few hundred curved reed strokes and occasional bulrush heads, all from a seeded PRNG so it is stable. The horizon sits at 76% of the height (70% on phones).
+
+Flock: Float32Array storage for position, velocity, depth (0.55 to 1.3) and wing phase. Bird count scales with area (W*H/1250, clamped 180 to 1100, 60% under reduced motion). A uniform spatial hash grid (46px cells, linked list in Int32Arrays) limits neighbour checks to 3x3 cells and at most 14 neighbours. Forces: alignment 0.06, cohesion 0.0035, inverse-square separation within 15px, a weak pull toward a Lissajous-wandering attractor so the flock forms rolling sheets, soft margins that keep birds on screen and above the horizon, random jitter, and min/max speed clamps. Depth scales speed slightly for parallax. Birds are drawn as small chevron silhouettes whose wing span flaps with a per-bird sine, batched into three depth buckets with increasing opacity (one path and fill per bucket) to keep the loop cheap.
+
+Pointer: acts like a hawk. Birds within 135px (95px on phones) flee with a quadratic falloff, opening a hole that ripples through the flock. A thin cream ring and dot replace the hidden cursor. Pointer-down launches an expanding ripple ring that shoves birds outward as its band passes them.
+
+Type and UI: top-left header with tracked uppercase kicker "Field note · dusk · the long estuary", a large Georgia italic title "Starlings over / Saltmarsh", and a short serif paragraph. Bottom-right glass pill panel (plum translucent, blurred) with a live italic count of starlings, a "Restless" range slider (ember-filled track, cream thumb) that raises max speed and jitter, and a cream "Scatter" button that bursts the flock outward from its centre. A serif italic hint "Move through the flock to disturb it. Tap to send a ripple." fades after the first tap or nine seconds. Sans: "Avenir Next" / "Gill Sans" / Trebuchet MS.
+
+Reduced motion: flock speed at 35%, wings stop flapping, fewer birds, slower ripples.
+
+Title: Starlings over Saltmarsh
+
+Description: A quiet, painterly simulation of a starling murmuration at sunset. Hundreds of small dark birds, each obeying only local rules of alignment, cohesion and separation, fold into rolling sheets across a plum-to-apricot sky above a reed-lined estuary where the low sun is breaking on the water. Moving the pointer through the flock behaves like a hawk diving in: the birds tear open around it and close behind it. The overlay reads like a naturalist's field note, with a large italic title and a small, warm control pill.
+
+Visual techniques:
+- Offscreen canvas background with multi-stop sky gradient, radial sun glow, clipped sun disc, water glints and seeded reed silhouettes
+- Boids (alignment, cohesion, separation) with a wandering Lissajous attractor
+- Uniform spatial hash grid with typed arrays for neighbour search
+- Depth layers that vary speed, size and opacity, batched into three fill passes
+- Per-bird sine wing flap on chevron silhouettes
+- Pointer predator field with quadratic falloff and custom drawn cursor ring
+- Expanding ripple shockwaves that push birds outward
+- devicePixelRatio-aware canvas with debounced resize and delta-time stepping
+- Glass control pill with custom-styled range slider
+
+Interaction model: Move the mouse or a finger across the sky to scare the flock and watch it split and re-form around you. Click or tap to send an expanding ripple through the birds. Drag the Restless slider to make the flock calmer or more frantic, and press Scatter to burst the whole murmuration outward from its centre.

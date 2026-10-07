@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lapis Courtyard</title>
+<style>
+:root{
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --ease:cubic-bezier(.25,1,.3,1);
+}
+body[data-p="lapis"]{--page:#0b1734;--g:#13306b;--s:#f4ead2;--i:#1f8a9a;--pa:#d4af5a;--pb:#b8452f;--st:#d4af5a;--txt:#f1e6cc;--acc:#d4af5a}
+body[data-p="saffron"]{--page:#2a140a;--g:#b4651f;--s:#fbf1dc;--i:#6d2a1f;--pa:#2d6c74;--pb:#f0b43c;--st:#3a2414;--txt:#f6e7cc;--acc:#f0b43c}
+body[data-p="malachite"]{--page:#06231c;--g:#0f5a48;--s:#efe7d0;--i:#1d2f5c;--pa:#d9a441;--pb:#7fc7a8;--st:#c9a24a;--txt:#e9efe0;--acc:#d9a441}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);background-image:radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.08),transparent 60%);color:var(--txt);font-family:var(--serif);min-height:100vh;overflow-x:hidden;transition:background-color .9s var(--ease),color .9s}
+.wrap{max-width:980px;margin:0 auto;padding:clamp(24px,5vw,56px) 16px 48px}
+header{text-align:center;margin-bottom:clamp(22px,4vw,40px)}
+.orn{width:34px;height:34px;display:block;margin:0 auto 14px}
+.orn polygon{fill:none;stroke:var(--acc);stroke-width:4}
+.eyebrow{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--acc);font-variant:small-caps}
+h1{font-weight:400;font-size:clamp(36px,6.5vw,72px);margin:10px 0 8px;letter-spacing:.01em;line-height:1}
+h1 i{color:var(--acc)}
+.dek{margin:0 auto;max-width:36em;font-size:clamp(15px,1.6vw,18px);line-height:1.6;opacity:.85;font-style:italic}
+.arch{position:relative;margin:0 auto;max-width:860px;padding:10px;border-radius:50% 50% 6px 6px/16% 16% 6px 6px;background:linear-gradient(180deg,var(--acc),transparent 140%);box-shadow:0 40px 80px rgba(0,0,0,.45)}
+.arch-in{position:relative;border-radius:50% 50% 2px 2px/15% 15% 2px 2px;overflow:hidden;box-shadow:inset 0 0 0 2px var(--page);background:var(--g)}
+.arch-in::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.22) 48%,transparent 60%);background-size:250% 100%;mix-blend-mode:soft-light;animation:sweep 9s ease-in-out infinite}
+.arch-in::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;box-shadow:inset 0 30px 60px rgba(0,0,0,.35),inset 0 -10px 30px rgba(0,0,0,.25)}
+@keyframes sweep{0%{background-position:120% 0}60%,100%{background-position:-30% 0}}
+svg.mosaic{display:block;width:100%;height:auto;touch-action:manipulation;cursor:crosshair}
+.g{fill:var(--g);transition:fill .9s}
+.s{fill:var(--s);stroke:var(--st);stroke-width:2.2;stroke-linejoin:round;transition:fill .9s,stroke .9s}
+.i{fill:var(--i);stroke:var(--st);stroke-width:1.6;transition:fill .9s,stroke .9s}
+.pa{fill:var(--pa);transition:fill .9s}
+.pb{fill:var(--pb);transition:fill .9s}
+.st{fill:var(--st);transition:fill .9s}
+.c{fill:var(--pa);stroke:var(--st);stroke-width:1.6;transition:fill .9s,stroke .9s}
+.spin{transform-box:fill-box;transform-origin:center;transition:transform 1.1s var(--ease),filter .4s}
+.tile:hover .spin{filter:brightness(1.12)}
+.below{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,4vw,48px);margin-top:clamp(28px,5vw,48px);align-items:start}
+@media (max-width:700px){.below{grid-template-columns:minmax(0,1fr)}}
+.below h2{font-weight:400;font-size:clamp(22px,2.6vw,28px);margin:0 0 10px}
+.below p{margin:0 0 12px;line-height:1.65;font-size:16px;opacity:.9}
+.panel{border-top:1px solid var(--acc);padding-top:16px}
+.lbl{font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--acc);margin-bottom:12px}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.chip{display:flex;align-items:center;gap:10px;font:inherit;font-size:15px;color:var(--txt);background:transparent;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:7px 14px 7px 7px;cursor:pointer;transition:border-color .3s,transform .3s var(--ease),background .3s}
+.chip:hover{transform:translateY(-2px);border-color:var(--acc)}
+.chip:focus-visible,.turn:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.chip[aria-pressed="true"]{border-color:var(--acc);background:rgba(255,255,255,.07)}
+.sw{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+.turn{font:inherit;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--page);background:var(--acc);border:0;padding:14px 22px;cursor:pointer;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);transition:filter .3s,transform .3s var(--ease)}
+.turn:hover{filter:brightness(1.12);transform:scale(1.03)}
+.foot{text-align:center;margin-top:44px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;opacity:.55}
+@media (prefers-reduced-motion:reduce){
+  .arch-in::after{animation:none;opacity:0}
+  .spin{transition:transform .25s linear}
+  body,.chip,.turn{transition:none}
+}
+</style>
+</head>
+<body data-p="lapis">
+<div class="wrap">
+  <header>
+    <svg class="orn" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,6 63,37 94,50 63,63 50,94 37,63 6,50 37,37"/><polygon points="19,19 50,31 81,19 69,50 81,81 50,69 19,81 31,50"/></svg>
+    <div class="eyebrow">Tilework of the Qasr Nadira</div>
+    <h1>The Lapis <i>Courtyard</i></h1>
+    <p class="dek">An eight-pointed star is two squares that refused to choose a single direction. Pass your hand across the wall and each star turns an eighth of the way toward you.</p>
+  </header>
+
+  <div class="arch"><div class="arch-in"><svg class="mosaic" id="mosaic" role="img" aria-label="A wall of eight-pointed star tiles that rotate when touched"></svg></div></div>
+
+  <div class="below">
+    <section>
+      <h2>Two squares, one star</h2>
+      <p>Each tile begins as a single square turned through forty-five degrees and laid over itself. The points that result meet their neighbours tip to tip, and the space left between them becomes a ground of quiet crosses.</p>
+      <p>Inside, a smaller star and a rosette of eight petals alternate between two glazes. Turn a tile by one eighth and the star looks unchanged, but the petals trade colours, so the wall keeps a memory of every hand that passed by.</p>
+    </section>
+    <aside class="panel">
+      <div class="lbl">Glaze</div>
+      <div class="chips" id="chips">
+        <button class="chip" type="button" data-p="lapis" aria-pressed="true"><span class="sw" style="background:conic-gradient(#13306b 0 50%,#d4af5a 0 75%,#1f8a9a 0)"></span>Lapis</button>
+        <button class="chip" type="button" data-p="saffron" aria-pressed="false"><span class="sw" style="background:conic-gradient(#b4651f 0 50%,#f0b43c 0 75%,#2d6c74 0)"></span>Saffron</button>
+        <button class="chip" type="button" data-p="malachite" aria-pressed="false"><span class="sw" style="background:conic-gradient(#0f5a48 0 50%,#d9a441 0 75%,#1d2f5c 0)"></span>Malachite</button>
+      </div>
+      <div class="lbl">Ripple</div>
+      <button class="turn" type="button" id="turn">Turn the courtyard</button>
+    </aside>
+  </div>
+  <p class="foot">Click any tile to send a ripple through the wall</p>
+</div>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg',svg=document.getElementById('mosaic');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var tiles=[],cols=0,rows=0;
+  function mk(tag,a,p){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+  function star(R,cx,cy){
+    var r=R*Math.cos(Math.PI/4)/Math.cos(Math.PI/8),pts=[];
+    for(var k=0;k<16;k++){var a=k*Math.PI/8-Math.PI/2,rad=k%2?r:R;pts.push((cx+Math.cos(a)*rad).toFixed(2)+','+(cy+Math.sin(a)*rad).toFixed(2));}
+    return pts.join(' ');
+  }
+  var big=star(49,50,50),small=star(31,50,50);
+  function build(){
+    var w=svg.parentNode.clientWidth||window.innerWidth,nc=w<560?5:8,nr=nc===5?7:6;
+    if(nc===cols&&nr===rows)return;cols=nc;rows=nr;
+    while(svg.firstChild)svg.removeChild(svg.firstChild);tiles=[];
+    svg.setAttribute('viewBox','0 0 '+cols*100+' '+rows*100);
+    for(var y=0;y<rows;y++)for(var x=0;x<cols;x++){
+      var g=mk('g',{'class':'tile',transform:'translate('+x*100+' '+y*100+')'},svg);
+      mk('rect',{x:0,y:0,width:100,height:100,'class':'g'},g);
+      [[0,0],[100,0],[0,100],[100,100]].forEach(function(c){
+        mk('polygon',{points:(c[0])+','+(c[1]-12)+' '+(c[0]+12)+','+c[1]+' '+c[0]+','+(c[1]+12)+' '+(c[0]-12)+','+c[1],'class':'c'},g);
+      });
+      var s=mk('g',{'class':'spin'},g);
+      mk('polygon',{points:big,'class':'s'},s);
+      mk('polygon',{points:small,'class':'i'},s);
+      for(var p=0;p<8;p++){
+        mk('ellipse',{cx:50,cy:36,rx:4.6,ry:11,'class':p%2?'pb':'pa',transform:'rotate('+p*45+' 50 50)'},s);
+      }
+      mk('circle',{cx:50,cy:50,r:5.5,'class':'st'},s);
+      var t={g:g,s:s,x:x,y:y,deg:0,busy:0};tiles.push(t);
+      (function(t){
+        g.addEventListener('pointerenter',function(){turn(t,45);});
+        g.addEventListener('click',function(){ripple(t.x,t.y);});
+      })(t);
+    }
+  }
+  function turn(t,d){
+    var now=performance.now();if(now-t.busy<350)return;t.busy=now;
+    t.deg+=d;t.s.style.transform='rotate('+t.deg+'deg)';
+  }
+  function ripple(cx,cy){
+    tiles.forEach(function(t){
+      var dist=Math.hypot(t.x-cx,t.y-cy);
+      setTimeout(function(){t.busy=0;turn(t,45);},reduce?0:dist*110);
+    });
+  }
+  document.getElementById('turn').addEventListener('click',function(){ripple((cols-1)/2,(rows-1)/2);});
+  var chips=[].slice.call(document.querySelectorAll('.chip'));
+  chips.forEach(function(c){c.addEventListener('click',function(){
+    document.body.setAttribute('data-p',c.getAttribute('data-p'));
+    chips.forEach(function(o){o.setAttribute('aria-pressed',String(o===c));});
+    ripple(Math.floor(Math.random()*cols),0);
+  });});
+  build();
+  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(build,150);});
+  if(!reduce)setTimeout(function(){ripple(0,0);},500);
+})();
+</script>
+</body>
+</html>

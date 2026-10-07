@@ -1,0 +1,17 @@
+Prompt:
+Build "Platonic Catalogue", a standalone HTML page for slot 096 wireframe-polyhedra: rotating wireframe polyhedra; click to switch shapes. Frame it as a plate from a fictional design atelier ("Atelier Vertex, Plate Series IV") cataloguing the five Platonic solids. Palette: near-black ink background #0d0c0b, warm paper off-white #f1ebe0 for lines and text, a single vermilion accent #e2412b for vertices and highlights, muted taupe #8a8378 for secondary labels. Typography: italic Georgia serif for the solid's name and short essay copy, Helvetica Neue for the masthead, ui-monospace for data readouts (vertices, edges, faces, classical element). Layout: a full-height three-row grid; top header with the masthead and big italic title on the left and a monospace data plate on the right; a central canvas stage with a short descriptive note in the upper-left and a giant outlined Roman numeral (I to V, stroked in translucent vermilion) in the upper-right; a five-column footer index of the solids with a red top rule on the active one. The canvas draws the solid in perspective with depth-shaded edges (nearer edges brighter and thicker), red vertex dots (dimmer at the back), faint concentric orbit rings and crosshair guides, and a soft red floor-shadow ellipse. Vertices are generated mathematically (cube, tetrahedron, octahedron, dodecahedron and icosahedron from golden-ratio coordinates) and edges found by shortest-distance pairing. Motion: continuous gentle tumble that slows when hovered; drag to spin with inertia that eases back to the idle rate; clicking (a tap without drag) transmutes to the next solid with an eased collapse-and-bloom: the shape shrinks to a point while twisting, swaps, then grows back while untwisting, and the text and numerals update at the midpoint. Keyboard: canvas is focusable; Enter or Space or arrows switch. Reduced motion: rotation slowed to a crawl, transitions faster, hint pulse disabled. Canvas sized to devicePixelRatio with resize handling. Copy assigns each solid to its classical element with a one-sentence poetic description.
+
+Title: Platonic Catalogue
+
+Description: A dark, gallery-plate presentation of the five Platonic solids. A single wireframe solid tumbles slowly in the centre of a black stage, its edges drawn in warm paper white with depth shading and its vertices picked out in vermilion. Editorial italic serif names, a monospace data plate, an outlined Roman numeral and a quiet five-column index give it the feel of a printed museum catalogue brought to life. Each click collapses the current solid to a point and blooms the next one out of it.
+
+Visual techniques:
+- Canvas 2D perspective projection of 3D vertices with manual rotation matrices
+- Procedurally generated Platonic solid geometry (golden-ratio coordinates) with automatic edge detection
+- Depth-based alpha and line-width shading for edges and vertices
+- Eased cubic collapse-and-bloom morph with twist between shapes
+- Outlined display numerals with -webkit-text-stroke
+- devicePixelRatio-aware canvas with resize handling and requestAnimationFrame loop
+- Hairline grid footer index with aria-pressed active state
+
+Interaction model: The solid rotates on its own. Drag on the stage to spin it with momentum that relaxes back to the idle drift; a click or tap without dragging transmutes it into the next solid. The footer buttons jump straight to any of the five solids, and with the canvas focused, Enter, Space and the arrow keys cycle through them. Hovering slows the rotation so the structure can be studied.

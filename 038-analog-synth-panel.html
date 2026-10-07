@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marrow MX-4 Chromatone</title>
+<style>
+:root{
+  --h:28;--s:38;--l:78;--g:150;
+  --plate:hsl(var(--h) calc(var(--s)*1%) calc(var(--l)*1%));
+  --plate-d:hsl(var(--h) calc(var(--s)*1%) calc(var(--l)*1% - 10%));
+  --fg:#1d1a16;
+  --glow:hsl(var(--g) 95% 58%);
+  --wood1:#5b2f17;--wood2:#7a4322;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:#1a1714 radial-gradient(70% 60% at 50% 30%,#2e2925,#121010 80%);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  color:#e9e1d3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 16px;overflow-x:hidden;
+}
+.intro{text-align:center;margin-bottom:22px;max-width:560px}
+.intro h1{font-family:"Futura","Century Gothic","Avenir Next",sans-serif;font-weight:500;letter-spacing:.32em;font-size:12px;text-transform:uppercase;color:#bfb3a1}
+.intro p{font-family:Georgia,"Iowan Old Style",serif;font-style:italic;font-size:15px;color:#8f8576;margin-top:8px;line-height:1.5}
+.rig{
+  position:relative;width:100%;max-width:940px;
+  display:grid;grid-template-columns:clamp(14px,3vw,34px) 1fr clamp(14px,3vw,34px);
+  border-radius:10px;
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.6);
+}
+.cheek{
+  background:
+    repeating-linear-gradient(176deg,rgba(0,0,0,.18) 0 2px,transparent 2px 7px),
+    repeating-linear-gradient(183deg,rgba(255,220,180,.06) 0 1px,transparent 1px 11px),
+    linear-gradient(90deg,var(--wood1),var(--wood2) 50%,var(--wood1));
+}
+.cheek:first-child{border-radius:10px 0 0 10px}
+.cheek:last-child{border-radius:0 10px 10px 0}
+.plate{
+  position:relative;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 3px),
+    linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.12)),
+    var(--plate);
+  color:var(--fg);
+  padding:clamp(18px,3.5vw,34px);
+  transition:color .4s;
+}
+.screw{position:absolute;width:12px;height:12px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#f4f0e8,#8a847a 60%,#4a453e);box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+.screw::after{content:"";position:absolute;left:2px;right:2px;top:5px;height:2px;background:rgba(0,0,0,.45);transform:rotate(35deg)}
+.screw.a{top:10px;left:10px}.screw.b{top:10px;right:10px}.screw.c{bottom:10px;left:10px}.screw.d{bottom:10px;right:10px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:2px solid currentColor;padding-bottom:12px;margin-bottom:22px}
+.brand{font-family:"Futura","Century Gothic","Avenir Next",sans-serif;font-weight:700;font-size:clamp(20px,3.4vw,30px);letter-spacing:.08em}
+.brand span{font-weight:400;opacity:.65;font-size:.55em;letter-spacing:.3em;margin-left:10px;vertical-align:middle}
+.leds{display:flex;gap:8px;align-items:center;font-size:9px;letter-spacing:.2em}
+.led{width:9px;height:9px;border-radius:50%;background:#2a2a2a;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.led.on{background:var(--glow);box-shadow:0 0 8px var(--glow),0 0 2px #fff inset}
+.main{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(18px,3vw,32px);align-items:start}
+.knobs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 10px}
+.kn{display:flex;flex-direction:column;align-items:center;gap:6px}
+.knob{width:clamp(64px,14vw,92px);aspect-ratio:1;cursor:ns-resize;touch-action:none;border-radius:50%;outline:none}
+.knob:focus-visible{box-shadow:0 0 0 3px var(--glow)}
+.knob svg{width:100%;height:100%;display:block;overflow:visible}
+.knob .cap{transition:transform .08s linear}
+.knob:hover .cap circle.c2{opacity:.9}
+.lbl{font-size:10px;letter-spacing:.24em;font-weight:700}
+.val{font-family:ui-monospace,Menlo,"Courier New",monospace;font-size:10px;opacity:.6}
+.scope{
+  background:#0c100d;border-radius:8px;padding:10px;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.3);
+  position:relative;overflow:hidden;
+}
+.scope svg{display:block;width:100%;height:auto}
+.scope .grid line{stroke:rgba(255,255,255,.07);stroke-width:1}
+.scope path{fill:none;stroke:var(--glow);stroke-width:2;filter:drop-shadow(0 0 4px var(--glow))}
+.scope .read{position:absolute;left:12px;top:8px;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:.15em;color:var(--glow);opacity:.8}
+.bay{margin-top:18px}
+.bay h3{font-size:10px;letter-spacing:.3em;margin-bottom:10px}
+.jacks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px}
+.jk{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.jk i{width:30px;height:30px;border-radius:50%;
+  background:radial-gradient(circle,#050505 0 32%,#9c968c 34%,#e6e1d7 52%,#7b766d 70%,#3a3732 100%);
+  box-shadow:0 2px 3px rgba(0,0,0,.35);transition:box-shadow .25s,transform .25s}
+.jk:hover i{transform:scale(1.08)}
+.jk.pending i{box-shadow:0 0 0 3px var(--glow),0 0 14px var(--glow)}
+.jk:focus-visible{outline:2px solid var(--glow);outline-offset:3px;border-radius:6px}
+.jk b{font-size:9px;letter-spacing:.16em}
+.cables{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:3}
+.foot{margin-top:22px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:.24em;opacity:.7;gap:12px;flex-wrap:wrap}
+.hint{margin-top:16px;font-size:12px;color:#8f8576;text-align:center;font-family:Georgia,serif;font-style:italic}
+@media (max-width:720px){
+  .main{grid-template-columns:1fr}
+  .knobs{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){.plate{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gSkirt" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#0d0d0d"/></radialGradient>
+    <radialGradient id="gCap" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#f6f3ee"/><stop offset=".5" stop-color="#b9b4ab"/><stop offset="1" stop-color="#5d5850"/></radialGradient>
+  </defs>
+</svg>
+<div class="intro">
+  <h1>Marrow Instruments · Bench Unit</h1>
+  <p>Every knob on this faceplate tunes the instrument's own skin. Turn them, then patch a few cords across the bay.</p>
+</div>
+<div class="rig">
+  <div class="cheek"></div>
+  <div class="plate" id="plate">
+    <i class="screw a"></i><i class="screw b"></i><i class="screw c"></i><i class="screw d"></i>
+    <div class="top">
+      <div class="brand">MX-4<span>CHROMATONE</span></div>
+      <div class="leds" id="leds">CLK <i class="led"></i><i class="led"></i><i class="led"></i><i class="led"></i></div>
+    </div>
+    <div class="main">
+      <div class="knobs" id="knobs">
+        <div class="kn" data-k="h" data-label="TINT" data-min="0" data-max="360" data-v="28" data-unit="°"></div>
+        <div class="kn" data-k="s" data-label="CHROMA" data-min="0" data-max="70" data-v="38" data-unit="%"></div>
+        <div class="kn" data-k="l" data-label="VALUE" data-min="14" data-max="88" data-v="78" data-unit="%"></div>
+        <div class="kn" data-k="g" data-label="GLOW" data-min="0" data-max="360" data-v="150" data-unit="°"></div>
+        <div class="kn" data-k="f" data-label="DRIFT" data-min="1" data-max="9" data-v="3" data-unit="Hz"></div>
+        <div class="kn" data-k="w" data-label="FOLD" data-min="0" data-max="100" data-v="35" data-unit=""></div>
+      </div>
+      <div>
+        <div class="scope">
+          <span class="read" id="read">OSC · 3.0 Hz · FOLD 35</span>
+          <svg viewBox="0 0 300 120" aria-hidden="true">
+            <g class="grid"><line x1="0" y1="60" x2="300" y2="60"/><line x1="75" y1="0" x2="75" y2="120"/><line x1="150" y1="0" x2="150" y2="120"/><line x1="225" y1="0" x2="225" y2="120"/><line x1="0" y1="30" x2="300" y2="30"/><line x1="0" y1="90" x2="300" y2="90"/></g>
+            <path id="wave" d="M0 60"/>
+          </svg>
+        </div>
+        <div class="bay">
+          <h3>PATCH BAY</h3>
+          <div class="jacks" id="jacks">
+            <button class="jk" data-j="o1" type="button"><i></i><b>OSC 1</b></button>
+            <button class="jk" data-j="o2" type="button"><i></i><b>OSC 2</b></button>
+            <button class="jk" data-j="lfo" type="button"><i></i><b>LFO</b></button>
+            <button class="jk" data-j="env" type="button"><i></i><b>ENV</b></button>
+            <button class="jk" data-j="vcf" type="button"><i></i><b>VCF</b></button>
+            <button class="jk" data-j="vca" type="button"><i></i><b>VCA</b></button>
+            <button class="jk" data-j="mix" type="button"><i></i><b>MIX</b></button>
+            <button class="jk" data-j="out" type="button"><i></i><b>OUT</b></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>SERIAL 07-1148</span><span>HAND WIRED IN PORT AVERY</span><span id="pc">3 CORDS</span></div>
+    <svg class="cables" id="cables" aria-hidden="true"></svg>
+  </div>
+  <div class="cheek"></div>
+</div>
+<p class="hint">Drag knobs up or down (or use arrow keys). Tap two jacks to patch a cord; tap the same pair again to pull it.</p>
+<script>
+(function(){
+  var root=document.documentElement,plate=document.getElementById('plate');
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS='http://www.w3.org/2000/svg';
+  var state={h:28,s:38,l:78,g:150,f:3,w:35};
+  function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+  function applyColors(){
+    root.style.setProperty('--h',state.h);root.style.setProperty('--s',state.s);
+    root.style.setProperty('--l',state.l);root.style.setProperty('--g',state.g);
+    root.style.setProperty('--fg',state.l>52?'#1d1a16':'#efe8da');
+    document.getElementById('read').textContent='OSC · '+state.f.toFixed(1)+' Hz · FOLD '+Math.round(state.w);
+  }
+  [].forEach.call(document.querySelectorAll('.kn'),function(wrap){
+    var k=wrap.dataset.k,min=+wrap.dataset.min,max=+wrap.dataset.max,unit=wrap.dataset.unit;
+    var v=+wrap.dataset.v;
+    var knob=document.createElement('div');knob.className='knob';knob.tabIndex=0;
+    knob.setAttribute('role','slider');knob.setAttribute('aria-label',wrap.dataset.label);
+    knob.setAttribute('aria-valuemin',min);knob.setAttribute('aria-valuemax',max);
+    var svg=el('svg',{viewBox:'0 0 100 100'},knob);
+    for(var i=0;i<=10;i++){var a=(-135+i*27)*Math.PI/180,r1=44,r2=i%5?48:50;
+      el('line',{x1:50+Math.sin(a)*r1,y1:50-Math.cos(a)*r1,x2:50+Math.sin(a)*r2,y2:50-Math.cos(a)*r2,stroke:'currentColor','stroke-width':i%5?1.2:2,'stroke-linecap':'round'},svg)}
+    el('circle',{cx:50,cy:52,r:37,fill:'rgba(0,0,0,.25)'},svg);
+    el('circle',{cx:50,cy:50,r:36,fill:'url(#gSkirt)'},svg);
+    var cap=el('g',{'class':'cap'},svg);
+    for(var j=0;j<24;j++){var b=j*15*Math.PI/180;el('line',{x1:50+Math.sin(b)*31,y1:50-Math.cos(b)*31,x2:50+Math.sin(b)*35,y2:50-Math.cos(b)*35,stroke:'#2b2b2b','stroke-width':1.6},cap)}
+    el('circle',{'class':'c2',cx:50,cy:50,r:28,fill:'url(#gCap)'},cap);
+    el('line',{x1:50,y1:25,x2:50,y2:40,stroke:'#141414','stroke-width':3.2,'stroke-linecap':'round'},cap);
+    var lbl=document.createElement('span');lbl.className='lbl';lbl.textContent=wrap.dataset.label;
+    var val=document.createElement('span');val.className='val';
+    wrap.appendChild(knob);wrap.appendChild(lbl);wrap.appendChild(val);
+    function set(nv){
+      v=Math.max(min,Math.min(max,nv));
+      var ang=-135+(v-min)/(max-min)*270;
+      cap.setAttribute('transform','rotate('+ang+' 50 50)');
+      knob.setAttribute('aria-valuenow',Math.round(v*10)/10);
+      val.textContent=(k==='f'?v.toFixed(1):Math.round(v))+unit;
+      state[k]=v;applyColors();
+    }
+    set(v);
+    var drag=null;
+    knob.addEventListener('pointerdown',function(e){drag={y:e.clientY,x:e.clientX,v:v};knob.setPointerCapture(e.pointerId);e.preventDefault()});
+    knob.addEventListener('pointermove',function(e){if(!drag)return;var d=(drag.y-e.clientY)+(e.clientX-drag.x)*.5;set(drag.v+d/160*(max-min))});
+    knob.addEventListener('pointerup',function(){drag=null});
+    knob.addEventListener('pointercancel',function(){drag=null});
+    knob.addEventListener('wheel',function(e){e.preventDefault();set(v-Math.sign(e.deltaY)*(max-min)/50)},{passive:false});
+    knob.addEventListener('keydown',function(e){
+      var st=(max-min)/50;
+      if(e.key==='ArrowUp'||e.key==='ArrowRight'){set(v+st);e.preventDefault()}
+      else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){set(v-st);e.preventDefault()}
+      else if(e.key==='Home'){set(min);e.preventDefault()}else if(e.key==='End'){set(max);e.preventDefault()}
+    });
+  });
+
+  // patch cables
+  var cablesSvg=document.getElementById('cables'),pc=document.getElementById('pc');
+  var colors=['#e8b730','#d6453d','#3a8fd6','#222222','#f2efe6','#3fae7a'];
+  var cords=[{a:'o1',b:'vcf',c:'#d6453d',p:0},{a:'lfo',b:'mix',c:'#e8b730',p:1.7},{a:'vca',b:'out',c:'#3a8fd6',p:3.1}];
+  var jacks={};[].forEach.call(document.querySelectorAll('.jk'),function(j){jacks[j.dataset.j]=j});
+  var pending=null,ci=3;
+  function center(id){
+    var r=jacks[id].querySelector('i').getBoundingClientRect(),pr=plate.getBoundingClientRect();
+    return [r.left+r.width/2-pr.left,r.top+r.height/2-pr.top];
+  }
+  function drawCables(t){
+    while(cablesSvg.firstChild)cablesSvg.removeChild(cablesSvg.firstChild);
+    cords.forEach(function(cd){
+      var p1=center(cd.a),p2=center(cd.b),dx=p2[0]-p1[0],dy=p2[1]-p1[1];
+      var dist=Math.sqrt(dx*dx+dy*dy),sag=30+dist*.35;
+      var sway=reduced?0:Math.sin(t*.0012+cd.p)*6;
+      var mx=(p1[0]+p2[0])/2+sway,my=Math.max(p1[1],p2[1])+sag;
+      var d='M'+p1[0]+' '+p1[1]+' Q'+mx+' '+my+' '+p2[0]+' '+p2[1];
+      el('path',{d:d,fill:'none',stroke:'rgba(0,0,0,.28)','stroke-width':8,'stroke-linecap':'round',transform:'translate(2 6)'},cablesSvg);
+      el('path',{d:d,fill:'none',stroke:cd.c,'stroke-width':6,'stroke-linecap':'round'},cablesSvg);
+      el('path',{d:d,fill:'none',stroke:'rgba(255,255,255,.35)','stroke-width':1.4,'stroke-linecap':'round',transform:'translate(-1 -1.5)'},cablesSvg);
+      [p1,p2].forEach(function(p){
+        el('circle',{cx:p[0],cy:p[1],r:9,fill:'#1b1b1b'},cablesSvg);
+        el('circle',{cx:p[0],cy:p[1],r:6,fill:cd.c},cablesSvg);
+        el('circle',{cx:p[0]-2,cy:p[1]-2,r:2,fill:'rgba(255,255,255,.55)'},cablesSvg);
+      });
+    });
+    pc.textContent=cords.length+(cords.length===1?' CORD':' CORDS');
+  }
+  Object.keys(jacks).forEach(function(id){
+    jacks[id].addEventListener('click',function(){
+      if(!pending){pending=id;jacks[id].classList.add('pending');return}
+      jacks[pending].classList.remove('pending');
+      if(pending!==id){
+        var a=pending,b=id,found=-1;
+        cords.forEach(function(c,i){if((c.a===a&&c.b===b)||(c.a===b&&c.b===a))found=i});
+        if(found>=0)cords.splice(found,1);
+        else cords.push({a:a,b:b,c:colors[ci++%colors.length],p:Math.random()*6});
+      }
+      pending=null;drawCables(performance.now());
+    });
+  });
+
+  // scope + leds
+  var wave=document.getElementById('wave'),leds=[].slice.call(document.querySelectorAll('.led'));
+  function frame(t){
+    var tt=reduced?0:t/1000,pts=[],fold=state.w/100,freq=state.f;
+    for(var x=0;x<=300;x+=3){
+      var ph=x/300*Math.PI*2*(1+freq*.4)+tt*freq*.8;
+      var y=Math.sin(ph)*(1+fold*3);
+      y=Math.sin(y*1.2); // wavefolder
+      y+=Math.sin(ph*3+tt)*.12*fold;
+      pts.push((x?'L':'M')+x+' '+(60-y*42).toFixed(1));
+    }
+    wave.setAttribute('d',pts.join(''));
+    var beat=Math.floor((reduced?0:t/1000)*freq*.6)%4;
+    leds.forEach(function(l,i){l.classList.toggle('on',i===beat)});
+    drawCables(t);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

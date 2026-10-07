@@ -1,0 +1,26 @@
+PROMPT
+
+Build "089 ferrofluid-spikes": a canvas ferrofluid pool whose surface rises into a lattice of glossy black spikes when a magnet controlled by the cursor comes near. It is presented as a lab specimen page, "Ferrous Bloom, Specimen FB-04, Halden Field Lab" (fictional). Standalone and offline.
+
+Palette: graphite studio backdrop (#11121a to #0b0c11 to #060609) lit by a soft violet radial glow centred on the magnet; fluid in near-black (#121218 at the crests to #030304 at the bottom); a rim light drawn as a horizontal gradient violet #8b6cff, pale lavender-white #d9dcff, teal #2fd6c3; ink #e9ecf4, dim labels #7d8296; hairlines rgba(233,236,244,.14). The magnet is a brushed-steel puck with a red south band and an "N" mark.
+
+Type: "Helvetica Neue" / Helvetica / Arial at very light weight with tight tracking for the giant title "Ferrous Bloom" ("Bloom" bold, violet-to-teal gradient-clipped). ui-monospace / "SF Mono" / Menlo for uppercase lab labels, readouts and buttons.
+
+Layout: a full-viewport hero canvas with a HUD overlay. Top left: specimen label, title and a one-line subtitle. Top right: a frosted readout panel with Field (mT), Spikes (count), and a status line with an indicator dot ("Surface calm, below threshold" / "Rosensweig threshold crossed"). Bottom: a frosted control bar with a gradient-track "Coil" range slider, a "Pulse" toggle and a "Hold to energize" button. Below the hero, a three-column notes section (Suspension, Instability, Release) with short real copy, stacking on mobile.
+
+Simulation and rendering: four depth rows of spike sites (scale 0.55 to 1.0, spacing 30px times scale, alternate rows offset by half a spacing). The field at each site is 1/(1+(dx^2+dz^2)/r0^2) times a vertical falloff from the magnet height, where dz grows for rows further back. A broad Gaussian bulge forms under the magnet. Spikes appear only when the field passes a 0.3 threshold (the Rosensweig instability), with height following a power curve. Each spike's height uses spring dynamics (stiffness 0.14, damping 0.8), so peaks overshoot and shiver as they rise and fall, and they lean toward the magnet. Each row is drawn as one silhouette path sampled every 2px, using the sharp profile h*(1-|u|)^2.4 from the nearest spikes. It is filled with a dark vertical gradient, then clipped to draw a coloured rim light along the surface, curved specular streaks down the left flanks of the spikes, and a glint at each tip. Dashed, animated field lines curve from the magnet to the pool when the field is strong. A pulse mode oscillates the coil current; energizing boosts it by 55% with a teal glow under the magnet.
+
+Title: Ferrous Bloom Study
+
+Description: A dark, high-end science-gallery page. A pool of liquid black in layered depth rows is lit by violet-to-teal studio rim light. As the steel magnet follows the cursor down toward it, the surface swells and then gives way all at once into crowns of glossy spikes that lean toward the magnet, quiver on springs, and collapse back into a mirror when the magnet is lifted. Live readouts report the field and the spike count, and short notes below explain the physics.
+
+Visual techniques:
+- Layered canvas silhouettes sampled per pixel column from a spike-lattice height field
+- Threshold-gated spike growth with spring-damper dynamics and lean toward the magnet
+- Gradient fills, clipped rim-light strokes and per-spike specular streaks for a glossy look
+- Animated dashed bezier field lines; a radial studio glow that follows the magnet
+- A brushed-steel magnet drawn with multi-stop linear gradients
+- Frosted HUD panels (backdrop-filter), a custom gradient range slider, gradient-clipped headline
+- devicePixelRatio sizing, resize handling and a single requestAnimationFrame loop
+
+Interaction model: Move the pointer (or drag on touch) to carry the magnet. Lower is stronger, and the magnet cannot go below the pool. Press and hold on the canvas or the "Hold to energize" button (Space or Enter also work) to boost the field. The Coil slider sets the base current and Pulse makes it oscillate. Arrow keys nudge the magnet. When left alone, the magnet drifts slowly across the pool. Reduced motion turns off the drift, the spring wobble, the pulse oscillation and the moving dash animation; spikes go straight to their resting height.

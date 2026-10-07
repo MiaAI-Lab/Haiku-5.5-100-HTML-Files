@@ -1,0 +1,17 @@
+Prompt:
+Build a standalone HTML page called "Currents in Ink". Concept: a canvas flow field of ink particles; click to add vortices. Full-viewport DPR-aware canvas on warm rice-paper #ece7dc, with a CSS overlay of faint stain blooms and fine vertical fibre lines in multiply blend to suggest paper. Ink: deep indigo #1d2340 by default, with sepia #5a3a22 and vermilion #b8352a alternatives. Particle system: a count scaled to the viewport area (capped at 2600) of particles with random lifetimes; each frame every particle reads an angle from a smooth, slowly evolving field made of layered sines and a radial term, moves a short step, and draws a hairline segment, all batched into one path stroked at 16% alpha. The canvas is never fully cleared; instead a very low-alpha paper wash fades old strokes so the ink builds into marbled, suminagashi-like trails. Vortices: clicking places a whirlpool that adds a tangential swirl (falling off with distance squared) and a slight inward pull; consecutive vortices alternate spin direction; clicking an existing vortex reverses it; at most nine live vortices, the oldest easing out. Each vortex is marked by a thin vermilion ring that contracts into place and breathes slightly, and a small ink drop is dotted at the click point. Vortex strength eases in and out. Typography: Georgia italic display title "Currents in Ink" top-left with a Courier New tracked uppercase eyebrow "Study 09 · Suminagashi engine" and a short Georgia paragraph; a slightly rotated vermilion hanko-style seal stamp top-right; a vortex counter bottom-right in Courier. Bottom center: a frosted pill toolbar with three round ink swatches (pressed state ring), a divider, "Still water" (dissolves all vortices) and "New sheet" (wipes the paper). A hint line above the toolbar fades out after the first click. Springy cubic-bezier press feedback on buttons. Resize is debounced and reseeds particles. Reduced motion: fewer, slower particles, slower field evolution, no ring breathing.
+
+Title: Currents in Ink
+
+Description: A meditative generative-art page in which thousands of hairline ink strokes drift across warm paper along an invisible, slowly shifting current, accumulating into marbled trails like Japanese paper marbling. The visitor becomes the stone in the stream: each click sets a whirlpool spinning that bends and coils the ink around it. A restrained Georgia italic title, a vermilion seal and a small frosted toolbar keep the interface quiet so the drawing stays centre stage.
+
+Visual techniques:
+- DPR-scaled canvas with batched single-path stroking for thousands of particles
+- Layered-sine pseudo-noise angle field that evolves over time
+- Persistent canvas with low-alpha paper wash for trailing ink accumulation
+- Vortex forces with inverse-square tangential swirl and inward pull, eased strength
+- Contracting and breathing vortex ring markers
+- CSS paper grain overlay with multiply blending
+- Frosted pill toolbar, aria-pressed swatches, springy press easing, fading hint
+
+Interaction model: Click or tap the paper to drop a vortex; the ink starts swirling around it, and successive vortices alternate direction. Click an existing vortex to reverse its spin. Choose indigo, sepia or vermilion ink from the toolbar to change the colour of new strokes, press "Still water" to let all vortices fade away, or "New sheet" to start on clean paper.

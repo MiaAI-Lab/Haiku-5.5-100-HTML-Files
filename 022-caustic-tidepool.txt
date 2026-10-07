@@ -1,0 +1,21 @@
+Prompt:
+Build a full-viewport canvas page that looks straight down into a shallow rock pool at low tide, with sunlight caustics moving across the floor. Palette: deep sea #04262c, teal #0b4b52, aqua accent #7fe6d9, foam white #e9fffb, sand #cdb78a, coral #ee8a6b. Typography: Didot / "Bodoni 72" / Georgia high-contrast serif for a large title "Tidepool Seven" with "Seven" in italic aqua; "Avenir Next" / "Segoe UI" / system-ui for body, small spaced uppercase labels; ui-monospace for numeric readouts.
+Rendering: on resize, paint a static seabed to an offscreen canvas with a seeded PRNG: teal-to-olive vertical gradient, sand speckles, rounded pebbles made of offset radial gradients, a few coral-red five-armed starfish with pale dots, pink anemones drawn as radiating quadratic tentacles around a dark core, and zigzag green weed strokes. Each frame, draw that bed and then compute caustics into a small low-resolution ImageData buffer (about one-fifth width, capped near 52k pixels). Per pixel, domain-warp the coordinates with sines over time, then sum two sine fields; brightness is exp(-5.5*|field|) for each, added and squared, so bright thin lines form a shifting net. Write only alpha into a pre-filled pale aqua buffer, then upscale with smoothing onto the main canvas using the "lighter" composite, plus a second slightly enlarged faint pass for bloom. A CSS vignette and a top light gradient sit over the canvas. Canvas sized to devicePixelRatio (max 2), debounced resize, requestAnimationFrame loop with clamped delta time.
+Ripples: each ripple has a center, age and amplitude. In the caustic loop it pushes the warped coordinates radially using a Gaussian wavefront travelling outward (sin(dist*7-age*9), decaying with age), so the light net visibly bends in rings. Thin foam-white and aqua circles are also stroked on the main canvas. Maximum eight ripples, each removed after six seconds.
+Layout: title block top-left with the eyebrow "Marrow Point · Pool 07 · Low water" and a two-sentence lede. Bottom-right frosted-glass control panel (backdrop blur, aqua hairline, rounded 18px) rising in on load, containing "Swell" (time speed) and "Sunlight" (caustic gain) custom range sliders with glowing thumbs and filled tracks, a live readout of water temperature and ripple count, and a pill "Drop pebble" button with a springy press. A breathing "Touch the water" hint fades away after the first ripple.
+Reduced motion: time runs at 0.15x, ripples age slowly, and the panel and hint animations are turned off.
+
+Title: Tidepool Seven
+
+Description: A meditative top-down view of a sunlit rock pool. A procedurally painted floor of pebbles, starfish, anemones and weed sits under a living net of caustic light, computed per pixel at low resolution and blended additively so it glows. Touching the water sends out ripples that bend the light net in rings, and a small frosted-glass instrument panel tunes the swell and the strength of the sun.
+
+Visual techniques:
+- Offscreen seeded-random seabed painted once per resize with radial-gradient pebbles and vector starfish and anemones
+- Low-resolution per-pixel caustic field using domain-warped sine sums and exponential line sharpening
+- Additive "lighter" compositing with a second scaled pass for soft bloom
+- Ripple wavefronts injected as radial coordinate displacement into the caustic function
+- devicePixelRatio-aware canvas, debounced resize and a pixel budget for the caustic buffer
+- Glassmorphism control panel with custom-styled range inputs and glowing thumbs
+- CSS vignette overlay and a breathing hint that fades once the user interacts
+
+Interaction model: Moving the pointer across the pool leaves a trail of small throttled ripples, and clicking or tapping drops a larger one. The light net warps outward from each point of contact. The Swell slider speeds up or calms the water, the Sunlight slider brightens or dims the caustics, and "Drop pebble" makes a strong ripple at a random spot. The ripple count updates live in the panel.

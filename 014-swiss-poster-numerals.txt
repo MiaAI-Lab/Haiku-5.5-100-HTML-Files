@@ -1,0 +1,43 @@
+PROMPT
+
+Build a standalone HTML page in the Swiss International Typographic Style for an invented event, "Raster 27 · International Symposium on Grid Systems", 12 to 14 March 2027 at Halle 9, Lindenquai, organised by the fictional Lindenquai Society for Visual Order. The concept is swiss-poster-numerals: a poster with giant numerals, an asymmetric grid and animated counters.
+
+Palette: off-white paper #f4f3ef, near-black ink #0e0e0e, warm grey #6f6f6b for secondary text, and a single signal red #e2161b. Nothing else. One inverted black section for the countdown.
+
+Type: one family, two weights. Use "Helvetica Neue", Helvetica, Nimbus Sans, Arial; 700 for display and 500 or regular for text. Tabular numerals everywhere (font-feature-settings "tnum"). Display numerals are set very tight (letter-spacing -0.06em to -0.075em, line-height 0.74 to 0.85). Labels are small 12px bold and everything is flush left, ragged right.
+
+Layout: a strict 12-column CSS grid with clamp() gutters and page padding, reused in every section and in a fixed overlay.
+- Header row on a 2px black rule: "Raster 27" in cols 1 to 3, the event name in 4 to 6, dates and venue in 7 to 9, and "Edition A" plus a square "Grid" toggle button in 10 to 12.
+- Hero (full viewport): a red square block about 38% wide sitting high on the right. Overlapping it with multiply blending is a giant "27" (clamp 200px to 640px, about 40vw) aligned to the right edge of cols 4 to 12. Top left: a red "Poster Nº 27" label and the headline "Order is / not a cage." Bottom row: a short paragraph in cols 1 to 4, grey meta in cols 7 to 9 ("Free for students / Doors 09:00 / Registration closes 28 Feb"), and "12 columns / 1 red" right-aligned in cols 10 to 12.
+- Stats band: four 3-column cells divided by hairlines, each with a huge counter (03 Days, 48 Speakers, 12 Columns, 1,440 Seats), a bold label and a grey one-liner.
+- Programme: a section header (a small label plus a large bold sentence "Every session starts on the minute and ends on a baseline."), then five rows: an index number, a big time numeral (09:30, 11:00, 13:45, 15:20, 17:00), a session title and an invented speaker.
+- Countdown: a black band with a red label "Days until the grid opens", a giant day count with a red full stop, and live hours, minutes and seconds below.
+- Footer with two short lines.
+On phones (under 760px) the header splits into two rows, the hero stacks (headline, then the numeral at 62vw, then the text), stats go two per row, programme rows stack under their index, and the grid overlay switches to 6 columns.
+
+Motion: crisp, with no bounce, using an expo-out curve cubic-bezier(.16,1,.3,1).
+- The hero "27" counts up from 00 on load with easeOutExpo over 1.8s and recounts quickly on hover.
+- An IntersectionObserver reveals sections (fade and rise 28px, staggered 90ms in groups of four) and starts each stat counter when it enters view. Hovering or focusing a stat replays its count, draws a 6px red bar across its top edge from the left, and turns the numeral red.
+- Programme rows fill with a black panel rising from below on hover or focus; the text turns paper-white and the time turns red.
+- The countdown counts up to the real number of days until 12 March 2027 09:00 when it comes into view, then ticks every second.
+- The red hero block drifts a few pixels against the pointer (an inverse parallax up to 36px) with a slow 1.2s ease.
+
+Interaction: the Grid button or the G key fades in a fixed overlay of twelve translucent red columns that line up exactly with the page grid, so you can see the system the layout is built on. Hover and focus states on stats and programme rows; all of them are keyboard focusable with red outlines.
+
+Reduced motion: reveals are shown at once, counters jump straight to their final values, and the parallax and fill transitions are off.
+
+Title: Raster 27 Poster
+
+Description: A disciplined, poster-like single page for a fictional symposium about grids, built entirely from one sans-serif family, black, off-white and one red. A colossal "27" overprints a red square in the hero, oversized tabular numerals count up as each section enters view, and a live countdown runs in a black band. Everything sits on a visible-on-demand 12-column grid, so the page doubles as a lesson in the Swiss style it celebrates.
+
+Visual techniques:
+- A shared 12-column CSS grid with an asymmetric placement of every element
+- Giant tight-tracked numerals with tabular figures and a multiply blend over a red block
+- easeOutExpo requestAnimationFrame counters with zero padding and thousands separators
+- IntersectionObserver-triggered staggered reveals and counter starts
+- A fixed translucent grid overlay aligned with the layout and toggled by a button or the G key
+- Hover fills rising from below and red rules drawn with scaleX
+- Inverse pointer parallax on the hero block
+- A live countdown computed from a fixed opening date
+
+Interaction model: The reader scrolls through the poster as it assembles. Numbers count up as they appear, and hovering a statistic or the hero numeral replays its count. Programme rows invert to black when hovered or focused. The Grid button (or G) shows the twelve-column structure over the whole page, the red block in the hero drifts gently against the pointer, and the countdown keeps ticking live in the black band.

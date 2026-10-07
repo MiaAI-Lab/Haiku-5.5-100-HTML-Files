@@ -1,0 +1,24 @@
+Prompt:
+Create a standalone HTML page called "The Lapis Courtyard", a wall of Islamic-inspired eight-pointed star tiles drawn in inline SVG, presented inside a tall arched niche, from the tilework of a fictional palace, the Qasr Nadira. Default "Lapis" glaze: page deep lapis night #0b1734, tile ground #13306b, ivory stars #f4ead2, turquoise inner stars #1f8a9a, gold #d4af5a for strapwork, corner diamonds and alternate petals, cinnabar #b8452f for the other petals, ivory text #f1e6cc. Two alternate glazes: "Saffron" (burnt orange ground #b4651f, cream stars, oxblood inner stars, teal and saffron petals, dark brown strapwork, near-black brown page) and "Malachite" (green ground #0f5a48, cream stars, indigo inner stars, gold and mint petals, gold strapwork, deep green page). All colors are CSS custom properties on the body, so switching glaze crossfades every SVG fill and stroke over 0.9s.
+
+Typography: "Iowan Old Style" / "Palatino Linotype" / Palatino / Georgia throughout; a gold small-caps eyebrow tracked at 0.42em, a large regular-weight title with "Courtyard" in gold italic, and an italic dek. A small outlined double-square star ornament sits above the title.
+
+Layout: centered column (max 980px). The mosaic sits in an arch made by an elliptical top border-radius, with a gold gradient rim, deep drop shadow, inner top shading and a slow soft-light sheen that sweeps across the glaze every 9 seconds. The SVG grid is 8 by 6 tiles on desktop and 5 by 7 on phones (rebuilt on resize when the breakpoint changes). Each 100-unit tile has a static layer (ground square and gold corner diamonds that join with neighbours into small crosses) and a rotating layer: a 16-vertex octagram of radius 49 with gold strapwork outline, a smaller turquoise octagram, a rosette of eight ellipse petals alternating two glazes, and a gold center disc. Below the arch, a two-column section explains the geometry ("Two squares, one star") beside a panel of round glaze chips with conic-gradient swatches and an elongated hexagonal gold "Turn the courtyard" button.
+
+Motion: each star group rotates by 45 degrees per turn using transform-box fill-box and a long, gentle cubic-bezier(.25,1,.3,1) ease; because petals alternate colors, every eighth turn visibly swaps them, so the wall records where the pointer has passed. Clicking a tile sends a ripple: every tile turns after a delay proportional to its distance from the clicked tile. A ripple from the top-left corner plays shortly after load. Reduced motion removes the sheen, shortens the rotation to a quick linear turn and fires ripples instantly.
+
+Title: The Lapis Courtyard
+
+Description: A contemplative tile wall where each eight-pointed star turns an eighth of a revolution when the pointer passes over it. The alternating petal glazes make every turn leave a visible trace, so the courtyard slowly becomes a record of the visitor's path, while ripples and glaze changes wash across the whole arch like light moving through a real courtyard.
+
+Visual techniques:
+- JavaScript-generated inline SVG tile grid with computed octagram polygons and rotated ellipse rosettes
+- Separate static and rotating layers per tile, with CSS transforms on SVG groups using transform-box fill-box
+- Glaze themes as CSS custom properties with transitioned fill and stroke
+- Arched niche via elliptical border-radius, gradient rim, inset shading and a soft-light animated sheen
+- Distance-delayed ripple propagation across the grid
+- Responsive grid rebuild at a breakpoint for phone and desktop proportions
+- Conic-gradient glaze swatches, pill toggle chips and a clip-path hexagonal button
+
+Interaction model:
+Move the pointer across the wall and each tile you enter turns 45 degrees. Click or tap a tile to send a ripple of turning outward from that point. The "Turn the courtyard" button sends a ripple from the center, and the Lapis, Saffron and Malachite chips recolor the whole page and trigger a ripple from the top edge. Buttons are keyboard accessible with visible focus rings.

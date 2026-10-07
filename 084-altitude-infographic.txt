@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page for "altitude-infographic": a vertical scroll infographic of altitude stages, framed as "Descent, a field guide to falling" from the edge of space down to sea level. Stages (one full-height section each): the Kármán Line at 100 km, the Mesopause at 85 km, the Stratopause at 50 km, the Ozone Layer at 25 km, the Tropopause at 11 km, Summit Altitude at 8.85 km, the Cloud Deck at 2 km and Sea Level at 0 km, each with a short evocative paragraph and a three-cell fact strip (temperature, pressure in hPa, and one signature fact). Palette: the whole sky is a fixed background gradient interpolated per stage from space black (#03040b) through midnight indigo, deep cobalt, and airliner blue to pale sea-level haze (#c4deee), with a darker top band; text in cool white (#eef3ff) with 62 percent white for secondary copy; a single warm accent (#ffb46b) for units, the cue and the altitude marker. Typography: Avenir Next / Futura / Segoe UI / Helvetica Neue for headings and copy, ui-monospace / SF Mono / Menlo for big altitude numerals and instrument readouts. Layout: a fixed left instrument rail (132px on desktop, 74px on phones) with a live readout of altitude in km, temperature and pressure, and below it a vertical scale line with a dot button for every stage placed on a logarithmic altitude scale, plus a glowing accent marker that slides to the current altitude; the main column holds a giant intro title and then the stage cards. A planet disc fixed at the bottom of the viewport, with a blue atmospheric glow, starts as a small curved limb and swells into an almost flat, wider horizon as you descend; a CSS star field of tiled radial-gradient dots fades out below roughly the ozone layer. Motion: scroll position is converted into a fractional stage index from section centers, eased with a smoothstep and a 0.12 lerp in requestAnimationFrame; sky colors and temperature interpolate linearly, pressure interpolates logarithmically. Cards rise and fade in on entering via IntersectionObserver. Rail buttons smooth-scroll to their stage and the nearest stage dot lights in accent with a springy scale. Reduced motion: no lerp lag, no card translate, no smooth scrolling.
+
+Title: Descent
+
+Description: A scroll-driven fall through the atmosphere. As the reader scrolls, an instrument rail counts altitude down from 100 km while temperature and pressure update live. The sky shifts from starry black to deep indigo and then to bright haze, and the planet's curved limb rises and flattens into a horizon. Each layer, from the coldest air on Earth at the mesopause to the full breath of sea level, gets a large monospace altitude figure, a short story and a strip of facts.
+
+Visual techniques:
+- Scroll-to-stage mapping using section centers, with smoothstep easing and rAF lerp smoothing
+- Per-stage RGB sky gradient interpolation and logarithmic pressure interpolation
+- Fixed planet disc whose diameter and visible cap are driven by normalized log altitude
+- Tiled multi-layer radial-gradient star field whose opacity depends on altitude
+- Logarithmic altitude scale rail with a glowing marker and stage jump buttons
+- IntersectionObserver reveal of stage cards with long ease-out transforms
+- Frosted fact strips using backdrop-filter over the shifting sky
+- Responsive rail that collapses to dots and a compact readout on phones
+
+Interaction model: Scroll to descend; the altitude, temperature and pressure readouts, the sky color, the stars and the planet horizon all follow your scroll position. Click any dot on the left altitude scale to glide straight to that layer. The dot for the current layer stays lit so you always know where you are in the fall.

@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page that reads like a premium print-magazine long-form feature. Concept: editorial almanac, a magazine-style long-form essay with drop caps, pull quotes and scroll reveals, in cream and oxblood. Fictional publication "Hearthstead Quarterly", Vol. XIV, Autumn. Essay: "The Almanac of Small Weathers" by Ottilie Marchbank, about the Penhallow family's ninety-one-year hand-kept ledger of non-meteorological "weathers" (frost leaving the gate latch, swifts departing, hen fogs, church bells sounding sour before thunder), started by Agnes Penhallow in 1934 and now kept by her great-granddaughter Wren. Write real, warm copy in three numbered sections (I Method, II Measures, III Inheritance). Palette: cream #f4ecdc page with a faint oxblood dot-grain texture made from a 5px radial-gradient, ink #2a1a17, muted brown #6b5750, oxblood #6e1a1f accents, tan hairlines #d8c9b0. Type: Iowan Old Style / Palatino / Georgia for body text; Didot / Bodoni / Georgia display for headlines, drop cap and pull quote; Gill Sans / Helvetica Neue for small tracked uppercase labels. Layout: sticky translucent masthead with publication name and A− / A+ text-size buttons; a 3px oxblood reading-progress bar pinned to the top; centered hero with kicker, huge Didot headline with an italic oxblood word, italic dek, byline and a fleuron ornament between rules. Article body is a three-column grid (margins plus a 36rem measure); margin notes with an oxblood left rule sit in the right column on desktop and fold inline on mobile. The opening paragraph uses a 5.4em floated oxblood drop cap and a small-caps first line. A full-width pull quote with a heavy top rule and thin bottom rule in large Didot italic. A four-cell "ledger data" strip of average dates (first frost Oct 19, swifts Aug 06, 23 hen fogs, 4 sour bells) that becomes 2x2 on mobile, with a paper-tone hover. End with a small oxblood square end mark and a quiet colophon footer. Motion: every block fades and rises 22px into place with a long cubic-bezier(.2,.7,.1,1) ease via IntersectionObserver; the pull quote scales up slightly instead. Progress bar updated with requestAnimationFrame-throttled scroll. Reduced motion: no reveals, no smooth scroll. Selection highlight in oxblood.
+
+Title: The Almanac of Small Weathers
+
+Description: A quiet, literary long-read laid out like a high-end quarterly magazine. Cream paper with a faint printed grain, oxblood ink for accents, a towering Didot headline and a classic drop cap set the tone. The essay tells the story of a farm family's ninety-one-year ledger of the weathers nobody else records, with margin annotations from the ledger itself, a sweeping pull quote and a small data strip of the ledger's averages. Paragraphs rise gently into view as the reader scrolls, and a thin oxblood bar tracks reading progress.
+
+Visual techniques:
+- Three-column editorial grid with margin notes that reflow inline on mobile
+- ::first-letter drop cap and ::first-line small caps
+- Full-bleed Didot italic pull quote between oxblood rules
+- Dot-grain paper texture from a tiny repeating radial-gradient
+- IntersectionObserver scroll reveals with long custom easing
+- Fixed reading-progress bar driven by scaleX
+- Sticky translucent masthead with backdrop blur
+- Responsive data strip with hover tinting; system serif, display and humanist sans stacks
+
+Interaction model: The reader scrolls through the essay; each paragraph, note, quote and table fades up as it enters the viewport while the oxblood bar at the top fills to show progress. The A− and A+ buttons in the masthead adjust the body text size for comfortable reading. Hovering the ledger data cells warms them to a paper tone.

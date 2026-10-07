@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oriel Coffee Room: Menu</title>
+<style>
+:root{
+  --oat:#f3ede3;--paper:#f8f4ec;--ink:#231813;--crema:#b4733a;--muted:#8c7b6c;--hair:rgba(35,24,19,.16);--cream:#f3e6d2;
+  --display:Didot,"Bodoni 72","Bodoni MT","Iowan Old Style",Georgia,serif;
+  --sans:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--oat);color:var(--ink)}
+body{font-family:var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.page{max-width:1200px;margin:0 auto;padding:clamp(24px,5vw,72px) clamp(16px,4vw,48px) 64px}
+.mast{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;border-bottom:1px solid var(--ink);padding-bottom:28px}
+.mast h1{font:400 clamp(72px,15vw,190px)/.8 var(--display);letter-spacing:-.035em;position:relative}
+.mast h1 em{display:block;font-style:italic;font-size:.3em;letter-spacing:0;margin-top:.35em;color:var(--crema)}
+.steam{position:absolute;left:clamp(150px,30vw,370px);top:-.35em;width:clamp(36px,6vw,64px);height:auto;overflow:visible}
+.steam path{fill:none;stroke:var(--crema);stroke-width:1.4;stroke-linecap:round;stroke-dasharray:60;stroke-dashoffset:60;opacity:0;animation:rise 4.2s ease-in-out infinite}
+.steam path:nth-child(2){animation-delay:1.4s}.steam path:nth-child(3){animation-delay:2.8s}
+@keyframes rise{0%{stroke-dashoffset:60;opacity:0;transform:translateY(8px)}30%{opacity:.8}70%{opacity:.5}100%{stroke-dashoffset:-60;opacity:0;transform:translateY(-10px)}}
+.meta{text-align:right;font-size:12px;letter-spacing:.18em;text-transform:uppercase;line-height:2;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,5vw,80px);padding:28px 0 36px;align-items:end}
+.intro p{font:italic clamp(19px,2vw,24px)/1.45 var(--display);max-width:32ch}
+.tabs{display:flex;flex-wrap:wrap;gap:4px 22px;justify-content:flex-end;position:relative}
+.tab{font:600 12px var(--sans);letter-spacing:.2em;text-transform:uppercase;background:none;border:none;color:var(--muted);padding:10px 0;cursor:pointer;position:relative;transition:color .3s}
+.tab::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .45s cubic-bezier(.7,0,.2,1)}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected=true]{color:var(--ink)}
+.tab[aria-selected=true]::after{transform:scaleX(1);transform-origin:left}
+.tab:focus-visible{outline:1px dashed var(--crema);outline-offset:4px}
+.tab sup{font:500 9px var(--mono);margin-left:3px;color:var(--crema)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair);border-left:1px solid var(--hair)}
+@media (max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}.mast{grid-template-columns:1fr}.meta{text-align:left}.intro{grid-template-columns:1fr}.tabs{justify-content:flex-start}}
+.card{position:relative;overflow:hidden;min-height:300px;padding:28px 26px 26px;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);background:var(--paper);cursor:pointer;
+  color:var(--ink);transition:color .45s ease .08s,opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1);outline:none;display:flex;flex-direction:column}
+.card.hide{display:none}
+.card.fade{opacity:0;transform:translateY(10px)}
+.ink{position:absolute;inset:-20px;pointer-events:none;filter:url(#inkEdge);z-index:0}
+.ink i{position:absolute;left:var(--x,50%);top:var(--y,50%);width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:var(--ink);transform:scale(0);transition:transform .8s cubic-bezier(.65,0,.25,1)}
+.card:hover .ink i,.card:focus-visible .ink i,.card.open .ink i{transform:scale(var(--s,60))}
+.card:hover,.card:focus-visible,.card.open{color:var(--cream)}
+.card>*:not(.ink){position:relative;z-index:1}
+.top{display:flex;justify-content:space-between;font:500 11px var(--mono);letter-spacing:.12em;color:var(--muted);transition:color .45s}
+.card:hover .top,.card:focus-visible .top,.card.open .top{color:rgba(243,230,210,.55)}
+.name{display:flex;align-items:baseline;gap:10px;margin-top:38px}
+.name h2{font:400 clamp(28px,2.6vw,36px)/1.05 var(--display);letter-spacing:-.01em}
+.name .lead{flex:1;border-bottom:1px dotted currentColor;opacity:.35;transform:translateY(-6px);min-width:16px}
+.name .price{font:italic 400 24px var(--display);color:var(--crema);transition:color .45s}
+.card:hover .price,.card:focus-visible .price,.card.open .price{color:#e0a46b}
+.origin{font:600 10.5px var(--sans);letter-spacing:.22em;text-transform:uppercase;margin-top:14px;opacity:.7}
+.faces{position:relative;margin-top:auto;padding-top:26px;min-height:96px}
+.notes,.recipe{transition:opacity .45s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.notes{font:italic 18px/1.45 var(--display)}
+.recipe{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;opacity:0;transform:translateY(12px);pointer-events:none}
+.recipe div{border-top:1px solid rgba(243,230,210,.25);padding-top:8px}
+.recipe b{display:block;font:400 22px/1 var(--display);color:var(--cream)}
+.recipe span{font:500 9.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(243,230,210,.55)}
+.card.open .notes{opacity:0;transform:translateY(-10px)}
+.card.open .recipe{opacity:1;transform:none}
+.hint{font:500 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;margin-top:14px;opacity:0;transition:opacity .4s .15s}
+.card:hover .hint,.card:focus-visible .hint{opacity:.5}
+.foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:40px;padding-top:20px;border-top:1px solid var(--ink);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.foot em{font:italic 16px var(--display);letter-spacing:0;text-transform:none;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){
+  .steam path{animation:none;opacity:.6;stroke-dashoffset:0}
+  .ink i{transition-duration:.01s}.card,.notes,.recipe,.tab::after{transition-duration:.01s}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="inkEdge" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"></feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+  </filter>
+</svg>
+<div class="page">
+  <header class="mast">
+    <h1>Oriel
+      <svg class="steam" viewBox="0 0 40 60" aria-hidden="true"><path d="M8 58c-6-10 6-16 0-26s6-16 0-28"></path><path d="M20 58c-6-10 6-16 0-26s6-16 0-28"></path><path d="M32 58c-6-10 6-16 0-26s6-16 0-28"></path></svg>
+      <em>coffee room &amp; small roastery</em></h1>
+    <div class="meta"><b>No. 14 Wicket Lane</b><br>Weekdays 7&ndash;16<br>Weekends 8&ndash;15</div>
+  </header>
+  <section class="intro">
+    <p>Twelve cups, written plainly. Hover to let the ink in; tap a cup to read how the bar pulls it.</p>
+    <nav class="tabs" role="tablist" aria-label="Menu sections" id="tabs">
+      <button class="tab" role="tab" aria-selected="true" data-f="all">All<sup>12</sup></button>
+      <button class="tab" role="tab" aria-selected="false" data-f="espresso">Espresso<sup>3</sup></button>
+      <button class="tab" role="tab" aria-selected="false" data-f="filter">Filter<sup>3</sup></button>
+      <button class="tab" role="tab" aria-selected="false" data-f="milk">With milk<sup>3</sup></button>
+      <button class="tab" role="tab" aria-selected="false" data-f="other">Not coffee<sup>3</sup></button>
+    </nav>
+  </section>
+  <main class="grid" id="grid">
+    <article class="card" data-c="espresso" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>01</span><span>Espresso</span></div>
+      <div class="name"><h2>House Espresso</h2><span class="lead"></span><span class="price">3.2</span></div>
+      <p class="origin">Huila, Colombia &middot; Sidama, Ethiopia &middot; Washed</p>
+      <div class="faces"><p class="notes">Dark cherry, cocoa nib and a long finish of orange peel.</p>
+        <div class="recipe"><div><b>18g</b><span>Dose</span></div><div><b>38g</b><span>Yield</span></div><div><b>28s</b><span>Time</span></div><div><b>93&deg;</b><span>Temp</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="espresso" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>02</span><span>Espresso</span></div>
+      <div class="name"><h2>Ristretto</h2><span class="lead"></span><span class="price">3.4</span></div>
+      <p class="origin">Cerrado Mineiro, Brazil &middot; Natural</p>
+      <div class="faces"><p class="notes">Short and syrupy. Toasted hazelnut, molasses, a little brown butter.</p>
+        <div class="recipe"><div><b>18g</b><span>Dose</span></div><div><b>24g</b><span>Yield</span></div><div><b>22s</b><span>Time</span></div><div><b>92&deg;</b><span>Temp</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="espresso" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>03</span><span>Espresso</span></div>
+      <div class="name"><h2>Long Black</h2><span class="lead"></span><span class="price">3.8</span></div>
+      <p class="origin">House espresso &middot; over hot water</p>
+      <div class="faces"><p class="notes">The crema kept intact, floating on a clean, tea-like body.</p>
+        <div class="recipe"><div><b>18g</b><span>Dose</span></div><div><b>38g</b><span>Yield</span></div><div><b>120</b><span>ml water</span></div><div><b>88&deg;</b><span>Water</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="filter" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>04</span><span>Filter</span></div>
+      <div class="name"><h2>Gesha Pour-over</h2><span class="lead"></span><span class="price">7.5</span></div>
+      <p class="origin">Boquete, Panama &middot; Washed</p>
+      <div class="faces"><p class="notes">Jasmine on the nose, bergamot and white peach in the cup.</p>
+        <div class="recipe"><div><b>15g</b><span>Dose</span></div><div><b>250g</b><span>Water</span></div><div><b>2:50</b><span>Time</span></div><div><b>94&deg;</b><span>Temp</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="filter" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>05</span><span>Filter</span></div>
+      <div class="name"><h2>Nyeri Batch Brew</h2><span class="lead"></span><span class="price">4.2</span></div>
+      <p class="origin">Nyeri, Kenya &middot; Washed</p>
+      <div class="faces"><p class="notes">Blackcurrant, tomato vine and cane sugar. Brewed fresh every forty minutes.</p>
+        <div class="recipe"><div><b>60g</b><span>Dose</span></div><div><b>1L</b><span>Water</span></div><div><b>5:30</b><span>Cycle</span></div><div><b>95&deg;</b><span>Temp</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="filter" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>06</span><span>Filter</span></div>
+      <div class="name"><h2>Cold Brew Reserve</h2><span class="lead"></span><span class="price">5.0</span></div>
+      <p class="origin">Yirgacheffe, Ethiopia &middot; Natural</p>
+      <div class="faces"><p class="notes">Blueberry and milk chocolate, steeped slowly overnight.</p>
+        <div class="recipe"><div><b>100g</b><span>Dose</span></div><div><b>1L</b><span>Water</span></div><div><b>18h</b><span>Steep</span></div><div><b>4&deg;</b><span>Cold</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="milk" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>07</span><span>With milk</span></div>
+      <div class="name"><h2>Flat White</h2><span class="lead"></span><span class="price">4.4</span></div>
+      <p class="origin">Double ristretto &middot; five ounces</p>
+      <div class="faces"><p class="notes">Silky microfoam poured thin, so the coffee still leads.</p>
+        <div class="recipe"><div><b>18g</b><span>Dose</span></div><div><b>2&times;</b><span>Ristretto</span></div><div><b>150</b><span>ml cup</span></div><div><b>60&deg;</b><span>Milk</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="milk" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>08</span><span>With milk</span></div>
+      <div class="name"><h2>Cortado</h2><span class="lead"></span><span class="price">4.0</span></div>
+      <p class="origin">Equal parts &middot; served in glass</p>
+      <div class="faces"><p class="notes">Half espresso, half warm milk. Small, round and gone in four sips.</p>
+        <div class="recipe"><div><b>18g</b><span>Dose</span></div><div><b>38g</b><span>Yield</span></div><div><b>40</b><span>ml milk</span></div><div><b>55&deg;</b><span>Milk</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="milk" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>09</span><span>With milk</span></div>
+      <div class="name"><h2>Cardamom Oat</h2><span class="lead"></span><span class="price">5.2</span></div>
+      <p class="origin">House syrup &middot; oat milk</p>
+      <div class="faces"><p class="notes">Green cardamom crushed by hand each morning, a breath of sweetness.</p>
+        <div class="recipe"><div><b>18g</b><span>Dose</span></div><div><b>10ml</b><span>Syrup</span></div><div><b>220</b><span>ml cup</span></div><div><b>60&deg;</b><span>Oat</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="other" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>10</span><span>Not coffee</span></div>
+      <div class="name"><h2>Hojicha Milk</h2><span class="lead"></span><span class="price">4.8</span></div>
+      <p class="origin">Roasted green tea &middot; low caffeine</p>
+      <div class="faces"><p class="notes">Toasty and caramel-soft, the afternoon drink of the bar staff.</p>
+        <div class="recipe"><div><b>4g</b><span>Tea</span></div><div><b>40ml</b><span>Water</span></div><div><b>180</b><span>ml milk</span></div><div><b>80&deg;</b><span>Water</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="other" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>11</span><span>Not coffee</span></div>
+      <div class="name"><h2>Cascara Tonic</h2><span class="lead"></span><span class="price">5.0</span></div>
+      <p class="origin">Dried coffee cherry &middot; tonic &middot; lemon</p>
+      <div class="faces"><p class="notes">The fruit around the bean, steeped like hibiscus and lifted with bubbles.</p>
+        <div class="recipe"><div><b>12g</b><span>Cascara</span></div><div><b>6m</b><span>Steep</span></div><div><b>120</b><span>ml tonic</span></div><div><b>1</b><span>Peel</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+    <article class="card" data-c="other" tabindex="0" role="button" aria-expanded="false"><span class="ink"><i></i></span>
+      <div class="top"><span>12</span><span>Not coffee</span></div>
+      <div class="name"><h2>Chocolate 70</h2><span class="lead"></span><span class="price">4.6</span></div>
+      <p class="origin">Single-estate cacao &middot; whole milk</p>
+      <div class="faces"><p class="notes">Melted from shaved bars, not powder. Dense, dark and only a little sweet.</p>
+        <div class="recipe"><div><b>35g</b><span>Cacao</span></div><div><b>200</b><span>ml milk</span></div><div><b>70%</b><span>Solids</span></div><div><b>65&deg;</b><span>Serve</span></div></div></div>
+      <p class="hint">Tap for the recipe</p>
+    </article>
+  </main>
+  <footer class="foot">
+    <span>Roasted Tuesdays, behind the counter</span>
+    <em>Water filtered to 90 ppm. Oat and whole milk at no extra cost.</em>
+    <span>Oriel &middot; est. in a former bay-window shop</span>
+  </footer>
+</div>
+<script>
+(function(){
+  var cards=[].slice.call(document.querySelectorAll(".card"));
+  function setInk(card,x,y){
+    var r=card.getBoundingClientRect(),w=r.width,h=r.height;
+    var dx=Math.max(x,w-x),dy=Math.max(y,h-y),d=Math.sqrt(dx*dx+dy*dy)+40;
+    card.style.setProperty("--x",(x+20)+"px");card.style.setProperty("--y",(y+20)+"px");card.style.setProperty("--s",(d*2/20).toFixed(1));
+  }
+  cards.forEach(function(card){
+    card.addEventListener("pointerenter",function(e){var r=card.getBoundingClientRect();setInk(card,e.clientX-r.left,e.clientY-r.top)});
+    card.addEventListener("pointerleave",function(e){if(card.classList.contains("open"))return;var r=card.getBoundingClientRect();
+      card.style.setProperty("--x",(e.clientX-r.left+20)+"px");card.style.setProperty("--y",(e.clientY-r.top+20)+"px")});
+    card.addEventListener("focus",function(){var r=card.getBoundingClientRect();if(!card.matches(":hover"))setInk(card,r.width/2,r.height/2)});
+    function toggle(){var o=!card.classList.contains("open");card.classList.toggle("open",o);card.setAttribute("aria-expanded",o?"true":"false");
+      var h=card.querySelector(".hint");h.textContent=o?"Tap to close":"Tap for the recipe"}
+    card.addEventListener("click",function(e){if(!card.matches(":hover")){var r=card.getBoundingClientRect();setInk(card,e.clientX-r.left,e.clientY-r.top)}toggle()});
+    card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}});
+  });
+  var tabs=[].slice.call(document.querySelectorAll(".tab"));
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  tabs.forEach(function(tab){
+    tab.addEventListener("click",function(){
+      tabs.forEach(function(t){t.setAttribute("aria-selected",t===tab?"true":"false")});
+      var f=tab.getAttribute("data-f");
+      cards.forEach(function(c){c.classList.add("fade")});
+      setTimeout(function(){
+        cards.forEach(function(c){var show=f==="all"||c.getAttribute("data-c")===f;c.classList.toggle("hide",!show);if(!show){c.classList.remove("open");c.setAttribute("aria-expanded","false")}});
+        var shown=cards.filter(function(c){return !c.classList.contains("hide")});
+        shown.forEach(function(c,i){setTimeout(function(){c.classList.remove("fade")},reduce?0:40+i*55)});
+      },reduce?0:260);
+    });
+  });
+})();
+</script>
+</body>
+</html>

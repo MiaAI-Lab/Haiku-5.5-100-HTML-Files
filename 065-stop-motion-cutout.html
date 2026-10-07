@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Tin Harbour: A Cutout Film</title>
+<style>
+:root{
+  --kraft:#c49a6c;
+  --kraft-dark:#9c7448;
+  --cream:#f3e7cf;
+  --mustard:#e7b33a;
+  --teal:#2f7f7a;
+  --teal-dark:#1f5c5a;
+  --tomato:#e0533d;
+  --ink:#2a1e14;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh;color:var(--ink);
+  font-family:"Gill Sans","Gill Sans MT","Trebuchet MS","Helvetica Neue",Arial,sans-serif;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.035) 0 2px,transparent 2px 5px),
+    radial-gradient(circle at 50% 30%,#d9b386,var(--kraft) 70%);
+  padding:clamp(16px,4vw,48px) clamp(16px,4vw,40px) 48px;
+  overflow-x:hidden;
+}
+.wrap{max-width:980px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px}
+h1{margin:0;font-size:clamp(1.8rem,5.5vw,3.2rem);line-height:1;letter-spacing:.01em;font-weight:700;color:var(--cream);
+  text-shadow:2px 2px 0 var(--tomato),4px 4px 0 var(--ink)}
+h1 span{display:inline-block;transform:rotate(var(--r,0deg))}
+.sub{margin:0;font:italic 1rem/1.4 Georgia,"Iowan Old Style",serif;color:#4a3420;max-width:320px}
+
+.stage{
+  position:relative;padding:clamp(10px,2.4vw,22px);
+  background:linear-gradient(#3a2a1e,#2a1e14);
+  border-radius:6px;box-shadow:0 30px 60px -20px rgba(40,20,0,.6), inset 0 0 0 3px #4d3826;
+}
+.stage::before,.stage::after{ /* tape */
+  content:"";position:absolute;width:90px;height:26px;background:rgba(243,231,207,.75);top:-12px;z-index:3;box-shadow:0 2px 4px rgba(0,0,0,.15)
+}
+.stage::before{left:8%;transform:rotate(-6deg)}
+.stage::after{right:8%;transform:rotate(5deg)}
+svg.scene{display:block;width:100%;height:auto;border-radius:3px;cursor:pointer;background:#f6d7a7}
+.scene .paper{transform-box:fill-box;transform-origin:center}
+.grain{position:absolute;inset:clamp(10px,2.4vw,22px);pointer-events:none;border-radius:3px;
+  background:repeating-radial-gradient(circle at 20% 30%,rgba(60,30,0,.05) 0 1px,transparent 1px 3px),
+             repeating-linear-gradient(35deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px);mix-blend-mode:multiply}
+.flicker{position:absolute;inset:clamp(10px,2.4vw,22px);pointer-events:none;border-radius:3px;background:radial-gradient(ellipse at center,transparent 55%,rgba(30,15,0,.35));opacity:var(--fl,1)}
+
+.slate{
+  margin-top:18px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:stretch;
+}
+.board{
+  background:#1d1d1d;color:#f1f1f1;border-radius:4px;padding:12px 14px 10px;min-width:210px;position:relative;
+  font:700 .74rem/1.3 "Courier New",ui-monospace,monospace;letter-spacing:.12em;
+  box-shadow:3px 3px 0 var(--ink);
+}
+.board::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px;border-radius:3px 3px 0 0;
+  background:repeating-linear-gradient(-45deg,#f1f1f1 0 10px,#1d1d1d 10px 20px);transform-origin:left bottom;transition:transform .12s}
+.board.clap::before{transform:rotate(-12deg)}
+.board .row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #444;padding:4px 0}
+.board .row:last-child{border:0}
+.board b{color:var(--mustard);font-variant-numeric:tabular-nums}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-content:center}
+.controls button{
+  font:700 .82rem/1 "Gill Sans","Gill Sans MT","Trebuchet MS",sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink);background:var(--cream);border:0;padding:13px 16px 12px;cursor:pointer;position:relative;
+  clip-path:polygon(2% 6%,98% 0,100% 90%,96% 100%,3% 96%,0 40%);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.08);
+  transition:transform .15s steps(2),background .2s;
+}
+.controls button:nth-child(2){background:var(--mustard)}
+.controls button:nth-child(3){background:#9fd0c6}
+.controls button:nth-child(4){background:#f2a28f}
+.controls button:hover{transform:rotate(-2deg) translateY(-2px)}
+.controls button:active{transform:translateY(1px)}
+.controls button:focus-visible{outline:3px dashed var(--ink);outline-offset:3px}
+.note{margin:16px 0 0;font:italic .95rem/1.5 Georgia,serif;color:#4a3420}
+@media (max-width:620px){
+  .slate{grid-template-columns:1fr}
+  .board{min-width:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .board::before,.controls button{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="title">The Little Tin Harbour</h1>
+    <p class="sub">A cutout film shot one frame at a time on a kitchen table, with scissors, glue, and a borrowed lamp.</p>
+  </header>
+
+  <div class="stage">
+    <svg class="scene" id="scene" viewBox="0 0 800 460" role="img" aria-label="Paper cutout harbour scene with a red boat, waves, hills, birds and a sun on a stick">
+      <defs>
+        <filter id="drop" x="-10%" y="-10%" width="130%" height="140%">
+          <feDropShadow dx="2.5" dy="3.5" stdDeviation="1.6" flood-color="#2a1e14" flood-opacity=".38"/>
+        </filter>
+      </defs>
+      <rect id="sky" width="800" height="460" fill="#f6d7a7"/>
+      <g id="stars" opacity="0" fill="#f3e7cf"></g>
+      <g id="sunRig"><g class="paper" filter="url(#drop)">
+        <rect x="596" y="150" width="8" height="320" fill="#9c7448"/>
+        <polygon id="rays" fill="#e7b33a"/>
+        <circle cx="600" cy="140" r="44" fill="#f2c94c"/>
+        <circle cx="586" cy="134" r="4" fill="#2a1e14"/><circle cx="612" cy="134" r="4" fill="#2a1e14"/>
+        <path d="M584 152 Q600 164 616 152" stroke="#2a1e14" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g></g>
+      <g id="moonRig" transform="translate(0,360)"><g class="paper" filter="url(#drop)">
+        <rect x="196" y="150" width="8" height="320" fill="#9c7448"/>
+        <path d="M226 100 A46 46 0 1 0 226 186 A36 36 0 1 1 226 100 Z" fill="#f3e7cf"/>
+      </g></g>
+      <g id="cloudA"><g class="paper" filter="url(#drop)" fill="#f3e7cf">
+        <circle cx="140" cy="90" r="26"/><circle cx="170" cy="78" r="32"/><circle cx="204" cy="92" r="24"/><rect x="120" y="92" width="104" height="22" rx="11"/>
+      </g></g>
+      <g id="cloudB"><g class="paper" filter="url(#drop)" fill="#fbf2e2">
+        <circle cx="430" cy="60" r="18"/><circle cx="452" cy="52" r="24"/><circle cx="478" cy="62" r="17"/><rect x="414" y="62" width="80" height="16" rx="8"/>
+      </g></g>
+      <g id="birds" fill="none" stroke="#2a1e14" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+        <path class="bird" d=""/><path class="bird" d=""/><path class="bird" d=""/>
+      </g>
+      <g class="paper" filter="url(#drop)"><path d="M0 300 C120 210 220 230 320 270 C420 200 560 190 800 280 L800 460 L0 460 Z" fill="#d79a3a"/></g>
+      <g class="paper" filter="url(#drop)">
+        <path d="M-10 320 C100 260 180 280 250 310 L250 460 L-10 460 Z" fill="#2f7f7a"/>
+        <rect x="70" y="250" width="34" height="46" fill="#f3e7cf"/><polygon points="64,252 87,228 110,252" fill="#e0533d"/>
+        <rect x="82" y="270" width="10" height="26" fill="#2a1e14"/>
+        <rect x="118" y="262" width="12" height="80" fill="#f3e7cf"/><polygon points="114,264 124,240 134,264" fill="#e0533d"/>
+        <rect id="lamp" x="119" y="268" width="10" height="10" fill="#f2c94c"/>
+      </g>
+      <g id="wave3"><g class="paper" filter="url(#drop)"><path class="wv" fill="#1f5c5a"/></g></g>
+      <g id="wave2"><g class="paper" filter="url(#drop)"><path class="wv" fill="#2f7f7a"/></g></g>
+      <g id="boat"><g class="paper" filter="url(#drop)" id="boatPaper">
+        <rect x="-3" y="-118" width="6" height="104" fill="#2a1e14"/>
+        <polygon points="5,-112 5,-24 70,-24" fill="#f3e7cf"/>
+        <polygon points="-5,-96 -5,-30 -52,-30" fill="#e7b33a"/>
+        <polygon points="0,-124 22,-118 0,-112" fill="#e0533d"/>
+        <path d="M-80 -20 L80 -20 L58 14 L-60 14 Z" fill="#e0533d"/>
+        <rect x="-62" y="-12" width="120" height="5" fill="#f3e7cf"/>
+        <circle cx="-30" cy="0" r="5" fill="#f3e7cf"/><circle cx="0" cy="0" r="5" fill="#f3e7cf"/><circle cx="30" cy="0" r="5" fill="#f3e7cf"/>
+      </g></g>
+      <g id="puffs" fill="#fbf2e2"></g>
+      <g id="wave1"><g class="paper" filter="url(#drop)"><path class="wv" fill="#4aa39a"/></g></g>
+    </svg>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="flicker" id="flicker" aria-hidden="true"></div>
+  </div>
+
+  <div class="slate">
+    <div class="board" id="board" aria-live="off">
+      <div class="row"><span>PROD.</span><b>TIN HARBOUR</b></div>
+      <div class="row"><span>SCENE</span><b id="sceneLbl">04 DAY</b></div>
+      <div class="row"><span>FRAME</span><b id="frameLbl">0000</b></div>
+      <div class="row"><span>RATE</span><b id="fpsLbl">8 FPS</b></div>
+    </div>
+    <div class="controls">
+      <button type="button" id="play" aria-pressed="true">Pause</button>
+      <button type="button" id="step">Step frame</button>
+      <button type="button" id="time">Bring the night</button>
+      <button type="button" id="fps">Shoot on twos</button>
+    </div>
+  </div>
+  <p class="note">Tap the boat for a toot of paper steam. Every movement here happens in small jumps, the way it would under a camera, and every piece trembles slightly between frames, because hands are never perfectly still.</p>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS = 'http://www.w3.org/2000/svg';
+  var $ = function(id){ return document.getElementById(id); };
+
+  // title letters cut out with random tilt
+  var t = $('title'), txt = t.textContent; t.textContent = '';
+  txt.split('').forEach(function(ch){ var s=document.createElement('span'); s.textContent = ch===' ' ? ' ' : ch; s.style.setProperty('--r',((Math.random()-.5)*8).toFixed(1)+'deg'); t.appendChild(s); });
+
+  // sun rays zigzag
+  var pts=[]; for (var i=0;i<24;i++){ var a=i/24*Math.PI*2, r = i%2 ? 50 : 66; pts.push((600+Math.cos(a)*r).toFixed(1)+','+(140+Math.sin(a)*r).toFixed(1)); }
+  $('rays').setAttribute('points', pts.join(' '));
+
+  // stars
+  for (var s=0;s<18;s++){
+    var x = 30+Math.random()*740, y = 20+Math.random()*190, r = 4+Math.random()*4, p=[];
+    for (var k=0;k<10;k++){ var a2=k/10*Math.PI*2-Math.PI/2, rr = k%2? r*.45 : r; p.push((x+Math.cos(a2)*rr).toFixed(1)+','+(y+Math.sin(a2)*rr).toFixed(1)); }
+    var st=document.createElementNS(NS,'polygon'); st.setAttribute('points',p.join(' ')); $('stars').appendChild(st);
+  }
+
+  // scalloped waves wider than the frame
+  function wavePath(y, w, h){
+    var d='M-120 '+y;
+    for (var x=-120; x<920; x+=w) d+=' q'+(w/2)+' '+(-h)+' '+w+' 0';
+    return d+' L920 460 L-120 460 Z';
+  }
+  var waves = [
+    {g:$('wave3'), y:350, w:60, h:16, dx:-6, mod:60},
+    {g:$('wave2'), y:378, w:80, h:22, dx:8, mod:80},
+    {g:$('wave1'), y:408, w:100, h:24, dx:-10, mod:100}
+  ];
+  waves.forEach(function(wv){ wv.g.querySelector('.wv').setAttribute('d', wavePath(wv.y,wv.w,wv.h)); wv.x=0; });
+
+  var birdFrames = ['M-14 0 Q-7 -9 0 0 Q7 -9 14 0','M-14 -4 Q-7 4 0 0 Q7 4 14 -4'];
+  var birds = Array.prototype.slice.call(document.querySelectorAll('.bird')).map(function(el,i){ return {el:el, x:-60-i*70, y:150+i*22, ph:i}; });
+
+  var papers = Array.prototype.slice.call(document.querySelectorAll('.scene .paper'));
+  var state = { frame:0, playing:!reduce, fps:8, night:0, nightT:0, boatX:470, cloudA:0, cloudB:0, puffs:[] };
+
+  function boil(){
+    if (reduce) return;
+    papers.forEach(function(p){
+      var r = (Math.random()-.5)*1.1, x=(Math.random()-.5)*1.4, y=(Math.random()-.5)*1.4;
+      p.style.transform = 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+r.toFixed(2)+'deg)';
+    });
+  }
+
+  function lerpColor(a,b,k){
+    var pa=[parseInt(a.substr(1,2),16),parseInt(a.substr(3,2),16),parseInt(a.substr(5,2),16)];
+    var pb=[parseInt(b.substr(1,2),16),parseInt(b.substr(3,2),16),parseInt(b.substr(5,2),16)];
+    return 'rgb('+pa.map(function(v,i){return Math.round(v+(pb[i]-v)*k);}).join(',')+')';
+  }
+
+  function advance(){
+    var f = ++state.frame;
+    waves.forEach(function(wv){ wv.x = (wv.x + wv.dx) % wv.mod; wv.g.setAttribute('transform','translate('+wv.x+','+(f%2? 2:0)+')'); });
+    // boat bobs in quantized poses
+    var pose = [0,-4,-6,-4,0,3,4,3][f%8], tilt = [0,-2,-3,-2,0,2,3,2][f%8];
+    state.boatX += 3; if (state.boatX > 900) state.boatX = -100;
+    $('boat').setAttribute('transform','translate('+state.boatX+','+(388+pose)+') rotate('+tilt+')');
+    state.cloudA = (state.cloudA + 2) % 1000; state.cloudB = (state.cloudB + 1) % 1000;
+    $('cloudA').setAttribute('transform','translate('+(((state.cloudA+100)%1000)-200)+',0)');
+    $('cloudB').setAttribute('transform','translate('+(((state.cloudB+500)%1000)-500)+',0)');
+    birds.forEach(function(b){
+      b.x += 7; if (b.x>860){ b.x=-60; b.y = 120+Math.random()*80; }
+      b.el.setAttribute('d', birdFrames[(Math.floor(f/2)+b.ph)%2]);
+      b.el.setAttribute('transform','translate('+b.x+','+(b.y+((f+b.ph)%4<2?0:-4))+')');
+    });
+    // day/night in hand-moved steps of one ninth
+    if (state.night !== state.nightT){ state.night += state.nightT > state.night ? 1/9 : -1/9; if (Math.abs(state.night-state.nightT)<.01) state.night = state.nightT; }
+    var n = state.night;
+    $('sunRig').setAttribute('transform','translate(0,'+(n*360).toFixed(0)+')');
+    $('moonRig').setAttribute('transform','translate(0,'+((1-n)*360).toFixed(0)+')');
+    $('sky').setAttribute('fill', lerpColor('#f6d7a7','#22385c',n));
+    $('scene').style.background = $('sky').getAttribute('fill');
+    $('stars').setAttribute('opacity', Math.max(0,(n-.4)/.6).toFixed(2));
+    $('lamp').setAttribute('fill', n>.5 ? (f%6<5 ? '#ffe28a' : '#f2c94c') : '#f2c94c');
+    // puffs
+    state.puffs = state.puffs.filter(function(p){ p.age++; p.el.setAttribute('transform','translate('+(p.x - p.age*3)+','+(p.y - p.age*7)+') scale('+(1+p.age*.25)+')'); p.el.setAttribute('opacity', Math.max(0,1-p.age/7)); if(p.age>7){ p.el.remove(); return false; } return true; });
+    boil();
+    $('flicker').style.setProperty('--fl', reduce ? 1 : (.85+Math.random()*.15).toFixed(2));
+    $('frameLbl').textContent = String(f).padStart(4,'0');
+  }
+
+  var last = 0, acc = 0;
+  function loop(now){
+    if (!last) last = now;
+    acc += now - last; last = now;
+    var dt = 1000/state.fps;
+    if (state.playing && acc >= dt){ acc = acc % dt; advance(); }
+    if (!state.playing) acc = 0;
+    requestAnimationFrame(loop);
+  }
+
+  function clap(){ var b=$('board'); b.classList.add('clap'); setTimeout(function(){ b.classList.remove('clap'); },140); }
+
+  $('play').addEventListener('click', function(){
+    state.playing = !state.playing; clap();
+    this.textContent = state.playing ? 'Pause' : 'Roll camera';
+    this.setAttribute('aria-pressed', state.playing ? 'true' : 'false');
+  });
+  $('step').addEventListener('click', function(){ advance(); clap(); });
+  $('time').addEventListener('click', function(){
+    state.nightT = state.nightT ? 0 : 1; clap();
+    this.textContent = state.nightT ? 'Bring the morning' : 'Bring the night';
+    $('sceneLbl').textContent = state.nightT ? '05 NIGHT' : '04 DAY';
+    if (!state.playing){ for (var i=0;i<9;i++) advance(); }
+  });
+  $('fps').addEventListener('click', function(){
+    state.fps = state.fps === 8 ? 12 : 8; clap();
+    $('fpsLbl').textContent = state.fps+' FPS';
+    this.textContent = state.fps === 8 ? 'Shoot on twos' : 'Shoot on ones';
+  });
+  $('boatPaper').addEventListener('click', function(e){
+    e.stopPropagation();
+    for (var i=0;i<3;i++){
+      var c = document.createElementNS(NS,'circle'); c.setAttribute('r', 7+i*3);
+      $('puffs').appendChild(c);
+      state.puffs.push({el:c, x:state.boatX+10+i*10, y:388-130-i*6, age:-i});
+    }
+    if (!state.playing) advance();
+  });
+  $('boatPaper').style.cursor = 'pointer';
+  $('scene').addEventListener('click', function(){ if (!state.playing){ advance(); clap(); } });
+  document.addEventListener('keydown', function(e){
+    if (e.target.tagName === 'BUTTON') return;
+    if (e.key === ' '){ e.preventDefault(); $('play').click(); }
+    else if (e.key === 'ArrowRight'){ $('step').click(); }
+  });
+
+  if (reduce){ $('play').textContent = 'Roll camera'; $('play').setAttribute('aria-pressed','false'); }
+  advance();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+Prompt
+
+033 sketchbook-strokes: stroke-dashoffset line-drawing animation on notebook paper, pencil palette.
+
+Build a single standalone HTML page, "Wren Hollow Sketchbook", an open spiral-bound notebook lying slightly rotated (-0.6deg) on a dark green-slate desk (#2b312e) with a warm lamp glow and a deep drop shadow. Palette: cream paper #f7f1e2, blue ruled lines rgba(74,116,186,.26) every 32px, a red margin line, graphite #3b3b3e with a soft grey #8a8a8c for light construction lines, and four colored-pencil accents: ochre #d1972a, terracotta #c4623f, sage #6f9161, cobalt #3c5aa8. The active accent is a CSS custom property (--acc) swapped per sketch. Typography: a handwriting stack ("Bradley Hand", "Segoe Print", "Chalkboard SE", "Noteworthy", "Comic Sans MS", cursive) for headings, notes and buttons; "Courier New" for red rubber-stamp labels; Georgia italic for plate captions. All text sits on the 32px rule rhythm.
+
+Layout: a three-column grid (left page, 34px spiral, right page). The spiral is a repeating radial-gradient ring pattern every 32px with metallic shading; pages have inner gutter shadows. Left page: stamp row ("Wren Hollow" / plate number), handwritten heading "Things that stayed still", a 400x400 inline SVG sketch, and a control row with a handwritten "Redraw" button (accent underline grows on hover) and a "Scrub" range input styled as a dashed pencil line with a tiny pencil-shaped thumb (eraser, ferrule, accent body). Right page: stamp row with the day and "Field notes", the sketch's handwritten title with a wobbly accent underline that draws itself, three lines of notes in blue-black ink, a plate caption, two pencil-shaped swatches (graphite and accent), and a faint margin doodle. Colored pencil index tabs (Teapot, Lighthouse, Fern, Bicycle) stick out of the right edge as vertical-text tabs that slide out on hover and sit flush when selected. Under 820px: single column, the spiral becomes a horizontal coil strip, tabs become a row of top tabs, the margin shrinks.
+
+Drawing engine: each sketch is a list of hand-authored cubic Bezier paths tagged graphite, light construction, or accent, plus closed fill shapes. JavaScript builds the paths, measures each with getTotalLength, sets stroke-dasharray to the length and builds a timeline: duration = length / 300 units per second (min 0.2s) plus a 0.14s pencil lift between strokes. A requestAnimationFrame loop advances time; each stroke's dashoffset follows an ease-in-out-sine of its local progress, so lines accelerate and settle like a real hand. A small SVG pencil (graphite tip, wood cone, accent hexagon body, ferrule, pink eraser), rotated -40deg, is moved with getPointAtLength to the live drawing tip and fades out when finished. A feTurbulence plus feDisplacementMap filter gives every line a slight graphite wobble. When the drawing completes, a 38-degree hatch pattern in the accent color fades into the fill shapes, the title underline draws itself, and the notes are revealed line by line with left-to-right clip-path wipes staggered 0.7s apart, like being written. The scrub slider maps directly onto the timeline so the sketch can be drawn forward or erased backward by hand.
+
+Sketches and copy: Grandmother's teapot (ochre, rising steam), Keeper's light at Wren Point (terracotta bands and lantern, beams, gulls, waves), an unfurling fern (sage leaflets, a tiny ladybird), and the blue bicycle (cobalt frame, basket of marigolds). Reduced motion: drawings appear complete instantly, no transitions.
+
+Title: Wren Hollow Sketchbook
+
+Description: A tactile, quiet page that turns stroke-dashoffset animation into the feeling of watching someone draw. An open notebook with ruled lines, a red margin and a coiled spiral holds a pencil sketch that is drawn one stroke at a time, with a little pencil riding the tip of the line, small pauses as it lifts, and a final wash of colored-pencil hatching. The facing page fills with handwritten field notes once the drawing is done. Four colored index tabs switch between subjects, each with its own pencil color that recolors the hatching, pencil, underline and controls.
+
+Visual techniques:
+- stroke-dasharray and stroke-dashoffset driven per path from a JavaScript timeline with eased per-stroke progress
+- getTotalLength for timing and getPointAtLength to steer an SVG pencil along the drawing tip
+- feTurbulence and feDisplacementMap for a hand-drawn graphite wobble
+- SVG pattern hatching colored through an inherited CSS custom property
+- Ruled notebook paper, margin line and spiral binding made from layered linear and radial gradients
+- clip-path inset wipes with staggered delays to simulate handwriting; self-drawing SVG underline
+- Custom-styled range input with a pencil-shaped thumb, vertical writing-mode index tabs
+- Reduced-motion instant rendering
+
+Interaction model: The first sketch draws itself on load. Click an index tab (or use arrow keys within the tabs) to blur away the current page and draw a new subject. "Redraw" replays the current sketch from a blank page. Drag the Scrub slider to take manual control of the pencil: move it backward to erase stroke by stroke and forward to redraw; the hatching and notes appear only once the drawing reaches its end.

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squishworks Clay Studio</title>
+<style>
+:root{
+  --bg:#f6e9e1;--ink:#3d2c3e;--muted:#8a6f86;
+  --peach:#ffb39a;--mint:#a7e3c9;--lilac:#c6b4ff;--butter:#ffe08a;--sky:#9fd3ff;--rose:#ff9fc4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{
+  min-height:100vh;background:var(--bg);color:var(--ink);
+  font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Nunito","Trebuchet MS",system-ui,sans-serif;
+  background-image:radial-gradient(circle at 15% 10%,#ffe3d6 0,transparent 45%),radial-gradient(circle at 90% 80%,#e6defc 0,transparent 50%);
+}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;letter-spacing:.01em}
+.logo i{width:30px;height:30px;border-radius:42% 58% 55% 45%/50% 45% 55% 50%;background:var(--peach);
+  box-shadow:inset -4px -5px 8px rgba(160,60,40,.25),inset 4px 5px 8px rgba(255,255,255,.7),4px 6px 12px rgba(120,60,60,.2)}
+.pill{border:0;font:inherit;font-weight:700;color:var(--ink);background:#fbf2ec;padding:10px 18px;border-radius:999px;cursor:pointer;
+  box-shadow:inset -3px -4px 6px rgba(150,100,90,.18),inset 3px 4px 6px #fff,4px 6px 14px rgba(120,80,80,.15);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.pill:hover{transform:translateY(-2px) scale(1.03)}
+.pill:active{transform:scale(.94);box-shadow:inset 3px 4px 8px rgba(150,100,90,.25),inset -3px -4px 6px #fff}
+.pill:focus-visible{outline:3px solid var(--lilac);outline-offset:3px}
+.hero{text-align:center;margin:44px auto 10px;max-width:680px}
+.hero small{font-weight:700;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;font-size:.72rem}
+h1{font-size:clamp(2.3rem,7vw,4.6rem);line-height:.98;font-weight:900;margin:12px 0 14px;letter-spacing:-.02em}
+h1 span{display:inline-block;color:#fff;-webkit-text-stroke:0;text-shadow:0 2px 0 #e98c74,0 4px 0 #d77862,0 8px 16px rgba(160,70,50,.35);color:var(--peach)}
+.hero p{color:var(--muted);font-size:1.05rem;line-height:1.55}
+.stage{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,34px);margin:40px 0 22px;padding:10px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:14px}
+.blob{
+  --c:var(--peach);--d:rgba(160,60,40,.32);
+  width:min(100%,220px);aspect-ratio:1;border:0;cursor:pointer;background:var(--c);
+  border-radius:var(--r,46% 54% 52% 48%/55% 45% 55% 45%);
+  box-shadow:inset -14px -18px 26px var(--d),inset 14px 16px 24px rgba(255,255,255,.75),14px 22px 34px rgba(110,60,70,.22),0 4px 0 rgba(255,255,255,.4);
+  transform-origin:50% 100%;will-change:transform;position:relative;transition:border-radius 1.2s ease;
+}
+.blob::after{content:"";position:absolute;left:22%;top:16%;width:22%;height:14%;border-radius:50%;background:rgba(255,255,255,.65);filter:blur(4px);transform:rotate(-24deg)}
+.blob .face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:18%;pointer-events:none}
+.blob .face b{width:9%;aspect-ratio:1;border-radius:50%;background:var(--ink);transition:transform .2s}
+.blob.squished .face b{transform:scaleY(.2)}
+.blob:focus-visible{outline:4px dashed var(--ink);outline-offset:8px}
+.cell h3{font-size:1.05rem;font-weight:800}
+.cell span{font-size:.82rem;color:var(--muted);text-align:center;max-width:22ch;line-height:1.4}
+.b2{--c:var(--mint);--d:rgba(40,120,90,.3)}.b3{--c:var(--lilac);--d:rgba(80,50,170,.3)}
+.b4{--c:var(--butter);--d:rgba(170,120,20,.3)}.b5{--c:var(--sky);--d:rgba(30,90,160,.3)}.b6{--c:var(--rose);--d:rgba(170,40,90,.3)}
+.tray{margin:30px auto 0;max-width:620px;background:#fbf2ec;border-radius:36px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  box-shadow:inset -6px -8px 14px rgba(150,100,90,.15),inset 6px 8px 14px #fff,10px 16px 30px rgba(120,80,80,.14)}
+.tray strong{font-size:2rem;font-weight:900;display:block}
+.tray em{font-style:normal;color:var(--muted);font-size:.85rem}
+.meter{flex:1;min-width:160px;height:22px;border-radius:999px;background:#efdcd2;box-shadow:inset 3px 4px 8px rgba(150,100,90,.25),inset -3px -3px 6px #fff;overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--peach),var(--rose),var(--lilac));transition:width .6s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:inset -2px -3px 5px rgba(0,0,0,.12),inset 2px 3px 5px rgba(255,255,255,.6)}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:40px}
+@media (max-width:640px){.stage{grid-template-columns:repeat(2,1fr)}.blob{width:min(100%,150px)}}
+@media (prefers-reduced-motion:reduce){.blob{transition:none}.pill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><i></i>Squishworks</div>
+    <button class="pill" id="reshape" type="button">Reshape the clay</button>
+  </header>
+  <section class="hero">
+    <small>Handmade softness, studio no. 26</small>
+    <h1>Press gently.<br><span>They press back.</span></h1>
+    <p>Six lumps of digital clay, kneaded by hand and left to rest in warm light. Hover to give them a nudge, tap to squish them flat and watch them bounce home.</p>
+  </section>
+  <section class="stage" id="stage" aria-label="Clay blobs">
+    <div class="cell"><button class="blob" type="button" aria-label="Squish Apricot"><span class="face"><b></b><b></b></span></button><h3>Apricot</h3><span>Warm as a kiln at dusk, soft as a fresh loaf.</span></div>
+    <div class="cell"><button class="blob b2" type="button" aria-label="Squish Mintleaf"><span class="face"><b></b><b></b></span></button><h3>Mintleaf</h3><span>Cool, springy, a little shy around strangers.</span></div>
+    <div class="cell"><button class="blob b3" type="button" aria-label="Squish Lavendough"><span class="face"><b></b><b></b></span></button><h3>Lavendough</h3><span>Rolled slow, dreams in pastel and lullabies.</span></div>
+    <div class="cell"><button class="blob b4" type="button" aria-label="Squish Butterpat"><span class="face"><b></b><b></b></span></button><h3>Butterpat</h3><span>Bounces highest. Loves an audience.</span></div>
+    <div class="cell"><button class="blob b5" type="button" aria-label="Squish Puddle"><span class="face"><b></b><b></b></span></button><h3>Puddle</h3><span>Wobbly after rain, always finds its shape again.</span></div>
+    <div class="cell"><button class="blob b6" type="button" aria-label="Squish Blush"><span class="face"><b></b><b></b></span></button><h3>Blush</h3><span>Turns a deeper pink every time you poke it.</span></div>
+  </section>
+  <div class="tray">
+    <div><strong id="count">0</strong><em>squishes delivered</em></div>
+    <div class="meter" aria-hidden="true"><i id="fill"></i></div>
+    <em id="mood">The clay is resting.</em>
+  </div>
+  <footer>Squishworks Clay Studio, a fictional workshop of soft things.</footer>
+</div>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var blobs=[].slice.call(document.querySelectorAll('.blob'));
+  var moods=['The clay is resting.','A little warmer now.','Pleasantly kneaded.','Thoroughly squished.','Peak softness achieved.'];
+  var count=0,countEl=document.getElementById('count'),fill=document.getElementById('fill'),mood=document.getElementById('mood');
+  function rr(){function n(){return 38+Math.round(Math.random()*24)}var a=n(),b=n(),c=n(),d=n();return a+'% '+(100-a)+'% '+b+'% '+(100-b)+'% / '+c+'% '+d+'% '+(100-d)+'% '+(100-c)+'%'}
+  var states=blobs.map(function(el){el.style.setProperty('--r',rr());return{el:el,x:1,y:1,vx:0,vy:0,tx:1,ty:1,rot:0,vr:0}});
+  var active=false;
+  function kick(){if(!active){active=true;requestAnimationFrame(step)}}
+  function step(){
+    var moving=false;
+    states.forEach(function(s){
+      var k=reduce?.5:.16,damp=reduce?.4:.78;
+      s.vx=(s.vx+(s.tx-s.x)*k)*damp;s.vy=(s.vy+(s.ty-s.y)*k)*damp;s.vr=(s.vr+(0-s.rot)*.1)*.82;
+      s.x+=s.vx;s.y+=s.vy;s.rot+=s.vr;
+      if(Math.abs(s.vx)+Math.abs(s.vy)+Math.abs(s.tx-s.x)+Math.abs(s.ty-s.y)+Math.abs(s.rot)>.002)moving=true;
+      s.el.style.transform='scale('+s.x.toFixed(4)+','+s.y.toFixed(4)+') rotate('+s.rot.toFixed(2)+'deg)';
+    });
+    if(moving)requestAnimationFrame(step);else active=false;
+  }
+  states.forEach(function(s){
+    var el=s.el;
+    el.addEventListener('pointerenter',function(){s.tx=1.07;s.ty=.93;s.vr+=(Math.random()-.5)*6;kick()});
+    el.addEventListener('pointerleave',function(){s.tx=1;s.ty=1;kick()});
+    el.addEventListener('focus',function(){s.tx=1.04;s.ty=.96;kick()});
+    el.addEventListener('blur',function(){s.tx=1;s.ty=1;kick()});
+    function squish(){
+      s.x=1.32;s.y=.62;s.vx=0;s.vy=0;el.classList.add('squished');
+      setTimeout(function(){el.classList.remove('squished')},260);
+      if(Math.random()<.5)el.style.setProperty('--r',rr());
+      count++;countEl.textContent=count;
+      fill.style.width=Math.min(100,count*5)+'%';
+      mood.textContent=moods[Math.min(moods.length-1,Math.floor(count/5))];
+      kick();
+    }
+    el.addEventListener('click',squish);
+  });
+  document.getElementById('reshape').addEventListener('click',function(){
+    states.forEach(function(s,i){setTimeout(function(){s.el.style.setProperty('--r',rr());s.vy-=.12;s.vx+=.08;kick()},i*70)});
+  });
+  if(!reduce){setInterval(function(){var s=states[Math.floor(Math.random()*states.length)];s.vy+=.04;s.vx-=.03;kick()},1800)}
+})();
+</script>
+</body>
+</html>

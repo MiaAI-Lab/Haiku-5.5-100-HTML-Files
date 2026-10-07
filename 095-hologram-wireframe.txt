@@ -1,0 +1,30 @@
+PROMPT
+
+Build a single standalone HTML page for concept 095, "hologram-wireframe": a scanline holographic projection of a wireframe model on canvas. Frame it as the viewing console of a fictional "Pellucid Archive, Vault 095", where artifacts survive only as light. Three relics: a Trefoil Knot, a Geodesic Lattice, and a Votive Vessel, each with a short invented provenance line.
+
+Palette: void #02070d under a radial teal floor glow (#06202b near the bottom), hologram cyan #5ff6ff with 50% and 14% variants, a faint magenta #ff4fd8 used only as a chromatic-aberration ghost, and a warm amber #ffcf5a for the status word.
+
+Typography: ui-monospace / "SF Mono" / Menlo / "Courier New" for all HUD text and buttons; an ultra-light (200) uppercase "Helvetica Neue" with wide tracking and a cyan text-shadow glow for the relic name.
+
+Layout: a full-viewport canvas with a CSS repeating-gradient scanline overlay (multiply) and a dark vignette. A HUD inset from the edges with two corner brackets: top-left the vault label, glowing relic name, and description; top-right monospace telemetry (yaw, pitch, vertex and edge counts, a five-bar signal meter; hidden on phones). Bottom row: chamfered-corner buttons (clip-path) for Knot / Lattice / Vessel and a Stabilize toggle, plus a blinking status line ("Projection materializing / stable / interference / locked").
+
+Geometry: (1) a (2,3) torus knot swept into a tube of 140 x 8 vertices using a curvature-based frame, with ring and longitudinal edges; (2) an icosahedron subdivided once and normalized onto a sphere (42 nodes) plus spokes to an inner core, drawn with node dots; (3) a lathed vessel from a 12-point profile with 28 segments and one deliberately chipped rim section. Perspective-project with yaw and pitch each frame into a Float32Array.
+
+Rendering: a projector emitter at the base (glowing ellipse, three concentric rings, a rotating half-ring of tick marks) casting a fading trapezoid beam up toward the model. Edges are sorted into four depth buckets so nearer lines are brighter, and each bucket is stroked as one path in three additive passes: a magenta ghost offset left, the sharp cyan line offset right, and a wide faint cyan glow pass. A gentle vertical bob, a slow bright band rolling down the screen, random brightness flicker, and occasional glitch bursts that copy horizontal slices of the canvas back onto itself with sideways offsets. On load and when switching relics, the model materializes bottom-up: edges appear only below a rising level, marked by a bright horizontal sweep line.
+
+Interaction: drag to rotate (yaw with inertia, clamped pitch); arrow keys rotate too. A tap without dragging triggers interference and a partial re-materialization. Relic buttons switch models with a glitch. Stabilize suppresses flicker and glitches and fills the signal meter. Telemetry updates live. Reduced motion: no auto-spin, bob, rolling band, flicker, glitch, or build-up sweep; the model appears whole and only moves when dragged.
+
+Title: Pellucid Archive Hologram
+
+Description: A dark archival console projecting glowing cyan wireframe relics above a beam emitter. Each object builds itself from the base upward behind a bright sweep line, then hangs in the air, slowly turning, with subtle chromatic fringing, depth-weighted brightness, scanlines, flicker, and the occasional burst of signal interference. Sparse monospace telemetry and chamfered controls complete the feeling of handling a fragile recording that exists only as light.
+
+Visual techniques:
+- Procedural meshes: tube-swept torus knot, subdivided geodesic sphere, lathed vessel profile
+- Manual 3D perspective projection with depth bucketing to batch strokes cheaply
+- Three additive "lighter" stroke passes for chromatic offset and glow
+- Bottom-up materialization clipped by model height with a gradient sweep line
+- Canvas self-blit glitch slices, random flicker, rolling scan band, CSS scanline and vignette overlays
+- Projector emitter with ellipses, radial glow, beam gradient, and rotating tick ring
+- devicePixelRatio-aware canvas with resize handling and a single requestAnimationFrame loop
+
+Interaction model: The relic rotates on its own; dragging spins and tilts it with inertia, and arrow keys do the same. Tapping the projection causes interference and makes it rebuild. Buttons switch between the three relics and toggle Stabilize for a clean, locked signal. With reduced motion, the hologram stays still and whole until the user drags it.

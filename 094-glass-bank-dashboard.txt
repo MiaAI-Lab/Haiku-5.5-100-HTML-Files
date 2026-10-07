@@ -1,0 +1,30 @@
+PROMPT
+
+Build a single standalone HTML page for concept 094, "glass-bank-dashboard": a fictional private-banking dashboard with invented data, glass panels, and a sparkline. The bank is "Halcyon Mutual"; the account holder is the invented "Ines Valdemar"; merchants (Atelier Brisa, Northwind Labs, Verdant Market, Lumen Rail, Casa Oro Bistro) are invented too.
+
+Palette: deep sea-teal night background #06191b behind three huge, heavily blurred, slowly drifting gradient orbs (emerald #0f8f78, violet #5b45d6, coral #e3664f). Text #eef7f3 with a 58% muted variant. Accents: mint #7cf2c4 (primary, chart line, toggles), violet #a99bff, coral #ff8a72, amber #ffd27a, sky #7fb8ff for categories.
+
+Typography: "Avenir Next" / "Segoe UI" / system-ui for a calm humanist UI; tabular numerals for all money; ui-monospace for the card number.
+
+Glass treatment: panels with a 145deg white-to-transparent gradient, 1px 16% white border, backdrop-filter blur(22px) saturate(140%), inset top highlight, soft drop shadow, 22px radius. Panels rise and fade in with staggered delays.
+
+Layout: an 84px glass icon rail on the left (conic-gradient logo tile, four stroke icons with an active state) that becomes a fixed bottom tab bar under 720px. Main area is a 12-column grid: a time-aware greeting with a "Privacy blur" switch; a wide hero panel (8 cols) with the total balance counting up with quintic easing, a mint delta pill, a segmented range control (1W/1M/3M/1Y) with a springy sliding pill indicator, and an SVG area sparkline; a 4-column card panel with a gradient virtual card (gold chip, masked number, name, expiry) plus limit usage; a spending donut with a legend; a recent-activity list with colored initial tiles and signed amounts; and savings goals with animated gradient progress bars. Columns reflow at 1100px and stack fully on phones.
+
+Data: a seeded Park-Miller PRNG generates a 365-day balance random walk with a gentle seasonal sine and monthly salary bumps. The sparkline renders the last N days as a smooth cubic path with a gradient area fill and redraws with a stroke-dashoffset draw-in on each range change; the delta pill shows the percentage change across that range.
+
+Interaction: pointer over the chart shows a dashed crosshair, a ringed dot, and a frosted tooltip with the exact value and date. The virtual card tilts in 3D toward the pointer with a soft-light glare that follows it. Hovering or focusing a legend row dims the other donut segments and thickens the chosen one. Transaction rows nudge right on hover. The Privacy blur switch blurs every monetary figure across the page. Rail icons set the active page state. Reduced motion: orbs still, no panel entrance, no line draw, no count-up, no card tilt, and bars appear at once.
+
+Title: Halcyon Mutual Ledger
+
+Description: A serene, luxurious banking dashboard in which frosted glass panels float above drifting teal, violet, and coral light. The total balance counts up into place, a mint sparkline draws itself across a selectable range, and a softly iridescent virtual card tilts toward the cursor. A spending donut, recent transactions, and savings goals complete the overview, all populated with invented, seeded data, and a single privacy switch blurs every figure for viewing in public.
+
+Visual techniques:
+- backdrop-filter glass panels with gradient fills, hairline borders, and inset highlights
+- Animated blurred radial-gradient orbs as an ambient backdrop
+- Seeded PRNG data, cubic-smoothed SVG sparkline with gradient area and stroke-dashoffset draw-in
+- Crosshair, focus dot, and frosted tooltip driven by pointer position
+- SVG donut built from stroke-dasharray segments with legend-linked emphasis
+- Pointer-tracked 3D card tilt with a soft-light radial glare
+- Springy segmented control indicator, animated progress bars, count-up balance, privacy blur filter
+
+Interaction model: Users switch the chart range with the segmented control and scrub the sparkline for exact daily balances. Hovering the card tilts it; hovering or tabbing through spending categories highlights their slice. The Privacy blur switch hides all amounts at once. The layout becomes a single column with a bottom tab bar on phones, and reduced-motion users see a fully static, instantly populated dashboard.

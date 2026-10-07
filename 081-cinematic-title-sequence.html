@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lantern Keeper — Title Sequence</title>
+<style>
+:root{
+  --ink:#050505;
+  --amber:#e8b56a;
+  --bone:#efe6d6;
+  --dim:#7d7366;
+  --serif:"Didot","Bodoni 72","Bodoni MT","Iowan Old Style",Georgia,serif;
+  --sans:"Helvetica Neue",Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--bone);font-family:var(--serif);overflow-x:hidden}
+.bar{position:fixed;left:0;right:0;height:9vh;background:#000;z-index:20;transition:height 1.6s cubic-bezier(.7,0,.2,1)}
+.bar.top{top:0}.bar.bot{bottom:0}
+body.open .bar{height:6vh}
+.grain{position:fixed;inset:-50%;z-index:15;pointer-events:none;opacity:.09;
+  background-image:repeating-radial-gradient(circle at 17% 32%,#fff 0 .6px,transparent .6px 3px),repeating-radial-gradient(circle at 71% 64%,#fff 0 .5px,transparent .5px 2.6px);
+  animation:grain .6s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}100%{transform:translate(1%,3%)}}
+.vignette{position:fixed;inset:0;z-index:14;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.85) 100%)}
+.hud{position:fixed;top:calc(9vh + 12px);left:16px;right:16px;display:flex;justify-content:space-between;z-index:21;font:500 10px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--dim);transition:top 1.6s cubic-bezier(.7,0,.2,1)}
+body.open .hud{top:calc(6vh + 12px)}
+.hud b{color:var(--amber);font-weight:500}
+section{min-height:100vh;display:grid;place-items:center;text-align:center;padding:14vh 20px;position:relative}
+.glow{position:absolute;width:60vmin;height:60vmin;border-radius:50%;background:radial-gradient(circle,rgba(232,181,106,.22),transparent 65%);filter:blur(10px);opacity:0;transition:opacity 3s ease}
+.lit .glow{opacity:1;animation:flick 5s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scale(1);opacity:1}43%{transform:scale(1.04);opacity:.85}47%{opacity:.6}52%{opacity:.95}}
+.kicker{font:500 11px/1.4 var(--sans);letter-spacing:.5em;text-transform:uppercase;color:var(--amber);margin-bottom:28px}
+.title{font-size:clamp(44px,12vw,170px);font-weight:400;letter-spacing:.08em;line-height:.95;position:relative}
+.title em{display:block;font-size:.3em;letter-spacing:.6em;font-style:italic;color:var(--dim);margin-bottom:.6em;padding-left:.6em}
+.ch{display:inline-block;opacity:0;filter:blur(14px);transform:translateY(.12em) scale(1.08);letter-spacing:inherit;
+  transition:opacity 1.4s cubic-bezier(.2,.7,.1,1),filter 1.6s cubic-bezier(.2,.7,.1,1),transform 1.8s cubic-bezier(.2,.7,.1,1)}
+.lit .ch{opacity:1;filter:blur(0);transform:none}
+.credit .role{font:500 11px/1 var(--sans);letter-spacing:.45em;text-transform:uppercase;color:var(--dim);margin-bottom:22px}
+.credit .name{font-size:clamp(34px,7vw,88px);font-weight:400;letter-spacing:.12em}
+.credit .name i{color:var(--amber)}
+.line{display:block;width:0;height:1px;margin:34px auto 0;background:linear-gradient(90deg,transparent,var(--amber),transparent);transition:width 2.4s cubic-bezier(.7,0,.2,1) .6s}
+.lit .line{width:min(320px,60vw)}
+.quote{max-width:640px;font-size:clamp(20px,3.6vw,34px);font-style:italic;line-height:1.5;color:var(--bone)}
+.quote .ch{filter:blur(6px);transform:none}
+.scroll{position:absolute;bottom:calc(9vh + 24px);left:50%;transform:translateX(-50%);font:500 10px/1 var(--sans);letter-spacing:.4em;text-transform:uppercase;color:var(--dim);opacity:0;transition:opacity 1.2s ease 3.4s}
+.lit .scroll{opacity:1}
+.scroll::after{content:"";display:block;width:1px;height:42px;margin:14px auto 0;background:linear-gradient(var(--amber),transparent);animation:drip 2.2s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.end .title{font-size:clamp(36px,8vw,96px)}
+button{margin-top:44px;background:none;border:1px solid rgba(232,181,106,.4);color:var(--amber);font:500 11px/1 var(--sans);letter-spacing:.4em;text-transform:uppercase;padding:16px 26px 16px 30px;cursor:pointer;transition:background .4s ease,color .4s ease,letter-spacing .5s cubic-bezier(.2,.7,.1,1)}
+button:hover,button:focus-visible{background:var(--amber);color:#000;letter-spacing:.5em;outline:none}
+.progress{position:fixed;left:0;bottom:9vh;height:1px;background:var(--amber);z-index:22;width:0;transition:bottom 1.6s cubic-bezier(.7,0,.2,1)}
+body.open .progress{bottom:6vh}
+@media (prefers-reduced-motion:reduce){
+  .grain{animation:none}.lit .glow{animation:none}
+  .ch{transition:opacity .6s ease;filter:none;transform:none}
+  .scroll::after{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="bar top"></div><div class="bar bot"></div>
+<div class="grain"></div><div class="vignette"></div>
+<div class="progress" id="progress"></div>
+<div class="hud"><span>Reel <b>01</b></span><span id="tc">00:00:00:00</span></div>
+
+<section class="scene" id="s1">
+  <div class="glow"></div>
+  <div>
+    <p class="kicker" data-split>Halvard Pictures presents</p>
+    <h1 class="title"><em data-split>The</em><span data-split>LANTERN</span><br><span data-split>KEEPER</span></h1>
+  </div>
+  <p class="scroll">Scroll to continue</p>
+</section>
+
+<section class="scene">
+  <div class="glow"></div>
+  <p class="quote" data-split>"Every night the sea forgets the shore, and every night someone must climb the stairs to remind it."</p>
+</section>
+
+<section class="scene credit">
+  <div class="glow"></div>
+  <div><p class="role" data-split>Starring</p><p class="name" data-split>Ines Varga</p><span class="line"></span></div>
+</section>
+
+<section class="scene credit">
+  <div class="glow"></div>
+  <div><p class="role" data-split>With</p><p class="name" data-split>Tobiah Rennick</p><span class="line"></span></div>
+</section>
+
+<section class="scene credit">
+  <div class="glow"></div>
+  <div><p class="role" data-split>Music by</p><p class="name" data-split>Odile Marchetti</p><span class="line"></span></div>
+</section>
+
+<section class="scene credit">
+  <div class="glow"></div>
+  <div><p class="role" data-split>Written &amp; Directed by</p><p class="name" data-split>Casimir Aalto</p><span class="line"></span></div>
+</section>
+
+<section class="scene end">
+  <div class="glow"></div>
+  <div>
+    <p class="kicker" data-split>Only in the dark</p>
+    <h2 class="title" data-split>Winter, 1954</h2>
+    <button id="replay" type="button">Roll it again</button>
+  </div>
+</section>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-split]').forEach(function(el){
+    var text = el.textContent, frag = document.createDocumentFragment(), i = 0;
+    el.setAttribute('aria-label', text);
+    text.split('').forEach(function(c){
+      var s = document.createElement('span');
+      s.className = 'ch'; s.setAttribute('aria-hidden','true');
+      s.textContent = c === ' ' ? ' ' : c;
+      if (c !== ' ') { s.style.transitionDelay = (reduce ? 0 : (i * (text.length > 40 ? 0.025 : 0.11))) + 's'; i++; }
+      frag.appendChild(s);
+    });
+    el.textContent = ''; el.appendChild(frag);
+  });
+  // stagger nested split groups so kicker then title read in order
+  document.querySelectorAll('.scene').forEach(function(sc){
+    var offset = 0;
+    sc.querySelectorAll('[data-split]').forEach(function(el){
+      var chars = el.querySelectorAll('.ch');
+      chars.forEach(function(ch){
+        var d = parseFloat(ch.style.transitionDelay) || 0;
+        ch.style.transitionDelay = (reduce ? 0 : d + offset) + 's';
+      });
+      offset += reduce ? 0 : Math.min(chars.length * 0.08, 1.2) + 0.3;
+    });
+  });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) e.target.classList.add('lit');
+      else if (e.boundingClientRect.top > 0) e.target.classList.remove('lit');
+    });
+  }, {threshold: 0.45});
+  document.querySelectorAll('.scene').forEach(function(s){ io.observe(s); });
+  setTimeout(function(){ document.body.classList.add('open'); }, 400);
+
+  var tc = document.getElementById('tc'), prog = document.getElementById('progress'), start = performance.now();
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(now){
+    var t = (now - start) / 1000, f = Math.floor((t % 1) * 24);
+    tc.textContent = pad(Math.floor(t / 3600)) + ':' + pad(Math.floor(t / 60) % 60) + ':' + pad(Math.floor(t) % 60) + ':' + pad(f);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  function onScroll(){
+    var max = document.documentElement.scrollHeight - innerHeight;
+    prog.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + '%';
+  }
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  document.getElementById('replay').addEventListener('click', function(){
+    document.querySelectorAll('.scene').forEach(function(s){ s.classList.remove('lit'); });
+    start = performance.now();
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+  });
+})();
+</script>
+</body>
+</html>

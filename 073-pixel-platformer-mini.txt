@@ -1,0 +1,27 @@
+Prompt
+
+Build "Moss & Lantern", a tiny pixel-art platformer on a single canvas that runs offline in one HTML file. Story: a hooded lamplighter walks a dusk forest gathering 17 fireflies and carries their light to a great lantern at the forest's end. Palette (invented, eight core colours): night #130f22, indigo #1b1530, plum #3a2550, deep plum #2a1c3f, moss #4f8a4b, leaf #9bc45a, lantern amber #ffb547, cream #f7e7c6, rose cloak #d9576b, plus wood #8a5a3b/#c98a52, hill #2b2148 and tree silhouette #1d2a3e. Type: "Courier New" / ui-monospace bold, uppercase with wide tracking, for the page title, HUD, overlays and key legend.
+
+Page: dark night background with a soft amber glow at the top and a moss glow at the bottom. A header reads "Moss & Lantern" (ampersand glowing amber) with a small tagline. The game sits in an arcade-cabinet frame: a rounded gradient bezel with a hairline border and a deep drop shadow, holding a 192x112 aspect-ratio screen. A key legend below uses styled kbd chips. Under 820px or on coarse pointers, chunky on-screen buttons appear (left, right and a wide amber JUMP) with a press-down offset-shadow animation.
+
+Engine: render at 192x112 internal pixels into an offscreen buffer, then scale it to a devicePixelRatio-sized display canvas with image smoothing off. Fixed 1/120 s physics step inside requestAnimationFrame, dt clamped. Tiles are 8 px; the level is 96x14 tiles authored with rectangle-fill commands: solid moss-topped ground with three pits, one-way wooden planks, stepped blocks, a wall to hop over, spike pairs, two checkpoint lantern posts and a goal lantern gate. Physics: gravity 900, jump velocity 262 (about 4.5 tiles), extra gravity when jump is released early for variable height, acceleration and friction with reduced air control, 90 ms coyote time and a 100 ms jump buffer, axis-separated AABB tile collision, and one-way platforms that only catch you from above. Spikes and falling into a pit cause a rose-and-cream burst, a small screen shake, and a respawn at the last lit checkpoint.
+
+Art: a dithered six-band dusk sky pre-rendered once; twinkling stars and a cratered moon with a soft glow; parallax rolling hills (sum of sines) and a pine silhouette layer drawn as 1 px columns; ground tiles with hashed speckles, a moss top, leaf tufts and a teal underline; planks with nail dots; pale spike pairs. The player is an 8x8 hooded sprite with idle, two run frames and a jump pose, flipped by facing, carrying a lantern that casts an additive amber glow. Fireflies bob and glow. Dust puffs on jump and landing, sparkles on pickup. A radial vignette of darkness follows the player so the lantern light feels real. The camera eases with a look-ahead in the facing direction and drifts slowly across the level behind the title screen.
+
+UI: HTML overlays (crisp text): a title card with the story, an amber "Begin the walk" button with a pressed offset shadow and a blinking "or press enter"; a HUD with the firefly count and a running timer; a win card with count, time and a message graded by how many fireflies were found. Reduced motion: no parallax, twinkle, bob or shake, fewer particles, no blinking.
+
+Title: Moss and Lantern
+
+Description: A pocket-sized dusk-forest platformer rendered as true low-resolution pixel art and scaled up crisply inside a glowing arcade bezel. The lamplighter's lantern pools warm light in a darkening vignette while hills and pines drift in parallax behind. Tight controls with coyote time, jump buffering and variable jump height make the short level satisfying, and fireflies, checkpoints and a lit goal lantern give it a gentle sense of completion.
+
+Visual techniques:
+- Low-resolution offscreen buffer scaled with nearest-neighbour to a DPR-aware canvas
+- Pre-rendered dithered sky gradient
+- Procedural parallax layers drawn as one-pixel columns
+- String-defined 8x8 sprite frames with palette lookup and horizontal flip
+- Additive radial-gradient glows for the lantern, fireflies, moon and goal
+- Radial darkness vignette centred on the player
+- Hash-based tile texturing and particle bursts
+- HTML overlays and HUD layered on the canvas, plus touch controls
+
+Interaction model: Press Enter, Space or the start button to begin. Walk with the arrow keys or A/D, and jump with Up, Space or Z, holding it for a higher jump. R restarts. On phones and tablets, use the on-screen left, right and JUMP buttons. Collect fireflies, light the checkpoints by walking past them, avoid spikes and pits, and reach the great lantern to see your time and firefly count.

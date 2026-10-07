@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selenographic Almanac: Moon Calendar</title>
+<style>
+:root{
+  --paper:#ebe7de;
+  --paper2:#e2ddd2;
+  --ink:#1c2140;
+  --ink2:#4a5072;
+  --hair:rgba(28,33,64,.16);
+  --silver:#f7f5ef;
+  --shade:#262b4a;
+  --accent:#b8893b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:
+    radial-gradient(120% 80% at 20% 0%,#f3f0e9 0%,transparent 60%),
+    var(--paper);
+  color:var(--ink);
+  font-family:"Didot","Bodoni 72","Bodoni MT","Iowan Old Style",Georgia,serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(18px,4vw,48px) clamp(16px,4vw,48px) 56px}
+.mast{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:1px solid var(--ink);padding-bottom:12px;flex-wrap:wrap}
+.mast .pub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+.mast .vol{font-style:italic;color:var(--ink2);font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(280px,5fr) 7fr;gap:clamp(24px,5vw,72px);margin-top:clamp(24px,4vw,48px)}
+aside{position:sticky;top:24px;align-self:start;text-align:center}
+.bigmoon{width:min(340px,78vw);aspect-ratio:1;margin:0 auto;position:relative}
+.bigmoon svg{width:100%;height:100%;overflow:visible;transition:filter .8s ease}
+.bigmoon::before{
+  content:"";position:absolute;inset:-14%;border-radius:50%;
+  border:1px solid var(--hair);
+}
+.bigmoon::after{
+  content:"";position:absolute;inset:-7%;border-radius:50%;
+  border:1px dashed var(--hair);animation:turn 120s linear infinite;
+}
+@keyframes turn{to{transform:rotate(360deg)}}
+.phase-name{font-size:clamp(28px,4vw,42px);font-style:italic;font-weight:400;margin-top:clamp(28px,5vw,48px);line-height:1}
+.date-line{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink2);margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:24px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.stats div{padding:14px 6px}
+.stats div+div{border-left:1px solid var(--hair)}
+.stats b{display:block;font-weight:400;font-size:clamp(22px,2.6vw,30px);font-variant-numeric:lining-nums tabular-nums}
+.stats span{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink2)}
+.verse{font-style:italic;color:var(--ink2);font-size:15px;line-height:1.55;margin-top:22px;max-width:34ch;margin-left:auto;margin-right:auto;min-height:3.1em}
+
+.cal-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.cal-head h2{font-weight:400;font-size:clamp(40px,7vw,84px);line-height:.85;letter-spacing:-.02em}
+.cal-head h2 small{display:block;font-size:.26em;font-style:italic;letter-spacing:0;color:var(--accent);margin-bottom:10px}
+.nav{display:flex;gap:6px}
+.nav button{
+  font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  background:transparent;color:var(--ink);border:1px solid var(--ink);height:40px;min-width:40px;padding:0 12px;border-radius:40px;cursor:pointer;
+  transition:background .25s,color .25s,transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.nav button:hover{background:var(--ink);color:var(--paper)}
+.nav button:active{transform:scale(.94)}
+.nav button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);margin-top:28px;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink2);border-bottom:1px solid var(--ink);padding-bottom:8px}
+.dow span{text-align:center}
+.days{display:grid;grid-template-columns:repeat(7,1fr)}
+.days.fade{animation:fade .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.day{
+  position:relative;appearance:none;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  aspect-ratio:1/1.12;border-bottom:1px solid var(--hair);
+  transition:background .3s ease;
+}
+.day:nth-child(7n+1),.day:not(:nth-child(7n+1)){border-right:1px solid var(--hair)}
+.day:nth-child(7n){border-right:0}
+.day.blank{cursor:default;pointer-events:none}
+.day .num{font-size:clamp(13px,1.6vw,17px);font-variant-numeric:lining-nums;line-height:1}
+.day svg{width:clamp(22px,4.2vw,40px);height:auto;transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
+.day:hover{background:var(--paper2)}
+.day:hover svg{transform:scale(1.14) rotate(-8deg)}
+.day:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
+.day.today .num{color:var(--paper);background:var(--ink);border-radius:20px;padding:3px 7px}
+.day.sel{background:var(--ink);color:var(--paper)}
+.day.sel svg{transform:scale(1.1)}
+.day .tag{position:absolute;top:6px;left:0;right:0;font-family:"Helvetica Neue",Arial,sans-serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:18px;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.foot{margin-top:56px;padding-top:14px;border-top:1px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-style:italic;color:var(--ink2);font-size:13px}
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr}
+  aside{position:static}
+  .day .tag{display:none}
+  .day:nth-child(n){border-right:0}
+  .days{border-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .bigmoon::after{animation:none}
+  .days.fade{animation:none}
+  .day svg{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <span class="pub">The Selenographic Almanac</span>
+    <span class="vol">Tidewater Press &middot; Tables of the Waxing &amp; the Waning</span>
+  </header>
+  <div class="grid">
+    <aside>
+      <div class="bigmoon">
+        <svg id="big" viewBox="-110 -110 220 220" role="img" aria-labelledby="pn">
+          <defs>
+            <radialGradient id="litG" cx="-.25" cy="-.3" r="1.25">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset=".6" stop-color="#f1eee6"/>
+              <stop offset="1" stop-color="#cfcabd"/>
+            </radialGradient>
+            <radialGradient id="darkG" cx=".3" cy=".3" r="1">
+              <stop offset="0" stop-color="#2d3355"/>
+              <stop offset="1" stop-color="#141831"/>
+            </radialGradient>
+            <clipPath id="litClip"><path id="litClipPath" d=""/></clipPath>
+          </defs>
+          <circle r="100" fill="url(#darkG)"/>
+          <g id="earthshine" opacity=".18" fill="#9aa3c8">
+            <ellipse cx="-30" cy="-28" rx="26" ry="20"/><ellipse cx="22" cy="-40" rx="18" ry="14"/><ellipse cx="34" cy="10" rx="24" ry="20"/><ellipse cx="-12" cy="30" rx="20" ry="14"/>
+          </g>
+          <path id="lit" d="" fill="url(#litG)"/>
+          <g clip-path="url(#litClip)" fill="#8f8a7f">
+            <ellipse cx="-30" cy="-28" rx="26" ry="20" opacity=".22"/>
+            <ellipse cx="22" cy="-40" rx="18" ry="14" opacity=".18"/>
+            <ellipse cx="34" cy="10" rx="24" ry="20" opacity=".2"/>
+            <ellipse cx="-12" cy="30" rx="20" ry="14" opacity=".16"/>
+            <ellipse cx="-52" cy="18" rx="12" ry="18" opacity=".14"/>
+            <circle cx="20" cy="62" r="7" fill="none" stroke="#7d786e" stroke-width="1.2" opacity=".35"/>
+            <circle cx="-44" cy="-62" r="5" fill="none" stroke="#7d786e" stroke-width="1" opacity=".3"/>
+            <circle cx="62" cy="-30" r="4" fill="none" stroke="#7d786e" stroke-width="1" opacity=".3"/>
+            <circle cx="-70" cy="40" r="3.5" fill="none" stroke="#7d786e" stroke-width="1" opacity=".3"/>
+          </g>
+          <circle r="100" fill="none" stroke="rgba(28,33,64,.35)" stroke-width=".6"/>
+        </svg>
+      </div>
+      <h1 class="phase-name" id="pn">Waxing Crescent</h1>
+      <p class="date-line" id="dl">Tuesday, 7 October 2026</p>
+      <div class="stats">
+        <div><b id="ill">0%</b><span>Illumined</span></div>
+        <div><b id="age">0.0</b><span>Days old</span></div>
+        <div><b id="nxt">0</b><span id="nxtl">To full</span></div>
+      </div>
+      <p class="verse" id="verse"></p>
+    </aside>
+
+    <section aria-label="Monthly lunar calendar">
+      <div class="cal-head">
+        <h2 id="mt"><small id="mname">The Rook Moon</small>October</h2>
+        <div class="nav">
+          <button type="button" id="prev" aria-label="Previous month">&larr;</button>
+          <button type="button" id="today">Today</button>
+          <button type="button" id="next" aria-label="Next month">&rarr;</button>
+        </div>
+      </div>
+      <div class="dow" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <div class="days" id="days"></div>
+      <div class="legend"><span><i style="background:var(--ink)"></i>Today</span><span><i style="background:var(--accent)"></i>Full &amp; new moons</span><span>Arrow keys move between nights</span></div>
+    </section>
+  </div>
+  <footer class="foot"><span>Phases reckoned from a mean synodic month of 29.530589 days.</span><span>Set in high-contrast serif at the Tidewater composing room.</span></footer>
+</div>
+<script>
+(function(){
+  var SYN=29.530588853, EPOCH=Date.UTC(2000,0,6,18,14)/864e5;
+  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var MOONS=['Hearth','Hollow','Thaw','Seedling','Lantern','Linden','Ember','Barley','Orchard','Rook','Frostbell','Long-Night'];
+  var WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var VERSES={
+    'New Moon':'A dark coin on a dark table. The tides lean hardest now, and the stars have the sky to themselves.',
+    'Waxing Crescent':'A paring of light at dusk, low in the west, following the sun down like a loyal hound.',
+    'First Quarter':'Cut cleanly in half, the moon stands overhead at sunset and casts long shadows across her craters.',
+    'Waxing Gibbous':'Nearly whole and rising in the afternoon, she brightens the hedgerows long before full dark.',
+    'Full Moon':'Opposite the sun, rising as it sets. Every field silvered, every shadow sharpened, all night long.',
+    'Waning Gibbous':'Late to rise and slow to leave, she lingers into the morning blue like a guest at the door.',
+    'Last Quarter':'Half lit again, but on the other side, keeping company with the milk carts and the dawn birds.',
+    'Waning Crescent':'A thin smile before sunrise, the last sliver before she slips into the sun and begins again.'
+  };
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var daysEl=document.getElementById('days');
+  var now=new Date(); var todayKey=key(now);
+  var view=new Date(now.getFullYear(),now.getMonth(),1);
+  var sel=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var shownF=null, anim=null;
+
+  function key(d){return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
+  function age(d){
+    var noon=new Date(d.getFullYear(),d.getMonth(),d.getDate(),12).getTime()/864e5;
+    var a=((noon-EPOCH)%SYN+SYN)%SYN; return a;
+  }
+  function frac(d){return age(d)/SYN;}
+  function illum(f){return (1-Math.cos(f*2*Math.PI))/2;}
+  function name(f){
+    var a=f*SYN;
+    if(a<1.2||a>SYN-1.2)return 'New Moon';
+    if(Math.abs(a-SYN/2)<1.2)return 'Full Moon';
+    if(Math.abs(a-SYN/4)<1)return 'First Quarter';
+    if(Math.abs(a-SYN*.75)<1)return 'Last Quarter';
+    if(f<.25)return 'Waxing Crescent';
+    if(f<.5)return 'Waxing Gibbous';
+    if(f<.75)return 'Waning Gibbous';
+    return 'Waning Crescent';
+  }
+  function phasePath(f,r){
+    f=((f%1)+1)%1;
+    var waxing=f<.5, crescent=f<.25||f>.75;
+    var rx=Math.abs(Math.cos(f*2*Math.PI))*r;
+    var outer=waxing?1:0, inner=waxing?(crescent?0:1):(crescent?1:0);
+    return 'M0,'+(-r)+'A'+r+','+r+' 0 0 '+outer+' 0,'+r+'A'+rx.toFixed(2)+','+r+' 0 0 '+inner+' 0,'+(-r)+'Z';
+  }
+  function smallMoon(f){
+    var ns='http://www.w3.org/2000/svg';
+    var s=document.createElementNS(ns,'svg');s.setAttribute('viewBox','-12 -12 24 24');s.setAttribute('aria-hidden','true');
+    var c=document.createElementNS(ns,'circle');c.setAttribute('r','10');c.setAttribute('fill','#262b4a');
+    var p=document.createElementNS(ns,'path');p.setAttribute('d',phasePath(f,10));p.setAttribute('fill','#f7f5ef');
+    var o=document.createElementNS(ns,'circle');o.setAttribute('r','10');o.setAttribute('fill','none');o.setAttribute('stroke','rgba(28,33,64,.45)');o.setAttribute('stroke-width','.6');
+    s.appendChild(c);s.appendChild(p);s.appendChild(o);return s;
+  }
+
+  function render(animate){
+    var y=view.getFullYear(),m=view.getMonth();
+    document.getElementById('mt').lastChild.nodeValue=MONTHS[m]+' '+y;
+    document.getElementById('mname').textContent='The '+MOONS[m]+' Moon';
+    daysEl.innerHTML='';
+    var first=(new Date(y,m,1).getDay()+6)%7, total=new Date(y,m+1,0).getDate();
+    for(var b=0;b<first;b++){var e=document.createElement('div');e.className='day blank';e.setAttribute('aria-hidden','true');daysEl.appendChild(e);}
+    for(var d=1;d<=total;d++){
+      var dt=new Date(y,m,d), f=frac(dt), prevF=frac(new Date(y,m,d-1));
+      var btn=document.createElement('button');btn.type='button';btn.className='day';
+      btn.dataset.d=d;
+      var nm=name(f);
+      btn.setAttribute('aria-label',WD[dt.getDay()]+' '+d+' '+MONTHS[m]+', '+nm+', '+Math.round(illum(f)*100)+' percent lit');
+      if(key(dt)===todayKey)btn.classList.add('today');
+      if(key(dt)===key(sel)){btn.classList.add('sel');btn.tabIndex=0;}else btn.tabIndex=-1;
+      if(prevF<.5&&f>=.5){var t=document.createElement('span');t.className='tag';t.textContent='Full';btn.appendChild(t);}
+      if(prevF>f){var t2=document.createElement('span');t2.className='tag';t2.textContent='New';btn.appendChild(t2);}
+      btn.appendChild(smallMoon(f));
+      var n=document.createElement('span');n.className='num';n.textContent=d;btn.appendChild(n);
+      daysEl.appendChild(btn);
+    }
+    if(!daysEl.querySelector('[tabindex="0"]')){var fb=daysEl.querySelector('button.day');if(fb)fb.tabIndex=0;}
+    if(animate){daysEl.classList.remove('fade');void daysEl.offsetWidth;daysEl.classList.add('fade');}
+  }
+
+  function setBig(f){
+    var d=phasePath(f,100);
+    document.getElementById('lit').setAttribute('d',d);
+    document.getElementById('litClipPath').setAttribute('d',d);
+    var il=illum(f);
+    document.getElementById('big').style.filter='drop-shadow(0 0 '+(6+il*28).toFixed(1)+'px rgba(255,252,240,'+(.25+il*.55).toFixed(2)+'))';
+  }
+  function showSel(){
+    var f=frac(sel), a=f*SYN, nm=name(f);
+    document.getElementById('pn').textContent=nm;
+    document.getElementById('dl').textContent=WD[sel.getDay()]+', '+sel.getDate()+' '+MONTHS[sel.getMonth()]+' '+sel.getFullYear();
+    document.getElementById('ill').textContent=Math.round(illum(f)*100)+'%';
+    document.getElementById('age').textContent=a.toFixed(1);
+    var toFull=(SYN/2-a+SYN)%SYN, toNew=SYN-a;
+    if(toFull<=toNew){document.getElementById('nxt').textContent=Math.round(toFull);document.getElementById('nxtl').textContent='To full';}
+    else{document.getElementById('nxt').textContent=Math.round(toNew);document.getElementById('nxtl').textContent='To new';}
+    document.getElementById('verse').textContent=VERSES[nm];
+    if(anim)cancelAnimationFrame(anim);
+    if(shownF===null||reduce.matches){shownF=f;setBig(f);return;}
+    var from=shownF, delta=((f-from+1.5)%1)-.5, start=performance.now(), dur=700+Math.abs(delta)*900;
+    (function step(t){
+      var k=Math.min(1,(t-start)/dur), e=1-Math.pow(1-k,4);
+      shownF=from+delta*e; setBig(shownF);
+      if(k<1)anim=requestAnimationFrame(step);else{shownF=f;anim=null;}
+    })(start);
+  }
+  function select(d,focus){
+    var moved=d.getMonth()!==view.getMonth()||d.getFullYear()!==view.getFullYear();
+    sel=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    if(moved)view=new Date(sel.getFullYear(),sel.getMonth(),1);
+    render(moved); showSel();
+    if(focus){var b=daysEl.querySelector('.sel');if(b)b.focus();}
+  }
+
+  daysEl.addEventListener('click',function(e){
+    var b=e.target.closest('button.day');if(!b)return;
+    select(new Date(view.getFullYear(),view.getMonth(),+b.dataset.d),true);
+  });
+  daysEl.addEventListener('keydown',function(e){
+    var step={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7}[e.key];
+    if(!step)return;e.preventDefault();
+    select(new Date(sel.getFullYear(),sel.getMonth(),sel.getDate()+step),true);
+  });
+  document.getElementById('prev').addEventListener('click',function(){view=new Date(view.getFullYear(),view.getMonth()-1,1);render(true);});
+  document.getElementById('next').addEventListener('click',function(){view=new Date(view.getFullYear(),view.getMonth()+1,1);render(true);});
+  document.getElementById('today').addEventListener('click',function(){var t=new Date();select(new Date(t.getFullYear(),t.getMonth(),t.getDate()),false);});
+
+  render(false); showSel();
+})();
+</script>
+</body>
+</html>

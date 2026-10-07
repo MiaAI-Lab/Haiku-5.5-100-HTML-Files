@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinetica Week — Velocity Marquee</title>
+<style>
+:root{
+  --cream:#f3eee3;
+  --ink:#121110;
+  --tomato:#ff4a1c;
+  --cobalt:#2337ff;
+  --butter:#ffd84a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+body{background:var(--cream);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden}
+.top{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px clamp(16px,4vw,40px);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;mix-blend-mode:difference;color:#fff;pointer-events:none}
+.intro{min-height:92vh;display:grid;align-content:end;padding:110px clamp(16px,5vw,64px) 48px;gap:22px}
+.intro h1{font-family:Impact,"Haettenschweiler","Arial Narrow Bold","Helvetica Neue",sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(56px,15vw,220px);line-height:.82;letter-spacing:-.02em}
+.intro h1 em{font-style:normal;color:var(--tomato)}
+.intro p{max-width:520px;font-size:clamp(16px,2.4vw,20px);line-height:1.45}
+.cue{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.cue i{width:28px;height:28px;border:2px solid var(--ink);border-radius:50%;position:relative}
+.cue i::after{content:"";position:absolute;left:50%;top:6px;width:2px;height:8px;background:var(--ink);transform:translateX(-50%);animation:cue 1.6s ease-in-out infinite}
+@keyframes cue{50%{transform:translate(-50%,6px);opacity:.2}}
+.row{position:relative;overflow:hidden;white-space:nowrap;padding:.06em 0;cursor:default;transition:background-color .45s ease,color .45s ease}
+.track{display:inline-flex;will-change:transform}
+.unit{display:inline-flex;align-items:center;flex:none}
+.word{font-family:Impact,"Haettenschweiler","Arial Narrow Bold","Helvetica Neue",sans-serif;text-transform:uppercase;line-height:.92;font-size:clamp(64px,17vw,250px);letter-spacing:-.01em;padding:0 .12em}
+.star{display:inline-block;width:.42em;height:.42em;margin:0 .18em;flex:none}
+.star svg{width:100%;height:100%;display:block;animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.r1{background:var(--ink);color:var(--cream)}
+.r1 .star svg{fill:var(--tomato)}
+.r2{background:var(--cream);color:transparent}
+.r2 .word{-webkit-text-stroke:2px var(--ink)}
+.r2 .star svg{fill:var(--ink)}
+.r3{background:var(--tomato);color:var(--ink)}
+.r3 .star svg{fill:var(--cream)}
+.r4{background:var(--cobalt);color:var(--butter)}
+.r4 .star svg{fill:var(--butter)}
+.r5{background:var(--cream);color:var(--ink)}
+.r5 .word{font-family:Georgia,"Times New Roman",serif;font-style:italic;text-transform:none;letter-spacing:-.04em}
+.r5 .star svg{fill:var(--tomato)}
+.row:hover,.row:focus-visible{background:var(--butter);color:var(--ink);outline:none}
+.row.r2:hover .word,.row.r2:focus-visible .word{-webkit-text-stroke-color:var(--ink);color:var(--ink)}
+.row:focus-visible{box-shadow:inset 0 0 0 4px var(--ink)}
+.note{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(18px,4vw,48px);padding:clamp(48px,10vw,120px) clamp(16px,5vw,64px)}
+.note h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;color:var(--tomato)}
+.note p{font-size:17px;line-height:1.5}
+.note b{font-family:Impact,"Arial Narrow Bold",sans-serif;font-weight:400;font-size:clamp(40px,7vw,72px);display:block;line-height:1;margin-bottom:8px}
+.outro{padding:clamp(60px,12vw,140px) clamp(16px,5vw,64px);background:var(--ink);color:var(--cream);display:grid;gap:22px}
+.outro h2{font-family:Impact,"Arial Narrow Bold",sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(40px,9vw,120px);line-height:.9}
+.btn{justify-self:start;font:700 14px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--butter);border:0;border-radius:999px;padding:18px 28px;cursor:pointer;transition:transform .35s cubic-bezier(.3,1.6,.5,1),background .3s}
+.btn:hover,.btn:focus-visible{transform:scale(1.06) rotate(-2deg);background:var(--tomato);outline:none}
+.btn:active{transform:scale(.96)}
+.gauge{position:fixed;left:clamp(12px,3vw,32px);bottom:clamp(12px,3vw,28px);z-index:10;display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--cream);border-radius:999px;padding:8px 16px 8px 8px;font:700 11px/1 ui-monospace,"Courier New",monospace;letter-spacing:.12em;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.dial{width:38px;height:38px;border-radius:50%;background:conic-gradient(var(--tomato) calc(var(--v,0)*1turn),#333 0);display:grid;place-items:center}
+.dial::after{content:"";width:26px;height:26px;border-radius:50%;background:var(--ink)}
+.gauge span b{display:block;font-size:16px;margin-top:3px}
+.mode{margin-left:6px;background:none;border:1px solid #555;color:var(--cream);border-radius:999px;font:inherit;letter-spacing:inherit;padding:8px 12px;cursor:pointer;transition:border-color .3s,background .3s,color .3s}
+.mode:hover,.mode:focus-visible{border-color:var(--butter);color:var(--butter);outline:none}
+.mode[aria-pressed="true"]{background:var(--butter);color:var(--ink);border-color:var(--butter)}
+@media (prefers-reduced-motion:reduce){
+  .star svg,.cue i::after{animation:none}
+  .btn{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="top"><span>Kinetica Week</span><span>Oct 14 — 20 &middot; Port Lumen</span></header>
+<section class="intro">
+  <h1>Speed is a <em>typeface.</em></h1>
+  <p>Seven days of motion design, kinetic posters and loud letterforms on the old ferry docks. Scroll fast and the city answers back. Scroll slow and it waits for you.</p>
+  <span class="cue"><i></i>Scroll to accelerate</span>
+</section>
+
+<div class="row r1" tabindex="0" data-dir="1" data-speed="1" data-words="Kinetica|Week|Motion|Type"></div>
+<div class="row r2" tabindex="0" data-dir="-1" data-speed="1.3" data-words="Faster|Louder|Wider|Bolder"></div>
+<div class="row r3" tabindex="0" data-dir="1" data-speed=".8" data-words="Posters|In|Transit"></div>
+
+<section class="note">
+  <div><b>140+</b><h2>Kinetic posters</h2><p>Printed on harbour tarpaulin and hung on cranes that swing every hour on the hour.</p></div>
+  <div><b>7</b><h2>Nights of projection</h2><p>Letterforms slide across the grain silos from dusk until the last tram leaves the pier.</p></div>
+  <div><b>1</b><h2>Rule</h2><p>Nothing on the docks stands still. Not the type, not the crowd, not the gulls.</p></div>
+</section>
+
+<div class="row r4" tabindex="0" data-dir="-1" data-speed="1.1" data-words="Port Lumen|Ferry Docks"></div>
+<div class="row r5" tabindex="0" data-dir="1" data-speed=".7" data-words="slow down|look closer"></div>
+<div class="row r1" tabindex="0" data-dir="-1" data-speed="1.5" data-words="Go|Go|Go"></div>
+
+<section class="outro">
+  <h2>Hold the line.<br>Then let it run.</h2>
+  <p style="max-width:520px;font-size:18px;line-height:1.5;color:#bdb8ad">Hover any band to catch it mid-flight. Day passes open at dawn on the Monday; the docks fill fast.</p>
+  <button class="btn" type="button" id="cta">Reserve a dock pass</button>
+</section>
+
+<div class="gauge" aria-live="off">
+  <div class="dial"></div>
+  <span>VELOCITY<b id="vel">0.0x</b></span>
+  <button class="mode" type="button" id="mode" aria-pressed="false">Freeze</button>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var STAR = '<span class="star"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0l4.6 13.2L38 9.4 28.4 20 38 30.6 24.6 26.8 20 40l-4.6-13.2L2 30.6 11.6 20 2 9.4l13.4 3.8z"/></svg></span>';
+  var rows = [];
+  Array.prototype.forEach.call(document.querySelectorAll('.row'), function(el){
+    var words = el.getAttribute('data-words').split('|');
+    var html = '';
+    words.forEach(function(w){ html += '<span class="word">' + w + '</span>' + STAR; });
+    el.setAttribute('aria-label', words.join(' '));
+    el.innerHTML = '<div class="track" aria-hidden="true"><div class="unit">' + html + '</div></div>';
+    rows.push({el:el, track:el.firstChild, dir:+el.getAttribute('data-dir'), sp:+el.getAttribute('data-speed'), x:0, w:0, hover:0, h:0});
+  });
+  function layout(){
+    rows.forEach(function(r){
+      var unit = r.track.firstChild;
+      while (r.track.children.length > 1) r.track.removeChild(r.track.lastChild);
+      r.w = unit.offsetWidth || 1;
+      var copies = Math.ceil(innerWidth / r.w) + 1;
+      for (var c = 0; c < copies; c++) r.track.appendChild(unit.cloneNode(true));
+    });
+  }
+  layout();
+  var rt; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(layout, 120); });
+  rows.forEach(function(r){
+    r.el.addEventListener('pointerenter', function(){ r.hover = 1; });
+    r.el.addEventListener('pointerleave', function(){ r.hover = 0; });
+    r.el.addEventListener('focus', function(){ r.hover = 1; });
+    r.el.addEventListener('blur', function(){ r.hover = 0; });
+  });
+
+  var frozen = false, modeBtn = document.getElementById('mode');
+  modeBtn.addEventListener('click', function(){ frozen = !frozen; modeBtn.setAttribute('aria-pressed', frozen); modeBtn.textContent = frozen ? 'Release' : 'Freeze'; });
+  document.getElementById('cta').addEventListener('click', function(){ this.textContent = 'Pass reserved — see you on the docks'; });
+
+  var lastY = scrollY, vel = 0, dirSign = 1, lastT = performance.now();
+  var velEl = document.getElementById('vel'), gauge = document.querySelector('.dial');
+  var BASE = reduce ? 0.15 : 1.1; // px per frame at 60fps
+  function tick(t){
+    var dt = Math.min(64, t - lastT) / 16.67; lastT = t;
+    var y = scrollY, dy = y - lastY; lastY = y;
+    if (dy !== 0) dirSign = dy > 0 ? 1 : -1;
+    var target = Math.min(Math.abs(dy) * (reduce ? 0.15 : 0.9), 60);
+    vel += (target - vel) * 0.12;
+    var mult = frozen ? 0 : 1 + vel * 0.25;
+    var skew = reduce || frozen ? 0 : Math.max(-14, Math.min(14, vel * 0.7 * dirSign));
+    rows.forEach(function(r){
+      r.h += (r.hover - r.h) * 0.12;
+      var step = BASE * r.sp * mult * (1 - r.h * 0.92) * r.dir * dirSign * dt;
+      r.x -= step;
+      if (r.x <= -r.w) r.x += r.w;
+      if (r.x > 0) r.x -= r.w;
+      r.track.style.transform = 'translate3d(' + r.x.toFixed(2) + 'px,0,0) skewX(' + (skew * r.dir).toFixed(2) + 'deg)';
+    });
+    velEl.textContent = (frozen ? 0 : mult).toFixed(1) + 'x';
+    gauge.style.setProperty('--v', Math.min(1, vel / 40).toFixed(3));
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

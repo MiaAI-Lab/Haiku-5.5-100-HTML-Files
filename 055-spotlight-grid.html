@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safelight: A Darkroom Grid</title>
+<style>
+:root{
+  --black:#050303;--red:#ff3b2f;--ember:#ff6a3d;--cream:#f4e6d6;--dim:rgba(255,59,47,.075);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--black)}
+body{color:var(--cream);font-family:var(--mono)}
+.stage{position:fixed;inset:0;touch-action:none;cursor:none;user-select:none;-webkit-user-select:none}
+.layer{position:absolute;inset:0;display:grid;place-items:center;padding:96px clamp(16px,6vw,96px)}
+.base{background-image:linear-gradient(var(--dim) 1px,transparent 1px),linear-gradient(90deg,var(--dim) 1px,transparent 1px);background-size:48px 48px;background-position:center}
+.lit{
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,59,47,.10),transparent 70%),
+    linear-gradient(rgba(255,80,60,.38) 1px,transparent 1px),linear-gradient(90deg,rgba(255,80,60,.38) 1px,transparent 1px),#140504;
+  background-size:100% 100%,48px 48px,48px 48px,auto;background-position:center;
+  -webkit-mask-image:radial-gradient(circle 0px at -100px -100px,#000,transparent);mask-image:radial-gradient(circle 0px at -100px -100px,#000,transparent);
+}
+.prose{max-width:860px;font-family:var(--serif);font-size:clamp(17px,1.2vw + 10px,32px);line-height:1.55;text-align:left;text-wrap:pretty}
+.prose p+p{margin-top:.9em}
+.kw{font-style:italic;color:var(--ember);text-shadow:0 0 18px rgba(255,90,50,.6)}
+.ghost .prose{color:transparent}
+.ghost .kw{color:transparent;text-shadow:none;transition:color 1.2s ease,text-shadow 1.2s ease}
+.ghost .kw.found{color:rgba(255,106,61,.5);text-shadow:0 0 14px rgba(255,59,47,.35)}
+.lit.flood{-webkit-mask-image:none!important;mask-image:none!important;animation:flood 2.4s ease forwards}
+@keyframes flood{0%{opacity:0}30%{opacity:1}100%{opacity:1}}
+.hud{position:fixed;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:clamp(16px,3vw,32px) clamp(16px,4vw,40px);pointer-events:none;z-index:3;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.hud.top{top:0}.hud.bottom{bottom:0;align-items:flex-end;color:rgba(244,230,214,.55)}
+.title b{display:block;font-family:var(--serif);font-size:clamp(26px,3vw,36px);letter-spacing:.02em;text-transform:none;font-weight:400;font-style:italic;color:var(--cream);margin-top:6px}
+.title span{color:var(--red)}
+.count{text-align:right}
+.count strong{display:block;font-size:clamp(26px,3vw,36px);font-weight:400;letter-spacing:0;color:var(--cream);font-variant-numeric:tabular-nums;margin-top:6px}
+.count strong em{font-style:normal;color:rgba(244,230,214,.35)}
+.ticks{display:flex;gap:4px;justify-content:flex-end;margin-top:8px}
+.ticks i{width:10px;height:2px;background:rgba(244,230,214,.18);transition:background .6s ease,box-shadow .6s}
+.ticks i.on{background:var(--red);box-shadow:0 0 8px var(--red)}
+.cursor{position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px;border:1px solid var(--red);border-radius:50%;pointer-events:none;z-index:4;box-shadow:0 0 12px rgba(255,59,47,.7)}
+.cursor::before,.cursor::after{content:"";position:absolute;background:var(--red);opacity:.6}
+.cursor::before{left:50%;top:-10px;width:1px;height:32px;margin-left:-.5px}
+.cursor::after{top:50%;left:-10px;height:1px;width:32px;margin-top:-.5px}
+.lantern{position:fixed;width:8px;height:8px;margin:-4px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(255,59,47,.15),0 0 18px var(--red);pointer-events:none;z-index:2;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(0)}}
+.bottom button{pointer-events:auto;font:inherit;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);background:rgba(20,5,4,.7);border:1px solid rgba(255,59,47,.4);padding:9px 14px;border-radius:2px;cursor:pointer;transition:border-color .3s,background .3s,color .3s}
+.bottom button:hover{border-color:var(--red);background:rgba(255,59,47,.12)}
+.bottom button:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.msg{position:fixed;left:50%;bottom:clamp(64px,10vh,110px);transform:translate(-50%,20px);opacity:0;z-index:3;font-family:var(--serif);font-style:italic;font-size:clamp(16px,2vw,22px);color:var(--cream);text-align:center;width:calc(100% - 32px);max-width:560px;transition:opacity 1s ease,transform 1s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.msg.show{opacity:1;transform:translate(-50%,0)}
+@media (hover:none){.cursor{display:none}.stage{cursor:auto}}
+@media (max-width:600px){.layer{padding:110px 16px 90px}.hud.bottom .hint{display:none}}
+</style>
+</head>
+<body>
+<main class="stage" id="stage" aria-label="A dark grid. Move the spotlight to reveal hidden text.">
+  <div class="layer base ghost" id="ghost" aria-hidden="true"></div>
+  <div class="layer lit" id="lit">
+    <div class="prose" id="prose">
+      <p>In the darkroom you work by a <span class="kw">red</span> lamp that the paper cannot see. Everything waits in the <span class="kw">tray</span>: a face, a <span class="kw">harbour</span>, the corner of a room you will not stand in again.</p>
+      <p>Rock the bath slowly. First the <span class="kw">shadows</span> arrive, then the edges of a <span class="kw">window</span>, then the <span class="kw">light</span> itself, which was there the whole time and only needed <span class="kw">patience</span>. Rinse. Hang it on the <span class="kw">line</span>. Let the <span class="kw">silver</span> settle.</p>
+    </div>
+  </div>
+</main>
+<div class="hud top">
+  <div class="title"><span>●</span> Plate 07 · Darkroom<b>Safelight</b></div>
+  <div class="count">Developed<strong><span id="n">0</span><em> / 9</em></strong><div class="ticks" id="ticks"></div></div>
+</div>
+<div class="hud bottom">
+  <span class="hint">Move to search · click to hang a lantern · scroll or [ ] to resize</span>
+  <button type="button" id="clear">Douse lanterns</button>
+</div>
+<p class="msg" id="msg">The print is fixed. Every word was already on the paper.</p>
+<div class="cursor" id="cur" aria-hidden="true"></div>
+<script>
+(function(){
+  var stage=document.getElementById('stage'),lit=document.getElementById('lit'),ghost=document.getElementById('ghost'),prose=document.getElementById('prose');
+  var cur=document.getElementById('cur'),nEl=document.getElementById('n'),ticks=document.getElementById('ticks'),msg=document.getElementById('msg');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var clone=prose.cloneNode(true);clone.removeAttribute('id');ghost.appendChild(clone);
+  var kws=[].slice.call(prose.querySelectorAll('.kw')),gk=[].slice.call(clone.querySelectorAll('.kw'));
+  var found=kws.map(function(){return false}),total=kws.length,nFound=0,centers=[];
+  for(var i=0;i<total;i++){ticks.appendChild(document.createElement('i'))}
+  var tickEls=ticks.children;
+
+  function measure(){centers=kws.map(function(k){var r=k.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}})}
+  window.addEventListener('resize',measure);
+
+  var tx=innerWidth/2,ty=innerHeight/2,x=tx,y=ty,R=Math.min(190,innerWidth*.3),r=0,touched=false,lanterns=[],dirty=true,t0=performance.now();
+  function setR(v){R=Math.max(70,Math.min(360,v));dirty=true}
+
+  stage.addEventListener('pointermove',function(e){tx=e.clientX;ty=e.clientY;touched=true});
+  stage.addEventListener('pointerdown',function(e){tx=e.clientX;ty=e.clientY;touched=true;if(e.pointerType!=='mouse'){x=tx;y=ty}});
+  stage.addEventListener('click',function(e){
+    if(lanterns.length>=3){var old=lanterns.shift();old.el.remove()}
+    var el=document.createElement('div');el.className='lantern';el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';document.body.appendChild(el);
+    lanterns.push({x:e.clientX,y:e.clientY,el:el});dirty=true;
+  });
+  stage.addEventListener('wheel',function(e){e.preventDefault();setR(R-e.deltaY*.25)},{passive:false});
+  document.addEventListener('keydown',function(e){if(e.key==='['){setR(R-20)}else if(e.key===']'){setR(R+20)}});
+  document.getElementById('clear').addEventListener('click',function(){lanterns.forEach(function(l){l.el.remove()});lanterns=[];dirty=true});
+
+  function reveal(i){
+    found[i]=true;nFound++;gk[i].classList.add('found');tickEls[i].classList.add('on');nEl.textContent=nFound;
+    if(nFound===total){lit.classList.add('flood');msg.classList.add('show');setTimeout(function(){msg.classList.remove('show')},7000)}
+  }
+
+  function maskFor(cx,cy,rad,core){
+    return 'radial-gradient(circle '+rad.toFixed(0)+'px at '+cx.toFixed(1)+'px '+cy.toFixed(1)+'px,#000 0,#000 '+core+'%,rgba(0,0,0,.55) 62%,transparent 100%)';
+  }
+
+  function loop(now){
+    var t=(now-t0)/1000;
+    if(!touched&&!reduce){tx=innerWidth/2+Math.sin(t*.37)*innerWidth*.28;ty=innerHeight/2+Math.sin(t*.53+1)*innerHeight*.22}
+    var k=reduce?1:.14;
+    var nx=x+(tx-x)*k,ny=y+(ty-y)*k,flick=reduce?0:Math.sin(t*13)*1.2+Math.sin(t*7.3)*1.6;
+    var nr=r+(R-r)*(reduce?1:.08);
+    if(Math.abs(nx-x)>.05||Math.abs(ny-y)>.05||Math.abs(nr-r)>.1||dirty||!reduce){
+      x=nx;y=ny;r=nr;dirty=false;
+      var m=[maskFor(x,y,r+flick,32)];
+      for(var i=0;i<lanterns.length;i++)m.push(maskFor(lanterns[i].x,lanterns[i].y,86,20));
+      var s=m.join(',');lit.style.webkitMaskImage=s;lit.style.maskImage=s;
+      cur.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';
+      if(nFound<total&&touched){
+        for(var j=0;j<total;j++){if(!found[j]){var d=Math.hypot(centers[j].x-x,centers[j].y-y);if(d<r*.42)reveal(j)}}
+        for(var l=0;l<lanterns.length;l++){for(var q=0;q<total;q++){if(!found[q]&&Math.hypot(centers[q].x-lanterns[l].x,centers[q].y-lanterns[l].y)<40)reveal(q)}}
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  measure();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

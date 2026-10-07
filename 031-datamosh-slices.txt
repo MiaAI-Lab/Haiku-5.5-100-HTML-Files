@@ -1,0 +1,27 @@
+Prompt
+
+031 datamosh-slices: glitch art from clip-path slicing and canvas noise, triggered on hover.
+
+Build a single standalone HTML page called "Signal Loss", a gallery of codec-failure artworks. Palette: near-black ink (#07070a), bone paper (#ecebe4), acid magenta (#ff2bd6), cyan (#21f3ff), lime (#c6ff3d) for status accents, slate (#62626e) for secondary text, hairlines in #24242c. Typography: "Arial Black"/Impact for a huge uppercase two-line title ("SIGNAL" filled, "LOSS" as an outlined stroke word with a magenta "o"), "Helvetica Neue"/Arial for body and captions, ui-monospace/"Courier New" for the broadcast chrome, and Georgia for a closing editorial pull statement.
+
+Layout: a monospace status bar at the top (blinking magenta REC dot with "CH 31 / Live feed", a "Corruption" meter bar with cyan-to-magenta fill and a percentage, and a running SMPTE-style timecode). Under it, the hero block: kicker line, giant title, a lede paragraph explaining that the images forgot their keyframes, and a hint line ("Hover to corrupt, click or Enter to force a keyframe"). Below, a three-column grid of frames (single column under 760px), each a pure-CSS composition: "Sunset Codec" (purple-to-magenta-to-orange sky, yellow sun disc, scanlines, magenta horizon stripes), "The Blue Room" (glowing cyan doorway with a dark arched figure, teal floor glow), and "Highway Zero" (conic-gradient road vanishing to a horizon, lime dashed centre line, blurred magenta streetlight dashes). Each has a caption row with a title and a monospace frame code. Close with a two-column "On datamoshing" note in Georgia and a monospace footer for the fictional "Vectorfield Broadcast Archive".
+
+Technique: every glitchable element (.mosh) has a .src child; JavaScript clones that child N times (9 to 11) into absolutely positioned, aria-hidden slices, each clipped with clip-path: inset(top% 0 bottom% 0). At rest the slices are equal bands with no transform, so they read as one image. On hover or focus, each 45 to 155 ms the bands are re-cut with random heights (some thin, some thick), about 70% of them shift horizontally (a third with large offsets, the rest small), occasionally scaleX, and pick a filter from invert, hue-rotate with saturation, high contrast or brightened hue shift. Leaving restores clean bands. Clicking (or Enter/Space) fires a "keyframe": a difference-blend white flash and a 380 ms clean hold.
+
+Behind everything, a fixed full-screen canvas at roughly 1/7 resolution (DPR-aware, pixelated scaling, screen-blended) paints static: sparse grey pixels, occasional tinted magenta or cyan scan bands, and block smears made by drawImage-ing the canvas onto itself with horizontal offsets. A global intensity value eases from 0.06 to 1 whenever any element is being corrupted, raising noise density and smear count, and drives the corruption meter. Noise redraws at about 30 fps. Under prefers-reduced-motion the noise is drawn once, the REC blink stops, and hovering applies a single static glitch state instead of a continuous one. Touch: tapping a frame toggles its corruption (and calms the others).
+
+Title: Signal Loss
+
+Description: A dark broadcast-gallery page where every image is a stack of clip-path slices of itself. Untouched, the hero title and three CSS-painted frames look clean and precise; the moment the pointer or keyboard focus lands on one, it fractures into slipping horizontal bands that invert, hue-shift and smear, while a low-resolution static field behind the page surges in density and the corruption meter climbs. The acid magenta and cyan palette on ink black, the outlined Arial Black title, and the monospace timecode chrome give it the feel of a premium video-art exhibition rather than a random glitch effect.
+
+Visual techniques:
+- Cloned content layers sliced with clip-path: inset() and re-cut at random intervals
+- Per-slice translate3d offsets, scaleX stretches and CSS filters (invert, hue-rotate, contrast)
+- Low-resolution DPR-aware canvas static written through a Uint32Array ImageData buffer
+- Self-referential drawImage block smears to imitate motion-vector datamosh drag
+- Pure CSS artworks from layered linear, radial, conic and repeating gradients plus pseudo-elements
+- Outlined display type via -webkit-text-stroke, highlighter underline via gradient background
+- Eased global intensity driving a CSS custom property meter, live timecode readout
+- Difference-blend keyframe flash, reduced-motion fallbacks
+
+Interaction model: Hover or tab onto the title block or any frame to corrupt it; the slices keep re-cutting and shifting for as long as attention stays, and the background static and corruption meter rise with it. Moving away or blurring snaps the image back together. Clicking, or pressing Enter or Space on a focused piece, forces a keyframe: a quick inverted flash followed by a brief clean moment before the glitch resumes. On touch screens, tapping a piece toggles its corruption on and off.

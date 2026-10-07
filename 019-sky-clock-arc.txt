@@ -1,0 +1,30 @@
+PROMPT
+
+Concept 019 sky-clock-arc: time-of-day sky gradient, sun and moon travel an arc, glass clock card.
+
+Build a standalone HTML page titled "Meridian: A Clock Made of Sky". The entire viewport is a sky that tells the viewer's real local time. A fixed .sky layer uses a three-stop vertical linear-gradient (CSS variables --top, --mid, --low) whose colours are interpolated every animation frame from eleven hourly keyframes with smoothstep easing: midnight navy (#05070f / #0b1330 / #1a2147), pre-dawn indigo, blue hour into a peach horizon (#e58f7a), sunrise blue over apricot (#ffd3a1), clear morning and midday blues (#2a7fe0 / #6fb6f2 / #d6effa), a warm afternoon horizon (#f4d9a8), a magenta-and-tangerine sunset (#c0607a / #ffa05a), plum dusk, and back to night. Three layered SVG hill silhouettes at the bottom (stretched with preserveAspectRatio none) take a keyframed hill colour, each layer shaded darker toward the front.
+
+The sun and moon travel a semicircular arc centred on the horizon. Sunrise is modelled at 06:00 and sunset at 18:00; the sun maps 06:00 to 18:00 onto the arc from left horizon to right horizon, and the moon does the same from 18:00 to 06:00. The arc is drawn in a full-viewport SVG as a dotted guide with small "06", "12" and "18" tick labels, plus a solid trail from the left horizon to the current body (warm for the sun, cool for the moon). The sun is a radial-gradient disc with a large layered glow, and a 900px screen-blended halo follows it, growing stronger near the horizon. The moon is a pale disc with an inset shadow forming a crescent. About 110 twinkling star dots fade in after 19:00 and out by 06:30.
+
+A frosted glass card sits centred inside the arc above the horizon on desktop (anchored at the bottom on phones, where the horizon is raised to make room). It contains: a pill showing the named phase of day (Night, Blue hour, Sunrise, Morning, Midday, Afternoon, Golden hour, Sunset, Dusk) with a glowing accent dot whose colour changes per phase; a huge ultra-light HH:MM with small superscript seconds; the long-form date; a three-column meta row (Sunrise 06:00, Sunset 18:00, and "Daylight left" or "Until sunrise" counted down in hours and minutes); a thin day-progress bar with a dawn-to-dusk gradient; a "Preview the day" range slider covering 00:00 to 23:59; and pill buttons "Timelapse" and "Return to now". Top-left wordmark "MERIDIAN" with an italic Georgia tagline "a clock made of sky".
+
+Type: "Avenir Next" / Avenir / Futura / "Century Gothic" / Trebuchet MS, weight 200 for the clock numerals with tabular figures; tracked uppercase micro-labels. Card: gradient white glass, 28px radius, blur(22px) saturate(150%), inset highlight and deep soft shadow.
+
+Reduced motion: stars stop twinkling and timelapse runs at a third of the speed.
+
+Title: Meridian Sky Clock
+
+Description: A living clock where the sky itself is the dial. The page reads the visitor's local time and paints the matching sky, from deep navy midnight through peach dawn, clear midday blue and a magenta sunset, while the sun or moon sits at the right point on a dotted arc over layered hills. A glass card at the centre names the moment ("Golden hour", "Blue hour"), shows the time in large ultra-light numerals, and counts down the daylight left. The viewer can scrub through the whole day or run a timelapse and watch the light change continuously.
+
+Visual techniques:
+- Hourly colour keyframes interpolated with smoothstep into CSS custom properties driving a gradient sky
+- Sun and moon positioned along a semicircular arc using cosine and sine of day fraction
+- SVG arc guide with dashed stroke and a live trail path to the current body
+- Screen-blended radial halo that strengthens as the sun nears the horizon
+- Crescent moon from an inset box-shadow, sun from layered radial gradient and glows
+- Procedurally placed twinkling stars faded by a night factor
+- Layered SVG hill silhouettes tinted from keyframed colours
+- Frosted glass card with backdrop-filter, gradient fill and inset highlight
+- Custom-styled range slider and pill buttons with hover inversion
+
+Interaction model: By default the page shows the current local time and updates continuously. Dragging the "Preview the day" slider (or using the arrow keys on it) jumps the sky to any minute of the day; a "Return to now" button then appears to resume live time. "Timelapse" sweeps through the day at one hour per second, and the same button pauses it.

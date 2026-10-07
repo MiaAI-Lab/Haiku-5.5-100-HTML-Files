@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Momentum Stack: Type That Leans</title>
+<style>
+:root{
+  --paper:#efe8da;
+  --ink:#141210;
+  --red:#e8401c;
+  --mute:#8b8273;
+  --skew:0deg;
+  --stretch:1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background-image:repeating-linear-gradient(0deg,rgba(20,18,16,.035) 0 1px,transparent 1px 3px);
+  mix-blend-mode:multiply;
+}
+header.top{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px clamp(16px,4vw,40px);
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  background:linear-gradient(var(--paper) 60%,transparent);
+}
+.brand{font-weight:800}
+.brand b{color:var(--red)}
+.meter{display:flex;align-items:center;gap:10px;font-family:ui-monospace,"Courier New",monospace;letter-spacing:.06em}
+.meter .bar{width:clamp(60px,14vw,140px);height:6px;border:1.5px solid var(--ink);position:relative;overflow:hidden}
+.meter .fill{position:absolute;inset:0;background:var(--red);transform-origin:left;transform:scaleX(0)}
+.meter output{min-width:5.5ch;text-align:right}
+
+.intro{
+  min-height:92vh;display:grid;align-content:end;
+  padding:110px clamp(16px,4vw,40px) 48px;
+}
+.intro p.kicker{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);margin-bottom:18px}
+.intro h1{
+  font-family:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  font-weight:900;font-size:clamp(46px,13vw,190px);line-height:.82;letter-spacing:-.045em;
+  text-transform:uppercase;
+}
+.intro h1 span{display:block}
+.intro h1 .r{color:var(--red)}
+.intro .lede{
+  margin-top:28px;max-width:46ch;font-family:Georgia,"Iowan Old Style",serif;font-size:clamp(16px,2.1vw,20px);line-height:1.5;
+}
+.intro .hint{margin-top:26px;display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.hint i{display:inline-block;width:1.5px;height:38px;background:var(--ink);transform-origin:top;animation:drip 1.6s cubic-bezier(.6,0,.2,1) infinite}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+.stack{padding:4vh 0 10vh}
+.row{
+  position:relative;
+  display:flex;align-items:baseline;gap:.25em;
+  white-space:nowrap;
+  border-top:2px solid var(--ink);
+  padding:0 clamp(16px,4vw,40px);
+  cursor:default;
+  outline:none;
+  overflow:hidden;
+}
+.row:last-child{border-bottom:2px solid var(--ink)}
+.row .w{
+  display:block;
+  font-family:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  font-weight:900;text-transform:uppercase;letter-spacing:-.05em;
+  font-size:clamp(52px,17vw,260px);line-height:.86;
+  transform:skewX(calc(var(--skew) * var(--k,1))) scaleY(var(--stretch));
+  transform-origin:50% 100%;
+  will-change:transform;
+  transition:color .35s ease;
+}
+.row .n{
+  font-family:ui-monospace,"Courier New",monospace;font-size:12px;letter-spacing:.1em;
+  align-self:flex-start;padding-top:10px;color:var(--mute);min-width:3ch;
+}
+.row .note{
+  position:absolute;right:clamp(16px,4vw,40px);top:10px;
+  font-family:Georgia,"Iowan Old Style",serif;font-style:italic;font-size:clamp(12px,1.5vw,15px);
+  max-width:26ch;white-space:normal;text-align:right;color:var(--mute);
+  opacity:0;transform:translateY(-6px);transition:opacity .4s ease,transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.row::after{
+  content:"";position:absolute;inset:0;background:var(--ink);z-index:-1;
+  transform:scaleY(0);transform-origin:bottom;transition:transform .45s cubic-bezier(.7,0,.2,1);
+}
+.row{z-index:0}
+.row:hover::after,.row:focus-visible::after{transform:scaleY(1)}
+.row:hover .w,.row:focus-visible .w{color:var(--paper)}
+.row:hover .w.alt,.row:focus-visible .w.alt{color:var(--red)}
+.row:hover .note,.row:focus-visible .note{opacity:1;transform:none;color:#cfc6b6}
+.row:hover .n,.row:focus-visible .n{color:var(--red)}
+.w.alt{color:var(--red)}
+.w.out{color:transparent;-webkit-text-stroke:2px var(--ink)}
+.row:hover .w.out,.row:focus-visible .w.out{-webkit-text-stroke-color:var(--paper)}
+
+.essay{
+  display:grid;grid-template-columns:repeat(12,1fr);gap:20px;
+  padding:12vh clamp(16px,4vw,40px);
+}
+.essay h2{
+  grid-column:1/6;font-family:"Arial Black",Impact,sans-serif;font-size:clamp(28px,4vw,52px);line-height:.95;letter-spacing:-.03em;text-transform:uppercase;
+}
+.essay .cols{grid-column:7/13;columns:2 220px;column-gap:28px;font-family:Georgia,"Iowan Old Style",serif;font-size:16px;line-height:1.6}
+.essay .cols p{margin-bottom:1em;break-inside:avoid}
+.essay .cols p:first-child::first-letter{float:left;font-family:"Arial Black",Impact,sans-serif;font-size:3.4em;line-height:.8;margin:.06em .1em 0 0;color:var(--red)}
+footer{
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;
+  padding:22px clamp(16px,4vw,40px) 40px;border-top:2px solid var(--ink);
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+}
+footer button{
+  font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;
+  background:var(--ink);color:var(--paper);border:0;padding:10px 16px;
+  box-shadow:4px 4px 0 var(--red);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s;
+}
+footer button:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--red)}
+footer button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--red)}
+footer button:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+
+@media (max-width:760px){
+  .essay h2,.essay .cols{grid-column:1/-1}
+  .row .note{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .row .w{transform:none!important}
+  .hint i{animation:none;transform:scaleY(1)}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="brand">Inertia<b>/</b>Press</span>
+  <span class="meter" aria-label="Scroll velocity"><span class="bar"><span class="fill" id="fill"></span></span><output id="vel">0.0</output></span>
+</header>
+
+<section class="intro">
+  <p class="kicker">Issue 091 &mdash; A broadside on motion</p>
+  <h1><span>Words</span><span class="r">lean into</span><span>speed.</span></h1>
+  <p class="lede">Every line below is cast in heavy metal and hung on a spring. Scroll slowly and the stack stands upright like a printer's forme. Fling the page and the letters shear, stretch, and settle again, carrying the memory of your hand.</p>
+  <p class="hint"><i></i>Scroll fast. Then stop.</p>
+</section>
+
+<section class="stack" id="stack">
+  <div class="row" tabindex="0"><span class="n">01</span><span class="w" style="--k:1">Momentum</span><span class="note">A body in motion insists on staying that way.</span></div>
+  <div class="row" tabindex="0"><span class="n">02</span><span class="w alt" style="--k:-1.2">Shear</span><span class="w out" style="--k:-1.2">Force</span><span class="note">The slice where one layer slides across the next.</span></div>
+  <div class="row" tabindex="0"><span class="n">03</span><span class="w" style="--k:.8">Lean</span><span class="w alt" style="--k:.8">Back</span><span class="note">Posture as a record of acceleration.</span></div>
+  <div class="row" tabindex="0"><span class="n">04</span><span class="w out" style="--k:1.4">Velocity</span><span class="note">Distance divided by the patience you have left.</span></div>
+  <div class="row" tabindex="0"><span class="n">05</span><span class="w" style="--k:-.9">Drag</span><span class="w alt" style="--k:-.9">&amp;</span><span class="w" style="--k:-.9">Drift</span><span class="note">What the air takes back from every gesture.</span></div>
+  <div class="row" tabindex="0"><span class="n">06</span><span class="w alt" style="--k:1.1">Spring</span><span class="note">Stored intent, released on a curve.</span></div>
+  <div class="row" tabindex="0"><span class="n">07</span><span class="w" style="--k:-1.3">Settle</span><span class="w out" style="--k:-1.3">Down</span><span class="note">Every oscillation ends in an upright letter.</span></div>
+  <div class="row" tabindex="0"><span class="n">08</span><span class="w" style="--k:.7">Stillness</span><span class="note">The quiet after the type has finished swaying.</span></div>
+</section>
+
+<section class="essay">
+  <h2>Notes from the composing room</h2>
+  <div class="cols">
+    <p>Lead type never moved on its own. It waited in its case until a compositor set it in a stick, locked it in a chase, and pressed it into paper. We wanted to give those letters a little of the weather they never felt.</p>
+    <p>So each row listens to the pace of your scrolling, not its position. Velocity becomes shear. Sudden stops become a short, damped wobble, the way a hanging sign rocks after a gust.</p>
+    <p>Odd rows lean one way, even rows the other, at slightly different strengths. The result reads like a column of pages riffled under a thumb: never chaotic, always returning home.</p>
+    <p>Hover or tab onto any line to pull it out of the stack, inked in reverse, with a marginal note set in italic.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Inertia Press &mdash; Set in heavy grotesque</span>
+  <button type="button" id="kick">Give it a shove</button>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var fill=document.getElementById('fill');
+  var out=document.getElementById('vel');
+  var lastY=window.scrollY, lastT=performance.now();
+  var target=0, skew=0, vel=0, stretch=1, impulse=0;
+  var stiffness=0.11, damping=0.78;
+
+  function sample(){
+    var now=performance.now(), y=window.scrollY;
+    var dt=Math.max(8,now-lastT);
+    var v=(y-lastY)/dt; // px per ms
+    lastY=y; lastT=now;
+    return v;
+  }
+  function frame(){
+    var v=sample();
+    target=Math.max(-22,Math.min(22,v*-9))+impulse;
+    impulse*=0.9;
+    var force=(target-skew)*stiffness;
+    vel=(vel+force)*damping;
+    skew+=vel;
+    var mag=Math.min(1,Math.abs(skew)/22);
+    stretch=1+mag*0.14;
+    if(reduce.matches){ skew=0; stretch=1; }
+    root.style.setProperty('--skew',skew.toFixed(2)+'deg');
+    root.style.setProperty('--stretch',stretch.toFixed(3));
+    fill.style.transform='scaleX('+mag.toFixed(3)+')';
+    out.textContent=(Math.abs(v)*1000/100).toFixed(1);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  document.getElementById('kick').addEventListener('click',function(){
+    if(reduce.matches) return;
+    impulse=(Math.random()>.5?1:-1)*26;
+  });
+})();
+</script>
+</body>
+</html>

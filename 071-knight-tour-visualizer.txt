@@ -1,0 +1,25 @@
+Prompt
+
+Build "Sixty-Four Leaps", a standalone HTML page that animates a knight's tour on a minimal 8x8 chessboard drawn in inline SVG. Mood: a quiet mathematics study printed on warm paper. Palette: paper #f3eee4 background with a faint white radial bloom top-left and a whisper of vermilion bottom-right; light squares #efe8da, dark squares #d8cfbc; ink #1c1b19; muted text #8a8376; single accent vermilion #c4402b. Visited squares tint toward blush (#f2dfd6 / #e3c4b6) with a slow 0.6s fill transition. Type: Georgia / Iowan Old Style for the display headline and body; ui-monospace / SF Mono / Menlo for coordinates, move numbers, labels, buttons and the move log.
+
+Layout: two-column grid on desktop (board about 55%, text panel about 45%), stacking to one column under 840px with the board on top; no horizontal scroll at 375px. The board SVG uses a viewBox of 800 units plus margins for file letters (a-h) below and rank numbers (8-1) to the left, a thin ink frame around the squares. The side panel has a mono eyebrow "Study 071 · Warnsdorff, 1823", a large serif headline "Sixty-four leaps, never twice." with the second phrase italic in vermilion, a short lede explaining Warnsdorff's rule, a three-cell stats row (Move / 64, current square in algebraic notation, number of onward choices) with a strong ink top rule, pill buttons (Play/Pause in vermilion, Step, Random start), a hairline tempo slider, a rolling mono move log with the current square highlighted as a vermilion chip, an italic verdict line, and a small footer note.
+
+Algorithm: Warnsdorff's heuristic from the chosen square; ties broken by distance from the board centre on the first attempt, then random tie-breaks over up to 300 retries until a full 64-square tour is found. On completion check whether the last square is a knight move from the first: if so draw a dashed closing line and announce a closed tour, otherwise announce an open tour ending at the final square.
+
+Motion: each leap draws a vermilion line segment via stroke-dashoffset with an ease-in-out cubic-bezier, a small node circle pops in with an overshooting spring (the start node is solid vermilion), the dark knight disc with a white chess-knight glyph glides to the new square via a CSS transform transition, and the move number fades into the corner of the visited square. Before each leap, dashed rings mark every legal unvisited candidate with its onward-degree count; the chosen one is drawn solid in vermilion. Before starting, hovering a square shows a faint ghost knight and a breathing vermilion dot hint reads "Choose any square to set the knight down". Reduced motion removes the draw, pop, glide and breathing animations and does not autoplay.
+
+Title: Sixty-Four Leaps
+
+Description: A calm, editorial visualization of the knight's tour. A warm paper chessboard fills one side of the page, and a vermilion line slowly traces the knight's path square by square while numbers collect in each corner. Dashed candidate rings show Warnsdorff's rule at work, and a typographic side panel keeps score with large serif numerals, a rolling algebraic move log, and a closing verdict that says whether the tour is open or closed.
+
+Visual techniques:
+- Inline SVG board built in script, with coordinates in a mono face
+- stroke-dashoffset line drawing for each knight move
+- CSS transform transitions on an SVG group for the gliding knight
+- Spring-overshoot pop animation for path nodes
+- Dashed candidate rings labelled with Warnsdorff degree counts
+- Fill transitions that tint visited squares
+- Two-column editorial layout with a ruled stats strip and pill controls
+- prefers-reduced-motion fallback that removes the animations
+
+Interaction model: Click or tap any square to place the knight there and start the tour, and click another square at any time to restart from it. Play/Pause (or the space bar) toggles autoplay, Step (or the right arrow key) advances one leap, Random start picks a random square, and the tempo slider sets the speed. Hovering the empty board previews a ghost knight on the square under the pointer.

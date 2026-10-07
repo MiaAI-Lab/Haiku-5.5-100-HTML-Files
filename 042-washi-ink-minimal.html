@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sumi · The Weight of Ink</title>
+<style>
+:root{--paper:#f1eadb;--paper2:#e6dcc8;--ink:#1c1a17;--grey:#6b655b;--seal:#c63d2b;--ease:cubic-bezier(.55,.05,.35,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--paper)}
+body{min-height:100vh;background:radial-gradient(120% 90% at 70% 10%,#f6f0e3,var(--paper) 50%,var(--paper2));color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;overflow-x:hidden}
+.washi{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.wash{position:fixed;left:0;top:0;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,rgba(28,26,23,.09),rgba(28,26,23,.03) 45%,transparent 70%);mix-blend-mode:multiply;opacity:0;transition:opacity .6s}
+.wash.on{opacity:1}
+main{position:relative;z-index:2;display:flex;flex-direction:row-reverse;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:clamp(24px,4vw,64px);min-height:100vh;padding:clamp(28px,6vh,72px) clamp(16px,4vw,56px)}
+.v{writing-mode:vertical-rl}
+.titlecol{display:flex;flex-direction:row-reverse;gap:14px;align-items:flex-start;height:min(70vh,480px)}
+.titlecol h1{font-weight:400;font-size:clamp(54px,9vh,92px);line-height:1;letter-spacing:.18em;text-orientation:upright;opacity:0;animation:rise 1.4s .2s var(--ease) forwards}
+.titlecol p{font-size:15px;letter-spacing:.2em;color:var(--grey);font-style:italic;padding-top:2.4em;opacity:0;animation:rise 1.4s .6s var(--ease) forwards}
+@keyframes rise{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.seal{width:62px;height:62px;flex:none;border:0;background:var(--seal);color:#f8e9df;border-radius:7px 5px 8px 6px;cursor:pointer;
+  display:grid;grid-template-columns:1fr 1fr;place-items:center;padding:6px;font:600 11px/1 Georgia,serif;letter-spacing:.06em;
+  box-shadow:inset 0 0 0 3px var(--seal),inset 0 0 0 5px #f1d6c9;filter:url(#rough);transform:rotate(-3deg);
+  transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.seal:hover{transform:rotate(-1deg) scale(1.05)}
+.seal:focus-visible,.enso:focus-visible,article:focus-visible{outline:1px dashed var(--seal);outline-offset:8px}
+.seal.press{animation:press .55s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes press{0%{transform:rotate(-3deg) scale(1)}30%{transform:rotate(-3deg) scale(.82);filter:url(#rough) brightness(.85)}100%{transform:rotate(-3deg) scale(1)}}
+.stamp{position:absolute;width:62px;height:62px;border-radius:7px;background:var(--seal);opacity:0;mix-blend-mode:multiply;pointer-events:none;filter:url(#dry)}
+.stamp.go{animation:imprint 2.6s ease-out forwards}
+@keyframes imprint{0%{opacity:.85;transform:scale(1.06) rotate(var(--r))}100%{opacity:0;transform:scale(1.18) rotate(var(--r))}}
+.ensowrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.enso{background:none;border:0;cursor:pointer;width:min(36vw,340px);aspect-ratio:1;border-radius:50%}
+.enso svg{width:100%;height:100%;overflow:visible;transition:transform 1s var(--ease)}
+.enso:hover svg{transform:scale(1.02) rotate(-2deg)}
+.enso path{fill:none;stroke:var(--ink);stroke-linecap:round}
+.cap{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--grey)}
+.cap b{color:var(--seal);font-weight:400}
+.cols{display:flex;flex-direction:row-reverse;flex-wrap:wrap;gap:clamp(18px,2.4vw,34px);justify-content:center}
+article{display:flex;flex-direction:row-reverse;align-items:flex-start;gap:10px;height:min(66vh,440px);padding:6px 2px;cursor:default;
+  transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.cols:hover article:not(:hover),.cols:focus-within article:not(:focus-within){opacity:.38}
+article:hover,article:focus-visible{transform:translateY(-4px)}
+.num{font-size:13px;color:var(--seal);letter-spacing:.2em;font-style:italic}
+article h2{font-weight:400;font-size:22px;letter-spacing:.14em;line-height:1.2}
+article svg{width:26px;height:100%;flex:none;overflow:visible}
+article svg path{fill:none;stroke:var(--ink);stroke-linecap:round}
+article p{font-size:15.5px;line-height:1.9;letter-spacing:.04em;color:#2b2824;max-inline-size:100%}
+.draw path{stroke-dasharray:1;stroke-dashoffset:1;animation:draw var(--d,1.4s) var(--ease) var(--dl,0s) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.colophon{height:min(60vh,400px);font-size:11px;letter-spacing:.28em;color:var(--grey);line-height:2.2;text-transform:uppercase}
+.colophon span{color:var(--seal)}
+@media (max-width:720px){
+  main{align-items:flex-start;gap:36px 22px}
+  .titlecol{height:300px}
+  .ensowrap{order:0;width:100%}
+  .enso{width:min(72vw,300px)}
+  article{height:340px}
+  article p{font-size:14.5px}
+  .colophon{height:260px}
+}
+@media (prefers-reduced-motion:reduce){
+  .draw path{animation:none;stroke-dashoffset:0}
+  .titlecol h1,.titlecol p{animation:none;opacity:1}
+  .wash{display:none}
+  .seal.press,.stamp.go{animation:none}
+  article,.enso svg{transition:none}
+}
+</style>
+</head>
+<body>
+<svg class="washi" aria-hidden="true" preserveAspectRatio="none">
+  <defs>
+    <filter id="fibers" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.22" numOctaves="3" seed="11" result="f"/>
+      <feColorMatrix in="f" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.36  0 0 0 0 0.27  0 0 0 -2.2 1.25"/>
+    </filter>
+    <filter id="speck" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="s"/>
+      <feColorMatrix in="s" type="matrix" values="0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 -6 3.3"/>
+    </filter>
+    <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="3" seed="2" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="brush" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="dry" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7 0.06" numOctaves="2" seed="9" result="t"/>
+      <feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.2 2" result="m"/>
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="c"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="5" result="n"/>
+      <feDisplacementMap in="c" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" filter="url(#fibers)" opacity=".18"/>
+  <rect width="100%" height="100%" filter="url(#speck)" opacity=".22"/>
+</svg>
+<div class="wash" id="wash" aria-hidden="true"></div>
+
+<main>
+  <header class="titlecol">
+    <h1 class="v">SUMI</h1>
+    <p class="v">a study in the weight of ink</p>
+    <button class="seal" id="seal" type="button" aria-label="Press the studio seal"><span>IN</span><span>K</span><span>ST</span><span>UD</span></button>
+  </header>
+
+  <div class="ensowrap">
+    <button class="enso" id="enso" type="button" aria-label="Paint a new ensō circle">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <g id="ensoG" class="draw">
+          <path id="eBody" pathLength="1" stroke-width="15" filter="url(#brush)" style="--d:1.35s"/>
+          <path id="eTail" pathLength="1" stroke-width="7" filter="url(#dry)" style="--d:1.6s" opacity=".85"/>
+        </g>
+      </svg>
+    </button>
+    <p class="cap">Ensō <b id="ensoN">no. 1</b> · tap to paint again</p>
+  </div>
+
+  <section class="cols" aria-label="Four quiet hours">
+    <article class="v" tabindex="0">
+      <span class="num">i</span>
+      <h2>First Light</h2>
+      <svg viewBox="0 0 26 400" preserveAspectRatio="none" aria-hidden="true" class="draw"><path pathLength="1" d="M14 8 C18 90 9 170 13 250 S15 360 12 392" stroke-width="7" filter="url(#brush)" style="--dl:.4s"/></svg>
+      <p>Grind the stick slowly. The stone remembers every morning you hurried, and the ink comes out thin with impatience.</p>
+    </article>
+    <article class="v" tabindex="0">
+      <span class="num">ii</span>
+      <h2>The Long Noon</h2>
+      <svg viewBox="0 0 26 400" preserveAspectRatio="none" aria-hidden="true" class="draw"><path pathLength="1" d="M12 10 C8 120 18 200 13 300 S11 370 14 390" stroke-width="7" filter="url(#dry)" style="--dl:.6s"/></svg>
+      <p>A single stroke is not drawn; it is let go. The wrist decides, the paper agrees, and the hand learns to stay out of the way.</p>
+    </article>
+    <article class="v" tabindex="0">
+      <span class="num">iii</span>
+      <h2>Dusk Wash</h2>
+      <svg viewBox="0 0 26 400" preserveAspectRatio="none" aria-hidden="true" class="draw"><path pathLength="1" d="M13 6 C16 80 10 160 14 230 S12 340 13 380" stroke-width="9" stroke-opacity=".55" filter="url(#brush)" style="--dl:.8s"/></svg>
+      <p>Water carries the black into grey, and grey into fog. Whatever you leave unpainted becomes the mountain you were trying to describe.</p>
+    </article>
+    <article class="v" tabindex="0">
+      <span class="num">iv</span>
+      <h2>Night Ink</h2>
+      <svg viewBox="0 0 26 400" preserveAspectRatio="none" aria-hidden="true" class="draw"><path pathLength="1" d="M13 12 C11 100 16 190 12 270 S14 350 13 386" stroke-width="6" filter="url(#dry)" style="--dl:1s"/></svg>
+      <p>Rest the brush bristles-down, never upright. By morning it will hold the shape of what you meant tonight.</p>
+    </article>
+  </section>
+
+  <footer class="colophon v">Kōyō Paper Works · hand-laid kozo, <span>42 g/m²</span> · one colour, one breath</footer>
+</main>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function restart(el){el.classList.remove('draw');void el.getBoundingClientRect();el.classList.add('draw');}
+
+  /* ensō */
+  var g=document.getElementById('ensoG'),body=document.getElementById('eBody'),tail=document.getElementById('eTail'),num=document.getElementById('ensoN'),count=1;
+  function arc(r,a0,sweep,seed,n){
+    var d='',i,a,rr,x,y;
+    for(i=0;i<=n;i++){
+      a=a0+sweep*i/n;
+      rr=r*(1+.025*Math.sin(i*.21+seed)+.012*Math.sin(i*.67+seed*2));
+      x=100+rr*Math.cos(a);y=100+rr*Math.sin(a);
+      d+=(i?'L':'M')+x.toFixed(2)+' '+y.toFixed(2);
+    }
+    return d;
+  }
+  function paint(){
+    var seed=Math.random()*10,a0=-Math.PI*(.4+Math.random()*.5),sweep=Math.PI*2*(.84+Math.random()*.1);
+    body.setAttribute('d',arc(74,a0,sweep*.86,seed,110));
+    tail.setAttribute('d',arc(73,a0+.04,sweep,seed+.3,130));
+    if(!reduce)restart(g);
+  }
+  paint();
+  document.getElementById('enso').addEventListener('click',function(){count++;num.textContent='no. '+count;paint();});
+
+  /* columns redraw on hover / focus */
+  document.querySelectorAll('article').forEach(function(a){
+    var s=a.querySelector('svg');
+    function go(){if(!reduce){s.querySelector('path').style.setProperty('--dl','0s');restart(s);}}
+    a.addEventListener('pointerenter',go);
+    a.addEventListener('focus',go);
+  });
+
+  /* seal stamp */
+  var seal=document.getElementById('seal');
+  seal.addEventListener('click',function(){
+    seal.classList.remove('press');void seal.offsetWidth;seal.classList.add('press');
+    if(reduce)return;
+    var r=seal.getBoundingClientRect(),st=document.createElement('div');
+    st.className='stamp';
+    st.style.left=(r.left+window.scrollX-8+Math.random()*16)+'px';
+    st.style.top=(r.top+window.scrollY+r.height+10)+'px';
+    st.style.setProperty('--r',(Math.random()*10-5).toFixed(1)+'deg');
+    document.body.appendChild(st);
+    requestAnimationFrame(function(){st.classList.add('go');});
+    setTimeout(function(){st.remove();},2700);
+  });
+
+  /* ink wash follower */
+  var w=document.getElementById('wash');
+  if(!reduce&&window.matchMedia('(pointer:fine)').matches){
+    var tx=0,ty=0,x=0,y=0,raf=0;
+    window.addEventListener('pointermove',function(e){tx=e.clientX;ty=e.clientY;w.classList.add('on');if(!raf)raf=requestAnimationFrame(step);});
+    document.addEventListener('pointerleave',function(){w.classList.remove('on');});
+    function step(){
+      x+=(tx-x)*.09;y+=(ty-y)*.09;
+      w.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';
+      raf=(Math.abs(tx-x)+Math.abs(ty-y)>.3)?requestAnimationFrame(step):0;
+    }
+  }
+})();
+</script>
+</body>
+</html>

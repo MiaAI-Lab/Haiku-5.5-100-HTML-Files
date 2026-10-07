@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fieldnote Magnetic Instruments</title>
+<style>
+:root{--paper:#f3f0e8;--ink:#16181d;--cobalt:#1f3cff;--verm:#ff4a1c;--dim:#7b7a74;--rule:rgba(22,24,29,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{min-height:100vh;background:var(--paper);color:var(--ink);font-family:"Avenir Next","Avenir","Segoe UI","Helvetica Neue",system-ui,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.page{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;padding:22px clamp(16px,4vw,48px);pointer-events:none}
+.page a,.page button{pointer-events:auto}
+nav{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;gap:10px;flex-wrap:wrap}
+nav b{font-weight:800;letter-spacing:.08em}
+nav b::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--verm);margin-right:8px;box-shadow:12px 0 0 var(--cobalt);margin-right:22px;vertical-align:0}
+.hero{align-self:center;display:grid;grid-template-columns:1.3fr 1fr;gap:30px;align-items:center;padding:40px 0}
+.kick{font:600 .72rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--cobalt)}
+h1{font-size:clamp(2.6rem,8vw,6.4rem);line-height:.92;letter-spacing:-.035em;font-weight:800;margin:14px 0 18px}
+h1 em{font-style:normal;color:var(--cobalt)}
+.lede{max-width:44ch;font-size:1.05rem;line-height:1.55;color:#3a3b40;background:rgba(243,240,232,.75);padding:4px 0}
+.modes{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.mag{position:relative;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:14px 24px;font:700 .84rem "Avenir Next","Segoe UI",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;will-change:transform;transition:background .3s,color .3s,border-color .3s}
+.mag span{display:inline-block;will-change:transform;pointer-events:none}
+.mag:hover{background:var(--ink);color:var(--paper)}
+.mag[aria-pressed=true]{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.mag:focus-visible{outline:2px dashed var(--verm);outline-offset:5px}
+.core{justify-self:center;width:clamp(170px,26vw,260px);aspect-ratio:1;border-radius:50%;border:0;background:var(--verm);color:#fff;font-size:1rem;padding:0;
+  box-shadow:0 0 0 10px rgba(255,74,28,.12),0 0 0 22px rgba(255,74,28,.06),0 20px 40px rgba(255,74,28,.3)}
+.core span{display:flex;flex-direction:column;align-items:center;gap:6px}
+.core small{font:500 .64rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.2em;opacity:.85}
+.core:hover{background:var(--ink);color:#fff}
+.core.zap{animation:zap .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes zap{30%{box-shadow:0 0 0 26px rgba(255,74,28,.18),0 0 0 54px rgba(255,74,28,.08),0 20px 40px rgba(255,74,28,.3)}}
+.read{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:14px;font:500 .72rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.read b{color:var(--ink);font-weight:700}
+@media (max-width:760px){.hero{grid-template-columns:1fr}.core{justify-self:start}}
+@media (prefers-reduced-motion:reduce){.core.zap{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<div class="page">
+  <nav><b>Fieldnote</b><span>Instrument series 029</span></nav>
+  <section class="hero">
+    <div>
+      <p class="kick">Ferrous interface study</p>
+      <h1>Everything leans <em>toward you.</em></h1>
+      <p class="lede">Two thousand iron filings lie on a sheet of warm paper. Move across them and they turn to follow, like compass needles finding north. The buttons feel the pull too: drift close and they reach for your hand.</p>
+      <div class="modes" role="group" aria-label="Field mode">
+        <button class="mag" type="button" data-m="attract" aria-pressed="true"><span>Attract</span></button>
+        <button class="mag" type="button" data-m="repel" aria-pressed="false"><span>Repel</span></button>
+        <button class="mag" type="button" data-m="swirl" aria-pressed="false"><span>Vortex</span></button>
+      </div>
+    </div>
+    <button class="mag core" type="button" id="core"><span>Discharge<small>send a pulse</small></span></button>
+  </section>
+  <div class="read" aria-live="polite"><span>Mode <b id="rm">Attract</b></span><span>Field <b id="rf">0.00</b> T</span><span>Pulses <b id="rp">0</b></span><span>Fieldnote Instruments, a fictional lab</span></div>
+</div>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+  var W,H,dpr,pts=[],GAP=26,R=190;
+  var mx=-9999,my=-9999,active=false,mode='attract',waves=[],pulses=0,energy=1;
+  function build(){
+    dpr=Math.min(window.devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    GAP=W<600?22:26;pts=[];
+    var ox=(W%GAP)/2+GAP/2,oy=(H%GAP)/2+GAP/2;
+    for(var y=oy;y<H;y+=GAP)for(var x=ox;x<W;x+=GAP)pts.push({hx:x,hy:y,x:x,y:y,vx:0,vy:0,a:Math.random()*.3-.15});
+    energy=1;
+  }
+  window.addEventListener('resize',build);build();
+  window.addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;active=true;energy=1;magnets(e)});
+  window.addEventListener('pointerdown',function(e){mx=e.clientX;my=e.clientY;active=true;energy=1});
+  window.addEventListener('pointerup',function(e){if(e.pointerType!=='mouse'){active=false;release()}});
+  document.addEventListener('pointerleave',function(){active=false;release()});
+  var mags=[].slice.call(document.querySelectorAll('.mag'));
+  function magnets(e){
+    mags.forEach(function(b){
+      var r=b.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,dist=Math.hypot(dx,dy),reach=Math.max(r.width,r.height)*.9+40;
+      var s=b.firstElementChild;
+      if(dist<reach){var k=(1-dist/reach),f=reduce?.12:.38;
+        b.style.transition='transform .18s cubic-bezier(.2,.8,.3,1),background .3s,color .3s,border-color .3s';
+        b.style.transform='translate('+(dx*f*k).toFixed(1)+'px,'+(dy*f*k).toFixed(1)+'px)';
+        s.style.transform='translate('+(dx*f*k*.5).toFixed(1)+'px,'+(dy*f*k*.5).toFixed(1)+'px)';
+      }else if(b.style.transform){reset(b)}
+    });
+  }
+  function reset(b){b.style.transition='transform .7s cubic-bezier(.3,1.7,.5,1),background .3s,color .3s,border-color .3s';b.style.transform='';b.firstElementChild.style.transition='transform .7s cubic-bezier(.3,1.7,.5,1)';b.firstElementChild.style.transform=''}
+  function release(){mags.forEach(reset)}
+  var rm=document.getElementById('rm'),rf=document.getElementById('rf'),rp=document.getElementById('rp');
+  mags.forEach(function(b){
+    if(!b.dataset.m)return;
+    b.addEventListener('click',function(){mode=b.dataset.m;energy=1;rm.textContent=b.textContent;
+      mags.forEach(function(o){if(o.dataset.m)o.setAttribute('aria-pressed',o===b?'true':'false')})});
+  });
+  var core=document.getElementById('core');
+  core.addEventListener('click',function(){
+    var r=core.getBoundingClientRect();
+    waves.push({x:r.left+r.width/2,y:r.top+r.height/2,r:0});
+    pulses++;rp.textContent=pulses;energy=1;
+    core.classList.remove('zap');void core.offsetWidth;core.classList.add('zap');
+  });
+  var peak=0,tick=0;
+  function frame(){
+    requestAnimationFrame(frame);
+    if(energy<.02&&!active&&!waves.length)return;
+    ctx.clearRect(0,0,W,H);
+    var k=reduce?.3:.07,damp=reduce?.5:.84,total=0,field=0;
+    for(var w=waves.length-1;w>=0;w--){waves[w].r+=reduce?40:11;if(waves[w].r>Math.hypot(W,H))waves.splice(w,1)}
+    ctx.lineCap='round';
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i],fx=0,fy=0,inf=0;
+      if(active){
+        var dx=mx-p.x,dy=my-p.y,d=Math.hypot(dx,dy)||1;
+        if(d<R){inf=(1-d/R);var f=inf*inf*(reduce?6:3.2),ux=dx/d,uy=dy/d;
+          if(mode==='attract'){fx=ux*f;fy=uy*f}else if(mode==='repel'){fx=-ux*f*1.4;fy=-uy*f*1.4}else{fx=(-uy*.9+ux*.25)*f*1.3;fy=(ux*.9+uy*.25)*f*1.3}
+          if(inf>field)field=inf}
+      }
+      for(w=0;w<waves.length;w++){var wv=waves[w],wx=p.x-wv.x,wy=p.y-wv.y,wd=Math.hypot(wx,wy)||1,band=Math.abs(wd-wv.r);
+        if(band<40){var wf=(1-band/40)*(reduce?2:5)*Math.max(.15,1-wv.r/900);fx+=wx/wd*wf;fy+=wy/wd*wf;inf=Math.max(inf,1-band/40)}}
+      p.vx=(p.vx+fx+(p.hx-p.x)*k)*damp;p.vy=(p.vy+fy+(p.hy-p.y)*k)*damp;
+      p.x+=p.vx;p.y+=p.vy;
+      total+=Math.abs(p.vx)+Math.abs(p.vy);
+      var ox=p.x-p.hx,oy=p.y-p.hy,disp=Math.hypot(ox,oy),ang;
+      if(active&&inf>0){ang=mode==='swirl'?Math.atan2(mx-p.x,-(my-p.y)):Math.atan2(my-p.y,mx-p.x)}else if(disp>.4){ang=Math.atan2(oy,ox)}else ang=p.a;
+      var len=3+Math.min(9,disp*.5+inf*9);
+      var c=Math.cos(ang)*len/2,s=Math.sin(ang)*len/2;
+      if(inf>.05){
+        ctx.strokeStyle=inf>.6?'rgba(255,74,28,'+(.55+inf*.45).toFixed(2)+')':'rgba(31,60,255,'+(.45+inf*.55).toFixed(2)+')';
+        ctx.lineWidth=1.6+inf*.8;
+      }else{ctx.strokeStyle='rgba(22,24,29,.42)';ctx.lineWidth=1.3}
+      ctx.beginPath();ctx.moveTo(p.x-c,p.y-s);ctx.lineTo(p.x+c,p.y+s);ctx.stroke();
+    }
+    energy=total/pts.length;
+    if(active&&!reduce){ctx.strokeStyle='rgba(31,60,255,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(mx,my,R*.35,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(mx,my,3,0,Math.PI*2);ctx.fillStyle=mode==='repel'?'#ff4a1c':'#1f3cff';ctx.fill()}
+    peak+=(field-peak)*.15;
+    if(++tick%6===0)rf.textContent=(peak*1.2).toFixed(2);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

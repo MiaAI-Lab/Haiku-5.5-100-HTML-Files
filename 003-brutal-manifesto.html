@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLUNT — A Manifesto for Honest Interfaces</title>
+<style>
+:root{
+  --paper:#f3efe4;
+  --ink:#0d0d0d;
+  --acid:#dcff1f;
+  --red:#ff3d1f;
+  --blue:#2440ff;
+  --pink:#ff9ad5;
+  --b:4px solid var(--ink);
+  --sh:8px 8px 0 var(--ink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--paper)}
+body{
+  font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);overflow-x:hidden;
+  background-image:linear-gradient(rgba(13,13,13,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(13,13,13,.09) 1px,transparent 1px);
+  background-size:48px 48px;background-color:var(--paper);
+  background-position:-1px -1px;
+}
+.mono{font-family:"Courier New",ui-monospace,monospace}
+.ticker{border-bottom:var(--b);background:var(--ink);color:var(--acid);overflow:hidden;white-space:nowrap;position:relative}
+.track{display:inline-flex;animation:tick 26s linear infinite;padding:12px 0}
+.ticker:hover .track{animation-play-state:paused}
+.track span{font-family:"Arial Black",Impact,"Helvetica Neue",sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.04em;padding:0 22px}
+.track span::after{content:"✸";margin-left:44px;color:var(--red)}
+@keyframes tick{to{transform:translateX(-50%)}}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 64px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+.logo{font-family:"Arial Black",Impact,sans-serif;font-size:22px;background:var(--acid);border:var(--b);box-shadow:5px 5px 0 var(--ink);padding:6px 12px;transform:rotate(-2deg)}
+.issue{font-size:13px;border:var(--b);padding:6px 10px;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+.box{border:var(--b);background:#fff;box-shadow:var(--sh);padding:22px;position:relative;transition:transform .14s steps(2),box-shadow .14s steps(2)}
+.hero{grid-column:1/9;background:var(--red);color:var(--ink);padding:28px}
+.hero h1{font-family:"Arial Black",Impact,"Helvetica Neue",sans-serif;font-size:clamp(46px,10vw,124px);line-height:.86;letter-spacing:-.04em;text-transform:uppercase;word-break:break-word}
+.hero h1 mark{background:var(--ink);color:var(--paper);padding:0 .08em}
+.hero p{margin-top:22px;font-size:clamp(16px,2vw,20px);max-width:520px;font-weight:700;line-height:1.35}
+.sig{grid-column:9/13;background:var(--acid);display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.sig .num{font-family:"Arial Black",Impact,sans-serif;font-size:clamp(56px,8vw,96px);line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.sig small{font-size:13px;text-transform:uppercase;font-weight:700;letter-spacing:.06em}
+.btn{
+  font-family:"Arial Black",Impact,sans-serif;font-size:18px;text-transform:uppercase;
+  background:var(--ink);color:var(--acid);border:var(--b);box-shadow:6px 6px 0 var(--blue);
+  padding:16px 18px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;
+  transition:transform .08s linear,box-shadow .08s linear,background .2s}
+.btn:hover{background:var(--blue);color:#fff;box-shadow:6px 6px 0 var(--ink)}
+.btn:active,.btn.pressed{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:4px dashed var(--ink);outline-offset:4px}
+.btn[disabled]{background:#fff;color:var(--ink);cursor:default;box-shadow:6px 6px 0 var(--ink)}
+.rule{grid-column:span 4;cursor:pointer;outline:none;min-height:220px;display:flex;flex-direction:column}
+.rule:nth-of-type(2n){background:var(--paper)}
+.rule:nth-of-type(5){background:var(--acid)}
+.rule .n{font-family:"Arial Black",Impact,sans-serif;font-size:64px;line-height:.8;-webkit-text-stroke:3px var(--ink);color:transparent;margin-bottom:14px;transition:color .1s}
+.rule h2{font-family:"Arial Black",Impact,sans-serif;font-size:22px;text-transform:uppercase;line-height:1;margin-bottom:10px}
+.rule p{font-size:15px;line-height:1.45;flex:1}
+.rule .tag{margin-top:16px;font-size:12px;text-transform:uppercase;font-weight:700;display:flex;justify-content:space-between;border-top:3px solid var(--ink);padding-top:10px}
+.rule:hover,.rule:focus-visible{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--ink)}
+.rule:focus-visible{outline:4px dashed var(--blue);outline-offset:6px}
+.rule:active{transform:translate(8px,8px);box-shadow:0 0 0 var(--ink)}
+.rule.on{background:var(--blue)!important;color:#fff}
+.rule.on .n{color:var(--acid);-webkit-text-stroke-color:var(--acid)}
+.rule.on .tag{border-color:#fff}
+.stamp{position:absolute;top:16px;right:14px;font-family:"Arial Black",Impact,sans-serif;font-size:13px;border:3px solid currentColor;padding:4px 8px;transform:rotate(8deg) scale(0);transition:transform .25s cubic-bezier(.34,1.8,.5,1)}
+.rule.on .stamp{transform:rotate(8deg) scale(1)}
+.quote{grid-column:1/8;background:var(--pink)}
+.quote blockquote{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:clamp(24px,3.6vw,40px);line-height:1.1}
+.quote cite{display:block;margin-top:16px;font-style:normal;font-size:13px;text-transform:uppercase;font-weight:700}
+.meter{grid-column:8/13;background:var(--ink);color:var(--paper)}
+.meter h3{font-family:"Arial Black",Impact,sans-serif;text-transform:uppercase;font-size:16px;margin-bottom:14px;color:var(--acid)}
+.bar{height:34px;border:3px solid var(--paper);margin-top:8px;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0;background:var(--acid);transform-origin:left;transform:scaleX(var(--v,0));transition:transform .5s steps(8)}
+.bar b{position:relative;z-index:1;mix-blend-mode:difference;color:#fff;font-size:13px;line-height:28px;padding-left:8px;text-transform:uppercase}
+footer{margin-top:40px;border:var(--b);background:var(--ink);color:var(--paper);padding:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:13px}
+@media (max-width:860px){
+  .hero,.sig,.quote,.meter{grid-column:1/-1}
+  .rule{grid-column:span 6}
+}
+@media (max-width:560px){
+  .rule{grid-column:1/-1;min-height:0}
+  :root{--sh:6px 6px 0 var(--ink)}
+  .grid{gap:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .track{animation-duration:120s}
+  .box,.btn,.stamp,.bar i{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="ticker" aria-label="Headlines">
+  <div class="track" id="track">
+    <span>Borders are load-bearing</span><span>No gradients were harmed</span><span>Shadows fall one direction only</span><span>Every pixel signs its name</span><span>Delete the carousel</span><span>Type big or go home</span>
+  </div>
+</div>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">BLUNT/</div>
+    <div class="issue mono">ISSUE 07 — PRINTED ON THE INTERNET</div>
+  </div>
+  <div class="grid">
+    <section class="box hero">
+      <h1>Make it <mark>loud</mark>. Make it true.</h1>
+      <p>A manifesto for interfaces that stop whispering. Eight rules from the BLUNT collective, set in heavy type and nailed to the grid.</p>
+    </section>
+    <aside class="box sig">
+      <div>
+        <small class="mono">Signatures so far</small>
+        <div class="num" id="count">4,812</div>
+      </div>
+      <button class="btn" id="sign" type="button"><span>Sign it</span><span aria-hidden="true">→</span></button>
+    </aside>
+
+    <article class="box rule" tabindex="0"><span class="stamp">AGREED</span><div class="n">01</div><h2>Show the structure</h2><p>Borders are not decoration. They are the bones. Let people see how the page holds itself up.</p><div class="tag mono"><span>Structure</span><span>Click to agree</span></div></article>
+    <article class="box rule" tabindex="0"><span class="stamp">AGREED</span><div class="n">02</div><h2>One light source</h2><p>Every shadow falls down and to the right. No blur, no glow, no apology. Depth is a decision.</p><div class="tag mono"><span>Depth</span><span>Click to agree</span></div></article>
+    <article class="box rule" tabindex="0"><span class="stamp">AGREED</span><div class="n">03</div><h2>Words before ornaments</h2><p>If the sentence is good, set it huge. If it is not good, rewrite it before you style it.</p><div class="tag mono"><span>Language</span><span>Click to agree</span></div></article>
+    <article class="box rule" tabindex="0"><span class="stamp">AGREED</span><div class="n">04</div><h2>Buttons must press</h2><p>A button is a promise of physics. Push it and it should sink into the page like a real key.</p><div class="tag mono"><span>Touch</span><span>Click to agree</span></div></article>
+    <article class="box rule" tabindex="0"><span class="stamp">AGREED</span><div class="n">05</div><h2>Color with intent</h2><p>Four colors. Acid, signal red, ink blue and a little pink for mercy. Everything else is paper.</p><div class="tag mono"><span>Palette</span><span>Click to agree</span></div></article>
+    <article class="box rule" tabindex="0"><span class="stamp">AGREED</span><div class="n">06</div><h2>Motion that stutters</h2><p>Stepped, honest movement. Animation should feel like a stamp hitting paper, not like syrup.</p><div class="tag mono"><span>Motion</span><span>Click to agree</span></div></article>
+
+    <section class="box quote">
+      <blockquote>“Politeness in design is often just fog. Clear the fog and people walk faster.”</blockquote>
+      <cite class="mono">— Odile Brask, BLUNT founding member</cite>
+    </section>
+    <section class="box meter" aria-live="polite">
+      <h3>Your agreement</h3>
+      <div class="bar"><i id="agreeBar"></i><b class="mono" id="agreeText">0 of 6 rules</b></div>
+      <div class="bar"><i id="sigBar" style="--v:.48"></i><b class="mono">Goal: 10,000 names</b></div>
+    </section>
+  </div>
+  <footer class="mono"><span>BLUNT COLLECTIVE — FICTIONAL, FOREVER</span><span>NO COOKIES. NO FOG.</span></footer>
+</div>
+<script>
+(function(){
+  var track = document.getElementById('track');
+  track.innerHTML += track.innerHTML;
+  track.querySelectorAll('span').forEach(function(s, i){ if (i >= 6) s.setAttribute('aria-hidden', 'true'); });
+
+  var rules = document.querySelectorAll('.rule');
+  var bar = document.getElementById('agreeBar');
+  var txt = document.getElementById('agreeText');
+  function update(){
+    var on = document.querySelectorAll('.rule.on').length;
+    bar.style.setProperty('--v', on / rules.length);
+    txt.textContent = on === rules.length ? 'All six. Welcome in.' : on + ' of ' + rules.length + ' rules';
+  }
+  rules.forEach(function(r){
+    r.setAttribute('role', 'button');
+    r.setAttribute('aria-pressed', 'false');
+    function toggle(){
+      var on = r.classList.toggle('on');
+      r.setAttribute('aria-pressed', on ? 'true' : 'false');
+      r.querySelector('.tag span:last-child').textContent = on ? 'Agreed ✓' : 'Click to agree';
+      update();
+    }
+    r.addEventListener('click', toggle);
+    r.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+  });
+
+  var count = 4812, signed = false;
+  var countEl = document.getElementById('count');
+  var sigBar = document.getElementById('sigBar');
+  var btn = document.getElementById('sign');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  btn.addEventListener('click', function(){
+    if (signed) return;
+    signed = true;
+    btn.classList.add('pressed');
+    var start = count, end = count + 1, t0 = performance.now();
+    function roll(now){
+      var p = Math.min(1, (now - t0) / 500);
+      var v = reduce ? end : Math.round(start + (end - start) * p);
+      countEl.textContent = v.toLocaleString('en-US');
+      if (p < 1 && !reduce) requestAnimationFrame(roll);
+    }
+    requestAnimationFrame(roll);
+    count = end;
+    sigBar.style.setProperty('--v', (count / 10000).toFixed(3));
+    setTimeout(function(){
+      btn.classList.remove('pressed');
+      btn.disabled = true;
+      btn.innerHTML = '<span>Signed. Loudly.</span><span aria-hidden="true">✸</span>';
+    }, 160);
+  });
+})();
+</script>
+</body>
+</html>

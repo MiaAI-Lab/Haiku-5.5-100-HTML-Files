@@ -1,0 +1,27 @@
+Prompt
+
+Build "Still Life with Light", a full-viewport canvas study of six shaded 3D spheres resting on a dark studio floor, lit by a single lamp the viewer drags around. Palette: near-black studio #141210, wall gradient #0f0e0c to #1d1a17, floor gradient #2a2420 to #14110f, warm text #efe6d8 with muted and hairline alphas, lamp accent #ffcf8a. Sphere colours: terracotta (200,85,61), sage (143,169,138), cobalt (47,78,168), bone (233,225,209), ochre (217,164,65), plum (107,58,91). Type: Georgia italic for the large title (the word "with" set upright in the lamp accent), Georgia for the short lede, Helvetica Neue for tracked uppercase labels, and ui-monospace for the azimuth, elevation and Kelvin readout.
+
+Scene: a horizon at about 58% of the height (52% on phones) divides wall from floor, with a faint highlight line. Six spheres sit at varied depths; nearer ones are lower and larger, with radius scaled from min(width, height). They are sorted back to front. Each sphere is shaded per pixel into its own offscreen canvas. Normals, nz and an antialiased edge alpha are precomputed into Float32Arrays at resize. Each frame computes the lamp direction for that sphere from its centre toward the lamp at (x, y, reach) and applies: wrapped Lambert diffuse, Blinn-Phong specular with a material-dependent exponent, a sky-to-floor hemispheric ambient term, warm floor bounce on the underside, contact ambient occlusion near the bottom, a Fresnel-style rim on the lit side, and, for lacquer, a cheap environment reflection that picks up the floor or the dark wall from the reflected vector. Colours are converted to linear (gamma 2.2) before shading and back with a square root. Materials: Clay (broad wrap, almost no spec), Satin (soft sheen), Lacquer (tight, hot highlight and reflective rim).
+
+Atmosphere: a large radial pool of lamp-coloured light on the wall around the lamp, a flattened elliptical pool on the floor beneath it, a dark contact shadow under each sphere, and a soft elliptical cast shadow stretched away from the lamp whose length grows as the lamp lowers or moves sideways, and which fades with length. The lamp is drawn as a white-hot core with a tinted halo, a thin ring and crosshair ticks; the ring grows and brightens while dragging. The lamp colour comes from a Tone slider that blends amber, neutral and cool blue, with a Kelvin readout from about 2700 to 6500.
+
+UI: top-left title block with a small tracked eyebrow ("Study 075 · one lamp, six spheres"), a big italic title and a two-line lede (hidden on phones); top-right mono readout of azimuth, elevation and Kelvin (moved above the dock on phones); a bottom-centred frosted dock with a segmented pill material switch (the active pill is filled cream), a Reach slider for lamp distance, and a Tone slider with a warm-to-cool gradient track. A centred italic hint pill "Drag anywhere to move the lamp" fades out after the first interaction or five seconds.
+
+Motion: the lamp eases toward the pointer with a quick lerp while dragging. After five idle seconds it drifts on a slow Lissajous path so the terminators keep turning, and it redraws only when something changes. Reduced motion disables the idle drift. The canvas is sized to devicePixelRatio and rebuilt on resize, and the animation runs on requestAnimationFrame.
+
+Title: Still Life with Light
+
+Description: A moody, painterly lighting study in which six matte, satin or lacquered spheres sit on a dark studio floor and respond in real time to a draggable lamp. Every pixel of every sphere is shaded by hand-written Lambert and Blinn-Phong maths with floor bounce, ambient occlusion and rim light, while soft cast shadows swing across the floor and a warm pool of light follows the lamp across the wall.
+
+Visual techniques:
+- Per-pixel sphere shading into offscreen ImageData from precomputed normal buffers
+- Wrapped Lambert diffuse, Blinn-Phong specular, hemispheric ambient, floor bounce, AO and Fresnel rim
+- Linear-space colour maths with gamma conversion
+- Material presets that change the specular exponent, wrap and environment reflection
+- Radial-gradient wall and floor light pools tinted by colour temperature
+- Transformed radial-gradient ellipses for cast and contact shadows
+- Frosted backdrop-filter control dock with a segmented pill switch
+- Idle Lissajous lamp drift and redrawing only when the scene is dirty
+
+Interaction model: Press and drag anywhere on the canvas to move the lamp; the spheres, shadows and wall light update as it moves. With the canvas focused, the arrow keys nudge the lamp (hold Shift for bigger steps). The dock switches the material between Clay, Satin and Lacquer, Reach moves the lamp nearer or farther, and Tone shifts its colour from warm amber to cool daylight. If left alone for a few seconds, the lamp drifts on its own.

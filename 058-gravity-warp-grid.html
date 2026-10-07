@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gravitas Observatory — Warp Grid</title>
+<style>
+:root{
+  --void:#04050c;
+  --ice:#9fe8ff;
+  --violet:#b48cff;
+  --rose:#ff7ab8;
+  --text:#dfe6ff;
+  --dim:#7380a8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--void);color:var(--text);overflow:hidden}
+body{font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
+.panel{position:fixed;top:clamp(12px,3vw,28px);left:clamp(12px,3vw,28px);width:min(320px,calc(100vw - 24px));padding:18px 18px 16px;border-radius:16px;
+  background:linear-gradient(160deg,rgba(40,48,90,.42),rgba(10,12,30,.55));border:1px solid rgba(159,232,255,.18);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+  box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.panel.tucked{width:min(260px,calc(100vw - 24px));padding-bottom:14px}
+.panel.tucked h1,.panel.tucked .lede,.panel.tucked .ctrl{display:none}
+.eyebrow{padding-right:36px;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim)}
+h1{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:400;font-size:clamp(24px,6vw,30px);line-height:1.05;margin:6px 0 8px;letter-spacing:-.01em}
+h1 i{color:var(--ice)}
+p.lede{font-size:12px;line-height:1.6;color:#aeb8d8}
+.ctrl{margin-top:14px;display:grid;gap:10px}
+label{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+label output{color:var(--ice)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--ice),var(--violet),var(--rose));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#0a0c1c;border:2px solid var(--ice);box-shadow:0 0 12px var(--ice);cursor:pointer;transition:transform .2s}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#0a0c1c;border:2px solid var(--ice);box-shadow:0 0 12px var(--ice);cursor:pointer}
+input[type=range]:focus-visible::-webkit-slider-thumb{transform:scale(1.25)}
+.row{display:flex;gap:8px;align-items:center}
+button{flex:1;font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text);background:rgba(255,255,255,.04);border:1px solid rgba(159,232,255,.25);border-radius:10px;padding:10px 8px;cursor:pointer;transition:background .25s,border-color .25s,color .25s,transform .2s}
+button:hover,button:focus-visible{background:rgba(159,232,255,.14);border-color:var(--ice);color:#fff;outline:none}
+button:active{transform:scale(.97)}
+.stat{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);padding-top:10px;border-top:1px solid rgba(159,232,255,.12);margin-top:4px}
+.stat b{color:var(--text);font-weight:500}
+.hint{position:fixed;left:50%;bottom:clamp(16px,4vh,34px);transform:translateX(-50%);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);pointer-events:none;transition:opacity 1s;white-space:nowrap}
+.hint.gone{opacity:0}
+.toggle{position:absolute;top:14px;right:14px;flex:none;width:28px;height:28px;padding:0;border-radius:8px;font-size:14px;letter-spacing:0;line-height:1}
+@media (max-width:420px){.hint{font-size:10px;letter-spacing:.18em}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="A grid of light warped by gravity wells. Click or tap to drop a mass."></canvas>
+<aside class="panel" id="panel">
+  <button class="toggle" id="tuck" type="button" aria-label="Collapse panel" aria-expanded="true">&#8963;</button>
+  <div class="eyebrow">Gravitas Observatory &middot; Bench 3</div>
+  <h1>Spacetime is a <i>fabric</i>, and you are holding the weights.</h1>
+  <p class="lede">Every mass you drop sinks into the lattice and pulls its neighbours closer. Light bends toward them; heavy bodies drift together and merge into one deeper well.</p>
+  <div class="ctrl">
+    <label for="mass">Mass to drop <output id="mo">12 M&#9737;</output></label>
+    <input id="mass" type="range" min="2" max="30" value="12">
+    <div class="row">
+      <button type="button" id="drift" aria-pressed="true">Drift: on</button>
+      <button type="button" id="clear">Clear wells</button>
+    </div>
+    <div class="stat"><span>Wells <b id="count">0</b>/9</span><span>Peak warp <b id="warp">0 px</b></span></div>
+  </div>
+</aside>
+<div class="hint" id="hint">Click anywhere to drop a mass</div>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  var W, H, dpr, gap, cols, rws;
+  var masses = [], ripples = [], probe = {x:-9999, y:-9999, a:0, t:0};
+  var drift = !reduce, MAX = 9;
+  var colors = ['rgba(90,110,180,.35)','rgba(110,170,230,.5)','rgba(159,232,255,.7)','rgba(180,150,255,.8)','rgba(220,130,240,.88)','rgba(255,122,184,.95)'];
+
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    gap = W < 600 ? 22 : 28;
+    cols = Math.ceil(W / gap) + 3; rws = Math.ceil(H / gap) + 3;
+    xs = new Float32Array(cols * rws); ys = new Float32Array(cols * rws); mg = new Float32Array(cols * rws);
+  }
+  var xs, ys, mg;
+  resize(); addEventListener('resize', resize);
+
+  var massIn = document.getElementById('mass'), mo = document.getElementById('mo');
+  massIn.addEventListener('input', function(){ mo.textContent = massIn.value + ' M☉'; });
+  var countEl = document.getElementById('count'), warpEl = document.getElementById('warp'), hint = document.getElementById('hint');
+
+  function drop(x, y){
+    if (masses.length >= MAX) masses.shift();
+    var m = +massIn.value;
+    masses.push({x:x, y:y, vx:0, vy:0, m:m, cur:reduce ? m : 0, v:0, born:performance.now()});
+    if (!reduce) ripples.push({x:x, y:y, r:0, a:18 + m});
+    hint.classList.add('gone');
+    countEl.textContent = masses.length;
+  }
+  cv.addEventListener('pointerdown', function(e){ drop(e.clientX, e.clientY); });
+  cv.addEventListener('pointermove', function(e){ probe.x = e.clientX; probe.y = e.clientY; probe.t = 1; });
+  cv.addEventListener('pointerleave', function(){ probe.t = 0; });
+  document.getElementById('clear').addEventListener('click', function(){ masses.length = 0; ripples.length = 0; countEl.textContent = 0; });
+  var dBtn = document.getElementById('drift');
+  dBtn.addEventListener('click', function(){ drift = !drift; dBtn.setAttribute('aria-pressed', drift); dBtn.textContent = 'Drift: ' + (drift ? 'on' : 'off'); });
+  if (!drift){ dBtn.setAttribute('aria-pressed', 'false'); dBtn.textContent = 'Drift: off'; }
+  var panel = document.getElementById('panel'), tuck = document.getElementById('tuck');
+  tuck.addEventListener('click', function(){
+    var t = panel.classList.toggle('tucked');
+    tuck.setAttribute('aria-expanded', !t); tuck.innerHTML = t ? '&#8964;' : '&#8963;';
+  });
+
+  // seed two gentle wells so the first frame already has character
+  drop(W * 0.62, H * 0.55); masses[0].m = masses[0].cur = 14;
+  drop(W * 0.32, H * 0.68); masses[1].m = masses[1].cur = 7;
+  ripples.length = 0; hint.classList.remove('gone');
+
+  var G = 380, SOFT = 900;
+  function step(dt){
+    var i, j, a, b;
+    for (i = 0; i < masses.length; i++){
+      a = masses[i];
+      // spring the mass into existence with a little overshoot
+      a.v += (a.m - a.cur) * 0.18 * dt; a.v *= 0.72; a.cur += a.v * dt;
+      if (reduce) a.cur = a.m;
+    }
+    if (drift){
+      for (i = 0; i < masses.length; i++) for (j = i + 1; j < masses.length; j++){
+        a = masses[i]; b = masses[j];
+        var dx = b.x - a.x, dy = b.y - a.y, d2 = dx*dx + dy*dy + 400, d = Math.sqrt(d2);
+        var f = 0.004 / d2 * 1000;
+        a.vx += dx / d * f * b.m * dt; a.vy += dy / d * f * b.m * dt;
+        b.vx -= dx / d * f * a.m * dt; b.vy -= dy / d * f * a.m * dt;
+      }
+      for (i = 0; i < masses.length; i++){
+        a = masses[i]; a.vx *= 0.985; a.vy *= 0.985;
+        a.x += a.vx * dt; a.y += a.vy * dt;
+      }
+      // merge close pairs
+      for (i = 0; i < masses.length; i++) for (j = masses.length - 1; j > i; j--){
+        a = masses[i]; b = masses[j];
+        var rr = 6 + Math.sqrt(a.cur) * 3 + Math.sqrt(b.cur) * 3;
+        if ((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) < rr*rr*0.5){
+          var tot = a.m + b.m;
+          a.x = (a.x*a.m + b.x*b.m) / tot; a.y = (a.y*a.m + b.y*b.m) / tot;
+          a.vx = (a.vx*a.m + b.vx*b.m) / tot; a.vy = (a.vy*a.m + b.vy*b.m) / tot;
+          a.m = Math.min(60, tot); a.cur = Math.max(a.cur, b.cur);
+          ripples.push({x:a.x, y:a.y, r:0, a:14 + tot * 0.5});
+          masses.splice(j, 1);
+        }
+      }
+      countEl.textContent = masses.length;
+    }
+    for (i = ripples.length - 1; i >= 0; i--){
+      ripples[i].r += 6 * dt; ripples[i].a *= Math.pow(0.975, dt);
+      if (ripples[i].a < 0.4) ripples.splice(i, 1);
+    }
+    probe.a += (probe.t - probe.a) * 0.08 * dt;
+  }
+
+  function warp(){
+    var peak = 0, n = 0, ox = -gap, oy = -gap;
+    for (var r = 0; r < rws; r++){
+      for (var c = 0; c < cols; c++, n++){
+        var px = ox + c * gap, py = oy + r * gap, dx = 0, dy = 0;
+        for (var k = 0; k < masses.length; k++){
+          var m = masses[k], vx = m.x - px, vy = m.y - py;
+          var f = G * m.cur / (vx*vx + vy*vy + SOFT);
+          if (f > 0.9) f = 0.9;
+          dx += vx * f; dy += vy * f;
+        }
+        if (probe.a > 0.01){
+          var qx = probe.x - px, qy = probe.y - py, qf = 1600 * probe.a / (qx*qx + qy*qy + 2500);
+          if (qf > 0.5) qf = 0.5; dx += qx * qf; dy += qy * qf;
+        }
+        for (var q = 0; q < ripples.length; q++){
+          var rp = ripples[q], rx = px - rp.x, ry = py - rp.y, rd = Math.sqrt(rx*rx + ry*ry) + 0.001;
+          var w = rd - rp.r, amp = rp.a * Math.exp(-w*w / 1800) * Math.sin(w * 0.08);
+          dx += rx / rd * amp; dy += ry / rd * amp;
+        }
+        xs[n] = px + dx; ys[n] = py + dy;
+        var mm = Math.sqrt(dx*dx + dy*dy); mg[n] = mm; if (mm > peak) peak = mm;
+      }
+    }
+    return peak;
+  }
+
+  var paths = colors.map(function(){ return null; });
+  function bucket(v){ var b = (v / 9) | 0; return b > 5 ? 5 : b; }
+  function draw(){
+    ctx.fillStyle = '#04050c'; ctx.fillRect(0, 0, W, H);
+    var bg = ctx.createRadialGradient(W*0.5, H*0.45, 0, W*0.5, H*0.45, Math.max(W, H) * 0.7);
+    bg.addColorStop(0, 'rgba(40,30,90,.35)'); bg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    for (var b = 0; b < 6; b++) paths[b] = new Path2D();
+    var r, c, i, j;
+    for (r = 0; r < rws; r++) for (c = 0; c < cols - 1; c++){
+      i = r * cols + c; j = i + 1;
+      var p = paths[bucket((mg[i] + mg[j]) * 0.5)]; p.moveTo(xs[i], ys[i]); p.lineTo(xs[j], ys[j]);
+    }
+    for (c = 0; c < cols; c++) for (r = 0; r < rws - 1; r++){
+      i = r * cols + c; j = i + cols;
+      var p2 = paths[bucket((mg[i] + mg[j]) * 0.5)]; p2.moveTo(xs[i], ys[i]); p2.lineTo(xs[j], ys[j]);
+    }
+    ctx.lineWidth = 1;
+    for (b = 0; b < 6; b++){ ctx.strokeStyle = colors[b]; ctx.lineWidth = b > 3 ? 1.4 : 1; ctx.stroke(paths[b]); }
+    // masses: event horizon with a hot rim
+    for (var k = 0; k < masses.length; k++){
+      var m = masses[k], R = 4 + Math.sqrt(Math.max(0, m.cur)) * 3.2;
+      var g = ctx.createRadialGradient(m.x, m.y, R * 0.6, m.x, m.y, R * 4);
+      g.addColorStop(0, 'rgba(255,170,220,.55)'); g.addColorStop(0.25, 'rgba(160,130,255,.22)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(m.x, m.y, R * 4, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(m.x, m.y, R, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,220,240,.9)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(m.x, m.y, R + 0.8, 0, 6.2832); ctx.stroke();
+    }
+  }
+
+  var last = performance.now(), frame = 0;
+  function loop(t){
+    var dt = Math.min(3, (t - last) / 16.67); last = t;
+    step(dt);
+    var peak = warp();
+    draw();
+    if ((frame++ & 15) === 0) warpEl.textContent = Math.round(peak) + ' px';
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+PROMPT
+
+Build a standalone HTML page titled "Formlehre · A Composition in Primary Forms" for an invented design school workshop, Formlehre Studio, Workshop Three. The concept is bauhaus-composition: primary geometric shapes that the user clicks to rotate and to recompose the layout.
+
+Palette: a warm unbleached paper background (#ece5d4) with faint horizontal print lines, and a lighter poster sheet (#f3eddf) with a fine halftone dot texture (7px radial-gradient grid). The primaries are signal red #d7322a, chrome yellow #f1bf22, ultramarine blue #1d4c9c and soft black #151413. Every form is printed with mix-blend-mode: multiply, so overlaps read as overprinted ink (yellow over blue turns olive, red over yellow turns vermilion).
+
+Type: a geometric sans stack (Futura, Futura PT, Century Gothic, Avenir Next, Trebuchet MS), bold and lowercase for display ("form, colour & rhythm" with the second line in red), tracked uppercase for labels, and tabular numerals for the composition number.
+
+Layout: two columns on desktop. The left column (260 to 360px) holds a kicker with tiny red-square, yellow-circle and blue-triangle icons, the large lowercase headline, a short lede, a control grid of square black-bordered buttons (a full-width red "Recompose R", then "Turn all T", "Recolour C", "Grid G", "Hold still H" with key hints), a three-part legend matching yellow to the triangle, red to the square and blue to the circle with one-line meanings, and a short studio note. The right column holds a 4:5 poster up to 560px wide (also limited by viewport height) with a soft lifted shadow. Inside the poster are a vertical-rl tracked label "Form follows joy" in the top right and a caption at the bottom: a small "Formlehre Studio" label over "komposition" and a huge two-digit composition number. Below the poster is a live status line. Under 820px the layout stacks with the poster first and full width.
+
+Shapes: eleven absolutely positioned buttons on a 12 x 15 square-cell grid, placed with CSS custom properties (--x, --y, --w, --h, --r, --c) and calc() for left, top, width, height and rotate. Types: a large circle (7 cells, red), a half circle (6x3, blue), a square (4x4, yellow), a triangle (clip-path, blue), a quarter circle (border-radius 100% 0 0 0, yellow), a long horizontal black bar, a tall red vertical bar, a black ring (radial-gradient mask), a small black circle, a 3x3 dot grid (tiled radial mask) and a striped blue block (repeating-linear-gradient mask).
+
+Composition logic: each recompose snaps forms to the grid with simple rules. The big circle anchors on thirds-like positions; the horizontal bar spans the sheet at a random row; the vertical bar sits in the upper half; everything else is placed randomly within bounds. Non-round forms add a random multiple of 90deg (squares sometimes add 45deg). Rotation always accumulates, so forms turn forward and never snap back. Half of all recomposes also rotate the colour permutation among six orderings of red, yellow and blue (black stays black). The composition number increments and the status line names the leading colours.
+
+Motion: left, top and transform transition over 0.8 to 0.95s on a springy overshoot curve, cubic-bezier(.68,-0.3,.26,1.32), staggered 45ms per shape for group moves and with no delay for single clicks. On load every form scales up from zero, then the first composition plays. An autoplay recomposes every 4.2s until the user presses "Hold still". Hover brightens a form, and focus shows a dashed black outline. The grid toggle fades in a blue 12x15 construction grid over the poster.
+
+Interaction: click a form to turn it a quarter. Click empty paper (or press Recompose or R) to reshuffle and reset the autoplay timer. T turns every non-round form, C recolours, G toggles the grid, and H pauses or plays the autoplay.
+
+Reduced motion: autoplay is disabled, the forms appear at full scale without flying in, and position and rotation changes are instant (only colour fades).
+
+Title: Formlehre Composition Machine
+
+Description: An interactive Bauhaus-inspired poster generator. Eleven primary forms in red, yellow, blue and black sit on a printed sheet and overprint one another like real ink, and each recompose throws them, with springy overshoot and a cascading stagger, into a new grid-snapped arrangement while the big composition number ticks upward. Quiet geometric typography, a colour-theory legend and hard-edged square controls frame it as a teaching tool from a design workshop.
+
+Visual techniques:
+- Grid-snapped absolute layout driven by CSS custom properties and calc()
+- Shapes built from border-radius, clip-path and CSS masks (ring, dot grid, stripes)
+- Multiply blend mode for ink-like overprint where forms overlap
+- Spring-overshoot cubic-bezier transitions with per-shape stagger delays
+- Accumulating rotation so every turn moves forward
+- Colour permutations across the three primaries
+- Toggleable construction grid overlay and a halftone paper texture
+- Vertical writing-mode label and oversized tabular numerals
+
+Interaction model: The poster is a toy. Clicking any form rotates it 90 degrees, and clicking bare paper produces a whole new composition. The side controls and keyboard shortcuts (R, T, C, G, H) recompose, turn all forms, cycle the colour mapping, show the construction grid, and pause or resume the slow autoplay that keeps the poster evolving.

@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page titled "Rime: A Frost Study": a full-screen canvas where fractal frost crystals grow across a dark window pane, with a slow breath-like pulse. Palette: night navy (#050d19 to #0b1d33) with faint periwinkle and teal radial glows behind the glass, frost white (#eaf7ff), pale cyan (#9fd6f0), lilac breath fog (#b9b6ff). Typography: an italic old-style serif for the title and body (Iowan Old Style, Palatino, Georgia) paired with letter-spaced uppercase Helvetica Neue/Arial for labels. Layout: the canvas fills the viewport, framed by an inset window-frame shadow; a frosted glass plate (backdrop blur, hairline border) sits bottom-left with the eyebrow "Hoarfrost study · No. 4", the large italic title "Rime", a three-sentence passage about frost, a breathing indicator (a small ring whose inner dot scales with a --breath CSS variable), the current phase word (inhale/exhale) and two pill buttons, Thaw and Freeze edges. A right-aligned hint stack at the top lists the gestures and a live count of growing branches. Growth: crystals are seeded along all four edges, pointing inward; each branch steps forward 1.6 device pixels per tick with slight curl and jitter, drawn twice (a wide faint cyan halo then a thin bright core) onto an offscreen accumulation canvas, spawning side branches at plus or minus 60 degrees (ice dendrite geometry) up to depth 4, and sometimes finishing with a tiny six-pointed star. A cap of 900 live branches keeps it cheap. Breath: a 6.5 second sine cycle modulates the frost layer opacity and a soft lilac fog radial gradient, and drives the plate's breathing indicator. Interaction: a tap seeds a six-armed crystal at that point; dragging melts a soft path through the frost with destination-out radial gradients, like a finger on a cold window; Thaw fades everything away and reseeds the edges; Freeze edges adds new edge seeds. Canvas is DPR-aware and preserves the frost image on resize. Reduced motion: no pulse, growth is computed instantly and new seeds appear fully grown.
+
+Title: Rime, A Frost Study
+
+Description: A quiet winter window at night. Fern-like ice dendrites creep in from the frame toward the centre, branching at the six-fold angles real frost favours and glowing faintly against a deep navy sky. The whole pane brightens and dims on a slow breathing rhythm, and a frosted glass plaque with a short italic text sets the mood. You can seed new crystals, or wipe the glass with a finger and watch the frost slowly fill the cleared path again.
+
+Visual techniques:
+- Recursive branching growth on an offscreen accumulation canvas with 60-degree side branches
+- Two-pass stroke (soft halo plus bright core) for glow without shadowBlur
+- destination-out radial gradients for melting and thawing
+- Breath cycle driving canvas alpha, a fog gradient and a CSS custom property
+- Backdrop-filter glass plaque with staged rise-in animation
+- Inset box-shadow window frame and layered radial-gradient sky
+- devicePixelRatio sizing with image-preserving resize
+
+Interaction model:
+Tap anywhere to plant a six-armed crystal that grows outward. Press and drag to wipe a clear trail through the frost, which new branches can grow back into. The Thaw button melts the pane and restarts from the edges; Freeze edges sends a new wave of crystals inward.

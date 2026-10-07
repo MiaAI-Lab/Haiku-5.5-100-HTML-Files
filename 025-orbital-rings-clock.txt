@@ -1,0 +1,22 @@
+Prompt:
+Build a standalone Swiss International Style clock page for an invented watchmaker, "Ringwerk Zeitmesser Modell 03 · Orbital". Palette: chalk paper #f2f0eb, ink #111, warm grey #8c8a85, rule lines #d6d3cc, and a single signal red #e30613 used only for seconds and for the active state. Type: "Helvetica Neue" / Helvetica / Arial throughout, bold with tight negative tracking for display sizes, tabular numerals for every number. No other typefaces.
+Layout: a 12-column grid (max 1180px) under a 6px black top rule. A three-cell header strip holds the maker and model, the tagline "Three rings, one orbit. Hour, minute, second." and a grey reference "Ref. RW-03-1180 / Signal red on chalk". The dial (inline SVG, viewBox -56 -56 112 112) spans columns 1 to 7. The side column (8 to 12) holds a red kicker naming the active zone, the huge "Orbital" title, a giant digital HH:MM with small red seconds superscripted, the long-form date, a short paragraph, a numbered time-zone list (Local, Zürich, Tokyo, New York, São Paulo, each with its own live HH:MM), and 24 h / 12 h toggles. A three-column legend row under a black rule shows big Hours, Minutes and Seconds numbers with a line-weight key, and a grey focus note sits below. Under 820px everything stacks into one column and the dial centers.
+Dial: 60 ticks generated in script (heavier every 5) with numerals 15, 30, 45 and 60 outside the rings. Three concentric rings, each a hairline track plus a progress arc drawn as a circle with pathLength=100 rotated -90 degrees and driven by stroke-dasharray: outer seconds r=44 (thin red), middle minutes r=35 (1.4), inner hours r=25 (2.6, a 12-hour turn). Each ring also has a marker dot at its leading edge. The seconds dot is red and orbits continuously with millisecond smoothness, followed by a short fading red trail segment built from a four-value dasharray. A centre hub shows the value of the focused ring (default seconds) with a small grey label.
+Interaction: hovering a ring sets it as the hub's subject. Focusing or clicking one makes the selection sticky and thickens its arc with an eased stroke-width transition. Keyboard focus shows a dashed red track, and Enter or Space selects. Zone buttons slide right on hover, a red underline grows across the active one, and choosing one recomputes the time with Intl.DateTimeFormat formatToParts for that timezone (offline, no fetching). The 12 h toggle switches every readout and adds AM or PM. Time parts are recomputed only when the second changes. Each frame just interpolates milliseconds.
+Reduced motion: the loop switches from requestAnimationFrame to a once-per-second setTimeout, so the dot steps instead of gliding, and transitions are removed.
+
+Title: Orbital Ring Clock
+
+Description: A strict, airy Swiss poster that is also a working clock. Three concentric rings fill clockwise for hours, minutes and seconds, a single red point orbits the outer ring once a minute, and a monumental Helvetica readout, a world-zone list and a legend row sit on a rigorous 12-column grid. Selecting a ring brings its value into the centre of the dial, and choosing a city re-times the whole composition.
+
+Visual techniques:
+- Inline SVG rings with pathLength=100 and stroke-dasharray progress arcs
+- Script-generated tick marks and numerals placed with trigonometry
+- Millisecond-smooth orbiting marker dots and a dasharray trail segment
+- Intl.DateTimeFormat formatToParts for offline multi-timezone time
+- 12-column CSS grid layout with heavy and hairline rules in Swiss style
+- Eased stroke-width focus states and an animated red underline on list items
+- Tabular numerals and tight negative tracking for display figures
+- Reduced-motion mode that steps once per second instead of animating per frame
+
+Interaction model: Hover a ring to read its value in the hub, or click or tab to a ring to keep it selected. Pick a city from the numbered list to show that zone's time on the dial, the digital readout, the date and the legend. Toggle between 24-hour and 12-hour display. Everything works by mouse, touch and keyboard.

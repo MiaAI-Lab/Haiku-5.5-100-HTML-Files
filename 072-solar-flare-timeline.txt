@@ -1,0 +1,25 @@
+Prompt
+
+Build "Heliograph", a standalone scroll-driven timeline of historic solar flares. Palette: near-black void #08060b, warm parchment text #f4e6d4 with 56% and 14% alpha variants for muted text and hairlines, flare orange #ff8a2a, hot gold #ffd27a, ember red #e8442e. Type: condensed light sans (Avenir Next Condensed, Arial Narrow, Helvetica Neue) at weight 200 for huge years and the class readout; Iowan Old Style / Georgia for the narrative; ui-monospace for dates, chips, scale ticks and labels in wide-tracked uppercase.
+
+Structure: (1) A full-height hero with a mono kicker, an enormous two-line uppercase "Solar Flares" title filled with a white-to-gold-to-ember gradient clipped to the text, a short lede, a "Descend" cue with a dripping gradient line, and a glowing horizon hairline that slowly breathes. (2) A two-column chronicle: on the left, a sticky full-height panel holding a canvas sun and a numeric readout (big condensed class such as X9.3, plus year and flux in scientific notation); on the right, eight tall articles separated by a hairline rail on their left edge. A glowing gradient rail fill grows with scroll progress, and each article has a dot on the rail that blooms gold when active. Events: Carrington 1859 (est. X45), August 1972 (est. X20), March 1989 Quebec blackout (X15), Bastille Day 2000 (X5.7), Halloween 2003 (X28+, sensors saturated), September 2017 (X9.3), May 2024 Region 3664 (X8.7), then a closing "alphabet of brightness" article explaining the A-B-C-M-X logarithmic ladder with gradient bars. Each event has a mono date, a giant year that turns into a gradient when active, a serif headline and paragraph, a logarithmic flux meter with A..X10+ ticks that sweeps to the event's value with an expo-out easing, a data line, and pill fact chips. (3) A centred italic outro. A fixed column of small jump dots sits on the right edge on desktop, with year labels that slide in on hover.
+
+Canvas sun: sized to devicePixelRatio and the panel. Each frame it draws a corona radial gradient whose radius and alpha scale with an eased intensity value, 28 faint tapered streamer wedges that breathe and slowly rotate, a limb-darkened disk gradient (cream, gold, orange, deep red edge), a pre-rendered granulation noise texture composited in overlay mode and slowly rotating inside a clip, a dark sunspot pair near the upper-right limb, four coronal loops drawn as glowing quadratic curves (a wide translucent stroke under a thin bright one) whose height rises with intensity, and on each new active event a white flash at the active region plus an outward burst of fading particles whose count scales with flare class. Intensity maps log10(flux) so that C-class is quiet and X45 is maximum. The page background also warms through a CSS custom property driven by intensity.
+
+Mobile (under 820px): single column, the sun panel becomes a sticky 42vh strip at the top with a fade-out gradient, the rail moves to a left gutter, and the jump dots are hidden. Reduced motion: no particle bursts or flash, intensity snaps without easing, the sun redraws only on scroll, CSS loops are stopped and smooth scrolling is disabled.
+
+Title: Heliograph Solar Chronicle
+
+Description: A dark, cinematic long-scroll chronicle of seven famous solar flares from the Carrington Event to the May 2024 storms. A canvas sun stays pinned beside the story and responds to whichever event is in view: its corona swells, coronal loops climb and a flash with a particle burst fires from the active region in proportion to the flare's X-ray class. Huge condensed years, a logarithmic flux meter and fact chips make each entry feel like a data plate in a museum of the Sun.
+
+Visual techniques:
+- Sticky canvas panel paired with a scroll-tracked article column
+- Procedural canvas sun: corona gradient, streamer wedges, limb darkening, overlay granulation texture, quadratic-curve coronal loops, flash and particle bursts
+- Logarithmic mapping from flare flux to visual intensity and meter width
+- Scroll-progress rail with a glowing gradient fill and blooming active dots
+- Gradient-clipped display typography for the title and the active year
+- CSS custom property (--heat) that warms the page background
+- Fixed jump navigation with sliding hover labels
+- Responsive sticky-strip layout on mobile and a reduced-motion fallback
+
+Interaction model: The reader scrolls. The event nearest the middle of the viewport becomes active, which updates the sun, the class readout, the flux meter and the rail. On desktop the dots along the right edge show year labels on hover and jump straight to an event when clicked.

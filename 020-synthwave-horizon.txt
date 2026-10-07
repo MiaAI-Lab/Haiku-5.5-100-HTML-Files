@@ -1,0 +1,40 @@
+PROMPT
+
+Concept 020 synthwave-horizon: perspective grid, setting sun, animated horizon line.
+
+Build a standalone HTML page titled "Nightdrive: Radio Halcyon 88.4", a full-screen synthwave driving scene for an invented late-night radio station. The horizon sits at 58% of the viewport height (56% on phones), stored as a CSS variable --hz.
+
+Sky: linear-gradient from deep violet-black #0d0221 through #2a0f4a to hot pink #ff2e88 at the horizon, behind a devicePixelRatio-aware canvas of twinkling stars that fade toward the horizon. A wide screen-blended radial glow sits on the horizon line.
+
+Sun: a large disc (min(58vw, 48vh)) with a vertical gradient from yellow #ffd319 through pink #ff2975 to violet #8c1eff, cut by a mask-image gradient into horizontal slats whose gaps widen toward the bottom, with a pink drop-shadow glow. It slowly sets and rises (translateY -6% to 22%, 26s, ease-in-out, alternate) behind the mountains.
+
+Mountains: an inline SVG strip anchored to the horizon with two jagged ridgelines filled with the floor colour and stroked in neon cyan #2de2e6 (front ridge with a cyan drop-shadow), plus faint wireframe facet lines down the peaks; strokes use vector-effect non-scaling-stroke.
+
+Floor: a .ground block from the horizon to the bottom with perspective 220px and perspective-origin at its top edge. Inside, a very wide plane (700% width, 260% height) rotated rotateX(78deg) from its bottom edge, painted with two 2px linear-gradient grid lines in magenta #ff2a6d on an 80px tile with a glow. JavaScript animates background-position every frame so the grid rushes toward the viewer, with lateral drift from steering. A gradient haze over the ground fades the far grid into the horizon.
+
+Horizon line: a 2px cyan line with a double glow, whose opacity pulses gently and brightens with speed, and a white highlight that scans across it every 3.2s.
+
+Title block: "NIGHTDRIVE" in heavy italic Futura / "Avenir Next" / "Arial Black", skewed -8deg, filled with a chrome gradient that has a dark horizon band at 50% (white, ice blue, periwinkle, near-black, pink, white), thin white text stroke and pink glow; beneath it the word "forever" in "Brush Script MT" / "Segoe Script" cursive, rotated -6deg with a layered neon cyan glow; then a tracked monospace line "Radio Halcyon · 88.4 FM · till the sun comes back".
+
+HUD (monospace, uppercase): bottom-left speed readout in large glowing cyan digits ("088 km/h · cruise"), centre hint "Hold Space or press to boost · steer with pointer" (hidden on phones), bottom-right three square cassette buttons Sunset / Midnight / Acid that swap the whole palette via a data-theme attribute on the root (Midnight: blue-black sky, electric blue horizon, cyan grid, violet neon, white-to-blue sun; Acid: green-black sky, lime horizon, chartreuse grid, magenta neon, yellow-to-green sun). Each palette change triggers a brief stepped white scanline flash like a tape channel change. A fixed scanline overlay covers everything.
+
+Motion: rAF loop with delta time. Speed eases toward a target (1 cruising, 3.4 boosting); the grid speed, the readout (speed x 88) and horizon brightness follow it, and above 1.2 the stars become radial streaks from the vanishing point. Pointer x sets a steering value that eases in: the whole world banks up to 1.6deg, the grid slides sideways, and mountains and sun parallax at different rates. Arrow keys also steer.
+
+Reduced motion: the grid stops, the sun no longer sets, the horizon scan stops, stars do not twinkle, boosting is disabled and the palette flash is skipped.
+
+Title: Nightdrive, Radio Halcyon
+
+Description: A retro-futurist synthwave postcard you can drive. A slatted gradient sun sinks behind neon wireframe mountains while a magenta grid races toward the viewer along an endless perspective floor, all held together by a glowing cyan horizon line with a scanning highlight. A chrome-lettered NIGHTDRIVE title with a neon script "forever" floats above the sun, and a monospace HUD reads out the cruising speed. Steering banks the whole horizon, boosting turns the stars into hyperspace streaks, and three "cassette" buttons swap the entire scene between Sunset, Midnight and Acid colourways.
+
+Visual techniques:
+- CSS 3D perspective floor with rotateX plane and JavaScript-animated background-position grid
+- mask-image gradient slats on a gradient sun, with a slow CSS set-and-rise keyframe
+- Inline SVG wireframe mountains with non-scaling neon strokes and drop-shadow glow
+- Glowing horizon line with box-shadow bloom and a scanning pseudo-element highlight
+- Chrome gradient text via background-clip: text with a horizon band, plus neon script text-shadow
+- Canvas starfield sized to devicePixelRatio that turns into radial streaks at speed
+- Theme swapping through CSS custom properties and a data-theme attribute, using color-mix for glows
+- Parallax and camera bank driven by an eased steering value
+- Scanline overlay and stepped channel-change flash
+
+Interaction model: Move the pointer left and right (or press the arrow keys) to steer: the horizon banks, the grid slides and the mountains and sun shift in parallax. Hold the mouse button, a finger, or the Space bar to boost, which speeds up the grid, raises the speed readout and stretches the stars into streaks; let go to coast back to cruising speed. Click Sunset, Midnight or Acid to switch the colour cassette.

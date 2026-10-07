@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferrous Bloom Study</title>
+<style>
+:root{--bg:#0c0d12;--ink:#e9ecf4;--dim:#7d8296;--vio:#8b6cff;--teal:#2fd6c3;--line:rgba(233,236,244,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;overflow-x:hidden}
+.hero{position:relative;height:100vh;height:100svh;min-height:540px;overflow:hidden}
+#fluid{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:none;touch-action:none}
+.hud{position:absolute;inset:0;pointer-events:none;padding:20px 16px;display:flex;flex-direction:column;justify-content:space-between}
+@media(min-width:760px){.hud{padding:34px 44px}}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+h1{font-weight:300;font-size:clamp(2.2rem,7.5vw,5.2rem);letter-spacing:-.045em;line-height:.92;margin-top:10px}
+h1 b{font-weight:700;background:linear-gradient(90deg,var(--vio),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{max-width:34ch;margin-top:14px;color:#b7bccb;line-height:1.55;font-size:.98rem}
+.read{display:grid;grid-template-columns:repeat(2,auto);gap:14px 26px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:rgba(12,13,18,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.read b{display:block;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:1.35rem;font-weight:500;letter-spacing:-.02em;color:var(--ink);text-transform:none;font-variant-numeric:tabular-nums;margin-top:3px}
+.read .state{grid-column:1/-1;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:.04em;font-size:.76rem}
+.dot{width:8px;height:8px;border-radius:50%;background:#3a3e4c;transition:background .3s,box-shadow .3s}
+.dot.on{background:var(--teal);box-shadow:0 0 10px var(--teal)}
+.ctrl{pointer-events:auto;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(12,13,18,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);max-width:640px}
+.ctrl label{display:flex;align-items:center;gap:12px;flex:1 1 220px}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:22px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(90deg,var(--vio),var(--teal))}
+input[type=range]::-moz-range-track{height:3px;border-radius:3px;background:linear-gradient(90deg,var(--vio),var(--teal))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7.5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9aa0b2 60%,#3b3f4d);border:0;box-shadow:0 2px 8px rgba(0,0,0,.6);transition:transform .2s}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9aa0b2 60%,#3b3f4d);border:0}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15)}
+input[type=range]:focus-visible{outline:1px solid var(--teal);outline-offset:4px;border-radius:4px}
+.btn{font:inherit;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:10px 16px;cursor:pointer;touch-action:none;transition:border-color .2s,background .2s,color .2s}
+.btn:hover{border-color:rgba(233,236,244,.4)}
+.btn:focus-visible{outline:1px solid var(--teal);outline-offset:3px}
+.btn[aria-pressed="true"],.btn.on{background:linear-gradient(90deg,var(--vio),var(--teal));color:#07080b;border-color:transparent}
+.notes{max-width:1100px;margin:0 auto;padding:56px 16px 72px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px;border-top:1px solid var(--line)}
+@media(min-width:760px){.notes{grid-template-columns:repeat(3,minmax(0,1fr));padding:72px 44px 90px}}
+.notes h2{font-weight:300;font-size:1.5rem;letter-spacing:-.02em;margin:10px 0 10px}
+.notes p{color:#a7acbb;line-height:1.65;font-size:.96rem}
+</style>
+</head>
+<body>
+<section class="hero">
+  <canvas id="fluid" aria-label="Ferrofluid surface; move the pointer to move the magnet"></canvas>
+  <div class="hud">
+    <div class="row">
+      <div>
+        <p class="mono">Specimen FB-04 &middot; Halden Field Lab</p>
+        <h1>Ferrous <b>Bloom</b></h1>
+        <p class="sub">A study in obedient liquid. Bring the magnet close and the black pool forgets it is a puddle.</p>
+      </div>
+      <div class="read mono" aria-live="polite">
+        <span>Field<b id="mt">0 mT</b></span>
+        <span>Spikes<b id="sp">0</b></span>
+        <span class="state"><i class="dot" id="dot"></i><span id="st">Surface calm, below threshold</span></span>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label class="mono" for="gain">Coil <input type="range" id="gain" min="20" max="100" value="80"></label>
+      <button type="button" class="btn" id="pulse" aria-pressed="false">Pulse</button>
+      <button type="button" class="btn" id="boost" aria-label="Hold to energize the magnet">Hold to energize</button>
+    </div>
+  </div>
+</section>
+<section class="notes">
+  <div><p class="mono">01 &middot; Suspension</p><h2>Rust you can pour</h2><p>Nanoscale grains of magnetite drift in a carrier oil, each coated so it never clumps. At rest the pool is a perfect black mirror.</p></div>
+  <div><p class="mono">02 &middot; Instability</p><h2>The threshold</h2><p>Past a critical field, a flat surface costs more energy than a crowded one. The liquid gives in all at once, in a lattice of evenly spaced peaks.</p></div>
+  <div><p class="mono">03 &middot; Release</p><h2>Memory of none</h2><p>Lift the magnet and the crowns collapse with a small shiver, back to glass. The fluid keeps nothing; that is its whole charm.</p></div>
+</section>
+<script>
+(function(){
+var cv=document.getElementById("fluid"),ctx=cv.getContext("2d");
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var W=0,H=0,dpr=1,rows=[],bgGrad,rimGrad;
+var mag={x:0,y:0,tx:0,ty:0},pointerIn=false,lastInput=-1e9,boost=0,boostOn=false,pulse=false,gain=.8;
+var elMt=document.getElementById("mt"),elSp=document.getElementById("sp"),elSt=document.getElementById("st"),dot=document.getElementById("dot");
+function resize(){
+  var r=cv.getBoundingClientRect();W=r.width;H=r.height;dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  var unit=Math.max(.7,Math.min(1.25,W/1100));rows=[];
+  for(var d=0;d<4;d++){var sc=(.55+d*.15)*unit,sp=30*sc,list=[],off=(d%2)*sp*.5;
+    for(var x=-sp+off;x<W+sp;x+=sp)list.push({x:x,h:0,v:0});
+    rows.push({d:d,sc:sc,sp:sp,base:H*(.66+d*.068),sp0:off,s:list,bulge:0})}
+  bgGrad=ctx.createLinearGradient(0,0,0,H);bgGrad.addColorStop(0,"#11121a");bgGrad.addColorStop(.6,"#0b0c11");bgGrad.addColorStop(1,"#060609");
+  rimGrad=ctx.createLinearGradient(0,0,W,0);rimGrad.addColorStop(0,"#8b6cff");rimGrad.addColorStop(.5,"#d9dcff");rimGrad.addColorStop(1,"#2fd6c3");
+  if(!mag.x){mag.x=mag.tx=W*.5;mag.y=mag.ty=H*.38}
+}
+function setT(x,y){mag.tx=x;mag.ty=Math.min(y,H*.62);lastInput=performance.now()}
+cv.addEventListener("pointermove",function(e){var r=cv.getBoundingClientRect();pointerIn=true;setT(e.clientX-r.left,e.clientY-r.top)});
+cv.addEventListener("pointerdown",function(e){var r=cv.getBoundingClientRect();setT(e.clientX-r.left,e.clientY-r.top);boostOn=true;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener("pointerup",function(){boostOn=false});
+cv.addEventListener("pointercancel",function(){boostOn=false});
+cv.addEventListener("pointerleave",function(){pointerIn=false});
+document.getElementById("gain").addEventListener("input",function(e){gain=e.target.value/100});
+var pb=document.getElementById("pulse");pb.addEventListener("click",function(){pulse=!pulse;pb.setAttribute("aria-pressed",pulse)});
+var bb=document.getElementById("boost");
+function hold(on){boostOn=on;bb.classList.toggle("on",on)}
+bb.addEventListener("pointerdown",function(e){e.preventDefault();hold(true)});["pointerup","pointerleave","pointercancel"].forEach(function(t){bb.addEventListener(t,function(){hold(false)})});
+bb.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();hold(true)}});
+bb.addEventListener("keyup",function(e){if(e.key===" "||e.key==="Enter")hold(false)});
+addEventListener("keydown",function(e){var s=24;if(e.target.tagName==="INPUT")return;
+  if(e.key==="ArrowLeft"){setT(mag.tx-s,mag.ty);e.preventDefault()}else if(e.key==="ArrowRight"){setT(mag.tx+s,mag.ty);e.preventDefault()}
+  else if(e.key==="ArrowUp"){setT(mag.tx,Math.max(40,mag.ty-s));e.preventDefault()}else if(e.key==="ArrowDown"){setT(mag.tx,mag.ty+s);e.preventDefault()}});
+
+function field(dx,dz,vert,sc){var r0=150*sc;return 1/(1+(dx*dx+dz*dz)/(r0*r0))*vert}
+function frame(t){
+  var idle=!pointerIn&&t-lastInput>3000;
+  if(idle&&!reduce){mag.tx=W*(.5+.32*Math.sin(t*.00021));mag.ty=H*(.42+.1*Math.sin(t*.00037))}
+  var k=reduce?1:.12;mag.x+=(mag.tx-mag.x)*k;mag.y+=(mag.ty-mag.y)*k;
+  boost+=((boostOn?1:0)-boost)*(reduce?1:.08);
+  var str=gain*(1+boost*.55)*(pulse?(reduce?.8:.62+.38*Math.sin(t*.006)):1);
+  /* background */
+  ctx.fillStyle=bgGrad;ctx.fillRect(0,0,W,H);
+  var gl=ctx.createRadialGradient(mag.x,mag.y,0,mag.x,mag.y,Math.max(W,H)*.55);
+  gl.addColorStop(0,"rgba(139,108,255,"+(.10+.12*boost)+")");gl.addColorStop(.5,"rgba(47,214,195,.04)");gl.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=gl;ctx.fillRect(0,0,W,H);
+  /* field lines */
+  if(str>.3){ctx.save();ctx.strokeStyle="rgba(200,205,255,"+(.05+.08*str)+")";ctx.lineWidth=1;ctx.setLineDash([3,7]);ctx.lineDashOffset=reduce?0:-t*.03;
+    for(var i=-3;i<=3;i++){if(!i)continue;var ex=mag.x+i*W*.07,ey=rows[3].base;ctx.beginPath();ctx.moveTo(mag.x+i*4,mag.y+20);ctx.bezierCurveTo(mag.x+i*W*.05,mag.y+60,ex,ey-90,ex,ey-10);ctx.stroke()}
+    ctx.restore()}
+  var maxF=0,count=0;
+  for(var ri=0;ri<rows.length;ri++){var R=rows[ri],sc=R.sc,base=R.base;
+    var vert=Math.exp(-Math.max(0,base-mag.y-70)/(H*.6)),dz=(3-R.d)*70;
+    var bt=40*sc*str*field(0,dz,vert,sc*1.6);R.bulge+=(bt-R.bulge)*(reduce?1:.1);
+    var maxH=110*sc,w=R.sp*.56;
+    for(var j=0;j<R.s.length;j++){var s=R.s[j],f=field(s.x-mag.x,dz,vert,sc)*str;if(f>maxF)maxF=f;
+      var tg=f>.3?maxH*Math.pow((f-.3)/.9,.75):0;
+      if(reduce){s.h=tg;s.v=0}else{s.v+=(tg-s.h)*.14;s.v*=.8;s.h+=s.v;if(s.h<0){s.h=0}}
+      s.lean=(mag.x-s.x)*.06*Math.min(1,f);if(s.h>3)count++}
+    /* silhouette */
+    var shade=18-R.d*4;ctx.beginPath();ctx.moveTo(-2,H);
+    var bw=W*.33*(1+R.d*.15),step=2;
+    for(var x=-2;x<=W+2;x+=step){var dx=x-mag.x,y=base-R.bulge*Math.exp(-dx*dx/(2*bw*bw));
+      var idx=Math.round((x-R.s[0].x)/R.sp),hmax=0;
+      for(var q=idx-1;q<=idx+1;q++){var sp=R.s[q];if(!sp||sp.h<.3)continue;var u=Math.abs(x-sp.x-sp.lean*.5)/w;if(u<1){var hh=sp.h*Math.pow(1-u,2.4);if(hh>hmax)hmax=hh}}
+      ctx.lineTo(x,y-hmax)}
+    ctx.lineTo(W+2,H);ctx.closePath();
+    var fg=ctx.createLinearGradient(0,base-maxH,0,H);fg.addColorStop(0,"rgb("+shade+","+shade+","+(shade+6)+")");fg.addColorStop(.35,"rgb("+(shade>>1)+","+(shade>>1)+","+((shade>>1)+4)+")");fg.addColorStop(1,"#030304");
+    ctx.fillStyle=fg;ctx.fill();
+    ctx.save();ctx.clip();
+    /* rim light along the surface */
+    ctx.globalAlpha=.25+R.d*.15;ctx.strokeStyle=rimGrad;ctx.lineWidth=1.4;ctx.stroke();
+    /* speculars on spike flanks */
+    ctx.globalAlpha=1;ctx.lineCap="round";
+    for(j=0;j<R.s.length;j++){s=R.s[j];if(s.h<5)continue;var yb=base-R.bulge*Math.exp(-(s.x-mag.x)*(s.x-mag.x)/(2*bw*bw)),tip=yb-s.h,cx=s.x+s.lean*.5;
+      var a=Math.min(.55,s.h/maxH*.7)*(.5+R.d*.18);
+      var sg=ctx.createLinearGradient(cx,tip,cx,yb);sg.addColorStop(0,"rgba(240,242,255,"+a+")");sg.addColorStop(1,"rgba(139,108,255,0)");
+      ctx.strokeStyle=sg;ctx.lineWidth=Math.max(1,1.6*sc);ctx.beginPath();ctx.moveTo(cx-w*.06,tip+s.h*.08);ctx.quadraticCurveTo(cx-w*.22,yb-s.h*.35,cx-w*.55,yb-1);ctx.stroke();
+      ctx.fillStyle="rgba(255,255,255,"+(a*.9)+")";ctx.beginPath();ctx.arc(cx-.4,tip+2.2,1.1*sc+.3,0,7);ctx.fill()}
+    ctx.restore();
+  }
+  /* magnet */
+  var mx=mag.x,my=mag.y,mw=64,mh=30;
+  ctx.save();ctx.translate(mx,my);
+  if(boost>.02){ctx.fillStyle="rgba(47,214,195,"+boost*.25+")";ctx.beginPath();ctx.ellipse(0,mh/2+4,mw*.8+boost*8,10+boost*4,0,0,7);ctx.fill()}
+  var mgr=ctx.createLinearGradient(-mw/2,0,mw/2,0);mgr.addColorStop(0,"#3a3d48");mgr.addColorStop(.3,"#e8eaf2");mgr.addColorStop(.55,"#8d92a3");mgr.addColorStop(.8,"#d4d7e2");mgr.addColorStop(1,"#3a3d48");
+  ctx.fillStyle=mgr;ctx.beginPath();ctx.roundRect?ctx.roundRect(-mw/2,-mh/2,mw,mh,6):ctx.rect(-mw/2,-mh/2,mw,mh);ctx.fill();
+  ctx.fillStyle="#1a1c24";ctx.beginPath();ctx.ellipse(0,-mh/2,mw/2,6,0,0,7);ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.5)";ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(0,-mh/2,mw/2-1,5,0,Math.PI,0);ctx.stroke();
+  ctx.fillStyle="#d7263d";ctx.fillRect(-mw/2,mh/2-7,mw,7);
+  ctx.fillStyle="#0c0d12";ctx.font="700 10px ui-monospace,Menlo,monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("N",0,2);
+  ctx.restore();
+  /* readouts */
+  var mt=Math.round(maxF*520);if(frame.mt!==mt){frame.mt=mt;elMt.textContent=mt+" mT"}
+  if(frame.c!==count){frame.c=count;elSp.textContent=count}
+  var on=maxF>.3;if(frame.on!==on){frame.on=on;dot.classList.toggle("on",on);elSt.textContent=on?"Rosensweig threshold crossed":"Surface calm, below threshold"}
+  requestAnimationFrame(frame);
+}
+addEventListener("resize",resize);resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

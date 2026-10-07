@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mirrorwerk Chrome Type Studio</title>
+<style>
+:root{--bg:#07080b;--line:rgba(255,255,255,.08);--txt:#c9ced8;--dim:#6b7280;--ang:110deg;--shift:0%}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{min-height:100vh;background:var(--bg);color:var(--txt);font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;display:flex;flex-direction:column}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 45% at 50% 42%,rgba(120,140,180,.16),transparent 70%),
+  repeating-linear-gradient(90deg,transparent 0 79px,var(--line) 79px 80px);opacity:.9}
+.top{position:relative;display:flex;justify-content:space-between;align-items:center;padding:20px 22px;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);gap:10px;flex-wrap:wrap}
+.top b{color:var(--txt);font-weight:600}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e33;margin-right:8px;box-shadow:0 0 10px #e33;animation:rec 1.6s infinite}
+@keyframes rec{50%{opacity:.25}}
+main{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;perspective:900px}
+.stagebox{position:relative;width:100%;max-width:1100px;text-align:center;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.word{display:block;font-family:Impact,"Haettenschweiler","Arial Narrow Bold","Arial Black",sans-serif;font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.01em;
+  font-size:clamp(3.2rem,15vw,11rem);word-break:break-word;
+  background-image:var(--fin);background-size:100% 260%;background-position:50% var(--shift);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(255,255,255,.18)) drop-shadow(0 18px 30px rgba(0,0,0,.7))}
+.word.ghost{transform:scaleY(-1);margin-top:-.08em;opacity:.35;filter:blur(1px);
+  -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.9),transparent 55%);mask-image:linear-gradient(to top,rgba(0,0,0,.9),transparent 55%)}
+.glint{position:absolute;inset:0 0 50% 0;pointer-events:none;mix-blend-mode:overlay;
+  background:linear-gradient(var(--ang),transparent 40%,rgba(255,255,255,.85) 49%,transparent 58%);background-size:300% 100%;animation:sweep 4.5s cubic-bezier(.6,0,.3,1) infinite}
+@keyframes sweep{0%{background-position:120% 0}60%,100%{background-position:-20% 0}}
+.floor{position:absolute;left:50%;bottom:-10px;width:120%;height:40%;transform:translateX(-50%);pointer-events:none;background:radial-gradient(ellipse at 50% 0,rgba(160,180,220,.1),transparent 65%)}
+.chrome{--fin:linear-gradient(180deg,#fdfdfd 0%,#9aa3b2 18%,#e9edf3 30%,#2a2f38 46%,#58616f 50%,#f4f6fa 58%,#8d96a5 70%,#ffffff 82%,#5d6573 100%)}
+.gold{--fin:linear-gradient(180deg,#fff6d8 0%,#c9952f 18%,#ffe8a3 30%,#4a3108 46%,#8a5e17 50%,#fff2c4 58%,#b7832a 70%,#fff9e6 82%,#6e4a12 100%)}
+.holo{--fin:linear-gradient(180deg,#f7fbff 0%,#9fd6ff 15%,#ffc1f1 30%,#2b2453 46%,#5c4ea3 50%,#d9fff3 58%,#ffd59e 70%,#ffffff 82%,#6b78c9 100%)}
+.panel{position:relative;margin:34px auto 0;width:100%;max-width:620px;display:grid;gap:14px;padding:18px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));backdrop-filter:blur(8px)}
+label{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+input[type=text]{width:100%;background:#0d0f14;border:1px solid #232733;color:#fff;font:600 1.1rem "Helvetica Neue",Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:12px 14px;border-radius:9px;outline:none;transition:border-color .2s,box-shadow .2s}
+input[type=text]:focus{border-color:#8f9bb3;box-shadow:0 0 0 4px rgba(143,155,179,.15)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.fin{flex:1;min-width:90px;border:1px solid #232733;background:#0d0f14;color:var(--txt);padding:11px 10px;border-radius:9px;cursor:pointer;font:600 .74rem "Helvetica Neue",Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s cubic-bezier(.3,1.6,.6,1),border-color .2s}
+.fin i{width:16px;height:16px;border-radius:50%;background-image:var(--fin);background-size:100% 200%}
+.fin:hover{transform:translateY(-2px);border-color:#4a5163}
+.fin[aria-pressed=true]{border-color:#c9ced8;color:#fff}
+.fin:focus-visible{outline:2px solid #c9ced8;outline-offset:3px}
+.hint{font-size:.74rem;color:var(--dim);text-align:center;letter-spacing:.05em}
+footer{position:relative;text-align:center;padding:18px;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:#3f4552}
+@media (prefers-reduced-motion:reduce){.glint{animation:none;opacity:0}.dot{animation:none}.stagebox{transition:none}}
+</style>
+</head>
+<body class="chrome">
+<div class="top"><span><span class="dot"></span><b>Mirrorwerk</b> type studio</span><span>Take 027 / polished in real time</span></div>
+<main id="main">
+  <div class="stagebox" id="box">
+    <span class="word" id="word">Liquid Metal</span>
+    <span class="glint" aria-hidden="true"></span>
+    <span class="word ghost" id="ghost" aria-hidden="true">Liquid Metal</span>
+    <div class="floor"></div>
+  </div>
+  <div class="panel">
+    <label for="txt">Engrave a word</label>
+    <input type="text" id="txt" maxlength="16" value="Liquid Metal" autocomplete="off" spellcheck="false">
+    <div class="row" role="group" aria-label="Finish">
+      <button type="button" class="fin chrome" data-f="chrome" aria-pressed="true"><i></i>Chrome</button>
+      <button type="button" class="fin gold" data-f="gold" aria-pressed="false"><i></i>Gold leaf</button>
+      <button type="button" class="fin holo" data-f="holo" aria-pressed="false"><i></i>Prism</button>
+    </div>
+    <p class="hint">Move across the stage to tilt the studio lights. The horizon line rides with you.</p>
+  </div>
+</main>
+<footer>Mirrorwerk, a fictional foundry of reflective letters</footer>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root=document.documentElement,body=document.body,box=document.getElementById('box');
+  var word=document.getElementById('word'),ghost=document.getElementById('ghost'),txt=document.getElementById('txt');
+  txt.addEventListener('input',function(){var v=txt.value.trim()||'Mirror';word.textContent=v;ghost.textContent=v});
+  [].forEach.call(document.querySelectorAll('.fin'),function(b){
+    b.addEventListener('click',function(){
+      body.className=b.getAttribute('data-f');
+      [].forEach.call(document.querySelectorAll('.fin'),function(o){o.setAttribute('aria-pressed',o===b?'true':'false')});
+    });
+  });
+  var tx=.5,ty=.5,cx=.5,cy=.5,t0=performance.now();
+  window.addEventListener('pointermove',function(e){tx=e.clientX/innerWidth;ty=e.clientY/innerHeight});
+  window.addEventListener('pointerleave',function(){tx=.5;ty=.5});
+  function frame(now){
+    cx+=(tx-cx)*.08;cy+=(ty-cy)*.08;
+    var drift=reduce?0:Math.sin((now-t0)/2600)*12;
+    var shift=50+(cy-.5)*90+drift;
+    root.style.setProperty('--shift',shift.toFixed(2)+'%');
+    root.style.setProperty('--ang',(90+(cx-.5)*60).toFixed(1)+'deg');
+    if(!reduce)box.style.transform='rotateY('+((cx-.5)*14).toFixed(2)+'deg) rotateX('+((.5-cy)*8).toFixed(2)+'deg)';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

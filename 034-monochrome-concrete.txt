@@ -1,0 +1,27 @@
+Prompt
+
+034 monochrome-concrete: brutalist architecture mood from CSS gradients, slow reveal, monochrome.
+
+Build a single standalone HTML page, "Béton Brut", presented as Volume IV of a fictional "Atlas of Poured Stone". Strictly monochrome: a seven-step warm grey scale from #0f0f0e through #1c1c1b, #383735, #6a6864, #9d9a94, #c9c6bf to #ebe8e2. No hue anywhere. Typography: "Arial Narrow"/"Helvetica Neue Condensed" in weight 800 uppercase for the giant title, plate numerals and headings; "Helvetica Neue"/Arial for body; Georgia italic for subtitles and the closing quote; "Courier New" for tracked uppercase labels, spec tables and the sun dial.
+
+Concrete material: a shared --tex custom property stacks four gradients: horizontal board-form seams every 13px, fine vertical timber grain, and two offset dot grids of dark and light speckle at irregular sizes (7x9px and 11x6px) for aggregate. Every mass uses background: var(--tex), tone.
+
+Light model: a single --sun variable from 0 (morning, light from the left) to 1 (evening, light from the right) plus --sunY = sin(pi * sun) for height. Every block has two pseudo-element highlight gradients whose opacities are 1 - sun and sun, so the lit face swaps sides; cast shadows are hard box-shadows whose x offset is calc((.5 - var(--sun)) * N px); window recesses use inset box-shadows driven the same way; the tower's ground shadow is a parallelogram skewX(calc((sun - .5) * 140deg)) from its base; a sun disc in the hero and in each plate travels an arc using --sun and --sunY. With a fine pointer, the pointer's x position sets the sun target; on touch (or after four idle seconds) scroll progress sets it. The sun eases toward its target exponentially (rate 2.2/s) for a slow, heavy feel. A fixed glassy dial at bottom right shows a dashed arc with a moving dot and a solar time from 7:00 to 19:00.
+
+Layout and reveal: a full-height hero with a two-tone dusk sky and ground, a sun disc, a tracked label row, and a huge centered "BÉTON / BRUT" (second word outlined with text-stroke) that rises and fades in over 2.4s, a skyline of six textured blocks of different tones that pour upward from below with staggered delays, and a lede that fades in last. A black curtain scales away from the top on load. Then three plates in an alternating 1.5fr/1fr grid (single column under 760px), each with a figure and a text column (giant grey numeral, condensed title, italic subtitle, body copy, monospace spec list with fictional dates, ateliers and dimensions): I "The Stepped Hall", an inverted ziggurat of four widening slabs with dark ribbon windows, standing on four pilotis, each slab casting its shadow onto the one below via z-index ordering; II "The Coffered Wall", an 8x6 grid of deep window boxes generated as buttons, with inset shadows that sweep across the recesses as the sun moves and lamps that can be switched on to glow pale; III "The Tower and Its Shadow", a finned tower with an overhanging cap and a dark slot, and a ground shadow that swings from one side to the other. Plates slow-reveal on scroll with IntersectionObserver: text fades and lifts over about 2s, building parts rise via clip-path inset wipes staggered 0.22s apart. A final textured black section holds a Georgia italic quote ("Concrete remembers everything that touched it while it was soft." Ines Vos, site diary, 1966) and a colophon. Reduced motion: transitions become instant, the curtain is removed, and the sun follows input without easing.
+
+Title: Béton Brut
+
+Description: A slow, heavy, monochrome tribute to brutalist architecture in which every surface is built from CSS gradients that imitate board-marked concrete, and the only thing that moves is the light. Moving the pointer across the page (or scrolling on a phone) drags the sun across the sky: highlights migrate from one face of each slab to the other, hard shadows swing beneath cantilevers, darkness creeps across deep window reveals and a tower's shadow sweeps across the ground. Long, decelerating reveals let the buildings pour themselves upward into place, giving the page the patience and weight of the material.
+
+Visual techniques:
+- Concrete texture from stacked repeating-linear and radial gradients in one reusable custom property
+- A global --sun custom property driving pseudo-element highlight opacity, box-shadow offsets, inset recess shadows and skewX ground shadows via calc()
+- Sun arc positioning from a JavaScript-computed sine value, exponential easing toward a pointer or scroll target
+- Load sequence with a scaling curtain, rising outlined display type and staggered pouring blocks
+- IntersectionObserver slow reveals with clip-path inset wipes and long cubic-bezier(.16,1,.3,1) curves
+- z-index layered slab shadows, generated window grid with toggleable glowing lamps
+- Fixed SVG sun dial with a moving dot and solar time readout
+- Reduced-motion instant transitions
+
+Interaction model: On a desktop, simply move the pointer from left to right to move the sun from morning to evening; all shading and shadows follow with a slow, weighty lag, and the dial shows the time. On touch devices the sun follows scroll position. Scroll down to let each plate pour into view. In the Coffered Wall plate, click or tap individual windows (or tab to them and press Enter) to switch their lamps on and off, with a live count of lit homes.

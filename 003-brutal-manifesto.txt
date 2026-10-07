@@ -1,0 +1,17 @@
+Prompt:
+Build a standalone neo-brutalist HTML page called "BLUNT — A Manifesto for Honest Interfaces" for a fictional design collective. Palette: warm paper #f3efe4 with a faint 48px ink grid in the page background, pure ink #0d0d0d, acid yellow #dcff1f, signal red #ff3d1f, ink blue #2440ff and a mercy pink #ff9ad5. Typography: "Arial Black"/Impact for every headline and number, "Helvetica Neue"/Arial for body, "Courier New"/ui-monospace for metadata, plus one Georgia italic pull quote. Every block has a 4px solid black border and a hard, unblurred 8px by 8px black offset shadow. At the very top a full-width black ticker with acid-yellow uppercase slogans separated by red ✸ marks scrolls continuously (content duplicated in JS and translated -50% in a linear loop), pausing on hover. Under it, a tilted acid logo badge "BLUNT/" and a monospace issue label. A 12-column grid holds: a red hero spanning 8 columns with an enormous uppercase headline "Make it loud. Make it true." where "loud" is reversed out on an ink highlight; an acid signature panel spanning 4 columns with a giant tabular counter (4,812) and a black "Sign it →" button with a blue hard shadow; six numbered rule cards in a 3-up grid (outlined stroke-only numerals 01 to 06, uppercase heading, short manifesto copy, a monospace footer tag), with alternating white, paper and acid backgrounds; a pink Georgia italic quote block from an invented member; and a black "Your agreement" panel with two thick bordered progress bars whose acid fill steps in 8 discrete jumps and whose label uses mix-blend-mode difference. Motion language is deliberately stepped and physical: cards lift up-left on hover with a bigger shadow, sink into the page on press, buttons translate by their shadow offset when pressed, and an "AGREED" stamp pops in with an overshoot. Responsive: hero and side panels go full width under 860px, rules go 2-up, then 1-up under 560px with smaller shadows. Reduced motion slows the ticker drastically and removes transitions.
+
+Title: BLUNT Manifesto
+
+Description: A loud, confident neo-brutalist manifesto page that celebrates exposed structure. Thick borders, a single hard shadow direction, oversized black type and a four-color palette create a poster-like grid, while a constant headline ticker gives it the energy of a protest banner. Interactions are tactile and stepped, so every press feels like a stamp landing on paper.
+
+Visual techniques:
+- Thick 4px borders and unblurred offset box-shadows as the core visual vocabulary
+- CSS grid with a 12-column layout collapsing to 6 and 1 columns
+- Infinite marquee ticker using duplicated content and a translateX(-50%) loop
+- Outlined numerals using -webkit-text-stroke with transparent fill
+- Stepped transitions (steps()) and overshoot cubic-bezier for the stamp pop
+- Progress bars using scaleX transforms with mix-blend-mode difference labels
+- Faint grid paper background from layered linear gradients
+
+Interaction model: Click or press Enter or Space on any rule card to agree with it; the card flips to blue, stamps "AGREED", and the agreement bar steps forward until all six are accepted. The "Sign it" button presses physically into the page, rolls the signature counter up by one, advances the goal bar and locks into a signed state. Hovering the ticker pauses it, and every interactive element has a dashed focus outline.

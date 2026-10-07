@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Molten Hours — Lava Lamp</title>
+<style>
+:root{
+  --bg0:#16040a;--bg1:#3a0b16;--amber:#ffb347;--flame:#ff5a2a;--cream:#ffe9cf;--rose:#ff8a7a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:radial-gradient(90% 70% at 50% 100%,#5a1220 0%,var(--bg1) 35%,var(--bg0) 80%);
+  color:var(--cream);
+  font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
+}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:manipulation}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+  background:repeating-radial-gradient(circle at 30% 20%,#fff 0 1px,transparent 1px 3px);}
+.title{
+  position:fixed;left:clamp(16px,5vw,64px);top:clamp(20px,6vh,64px);
+  pointer-events:none;max-width:min(92vw,560px);
+}
+.title small{display:block;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--rose);margin-bottom:14px}
+.title h1{
+  font-family:"Arial Black","Helvetica Neue",Impact,sans-serif;font-weight:900;
+  font-size:clamp(44px,11vw,128px);line-height:.86;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(255,233,207,.85);
+  mix-blend-mode:screen;
+}
+.title h1 em{font-style:normal;color:var(--cream);-webkit-text-stroke:0}
+.title p{margin-top:16px;font-family:Georgia,"Iowan Old Style",serif;font-style:italic;font-size:clamp(14px,1.8vw,18px);line-height:1.5;max-width:34ch;color:rgba(255,233,207,.82)}
+.panel{
+  position:fixed;right:clamp(16px,4vw,48px);bottom:clamp(16px,5vh,48px);
+  display:flex;flex-direction:column;gap:12px;
+  padding:16px 18px;border-radius:18px;
+  background:rgba(40,8,14,.45);border:1px solid rgba(255,179,71,.22);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  min-width:220px;max-width:calc(100vw - 32px);
+}
+.row{display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,233,207,.7)}
+.row b{font-family:ui-monospace,Menlo,"Courier New",monospace;font-weight:500;color:var(--amber);letter-spacing:.05em;font-size:13px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+  background:linear-gradient(90deg,#7a1a24,var(--flame),var(--amber));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--cream);box-shadow:0 0 0 4px rgba(255,90,42,.35),0 0 18px var(--flame);cursor:pointer;transition:transform .2s}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;background:var(--cream);box-shadow:0 0 0 4px rgba(255,90,42,.35),0 0 18px var(--flame);cursor:pointer}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15)}
+input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:6px}
+button{appearance:none;border:1px solid rgba(255,179,71,.4);background:transparent;color:var(--cream);
+  font:inherit;font-size:11px;letter-spacing:.22em;text-transform:uppercase;padding:9px 12px;border-radius:999px;cursor:pointer;transition:background .3s,color .3s}
+button:hover{background:var(--amber);color:#2a0a10}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);transition:opacity .4s,transform .4s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:560px){.panel{left:16px;right:16px;min-width:0}.toast{bottom:150px}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Lava lamp of glowing wax blobs. Click to add a blob."></canvas>
+<div class="grain"></div>
+<div class="title">
+  <small>Ember &amp; Vale · Lamp No. 7</small>
+  <h1>Molten<br><em>Hours</em></h1>
+  <p>Wax warms at the base, rises, cools near the glass, and drifts back down. Tap anywhere to pour in another bead.</p>
+</div>
+<div class="panel">
+  <div class="row">Heat <b id="hv">62°</b></div>
+  <input id="heat" type="range" min="10" max="100" value="62" aria-label="Lamp heat">
+  <div class="row">Beads <b id="bv">0</b></div>
+  <button id="reset" type="button">Settle the wax</button>
+</div>
+<div class="toast" id="toast">The lamp is full</div>
+<script>
+(function(){
+  var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+  var off=document.createElement('canvas'),octx=off.getContext('2d');
+  var W,H,dpr,gw,gh,img,STEP;
+  var heatEl=document.getElementById('heat'),hv=document.getElementById('hv'),bv=document.getElementById('bv');
+  var toast=document.getElementById('toast');
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var blobs=[],MAX=16;
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=innerWidth;H=innerHeight;
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+    STEP=W<600?5:7;
+    gw=Math.ceil(W/STEP);gh=Math.ceil(H/STEP);
+    off.width=gw;off.height=gh;img=octx.createImageData(gw,gh);
+  }
+  function add(x,y,r){
+    if(blobs.length>=MAX){toast.classList.add('on');clearTimeout(add.t);add.t=setTimeout(function(){toast.classList.remove('on')},1400);return}
+    var s=Math.min(W,H);
+    blobs.push({x:x,y:y,vx:(Math.random()-.5)*.3,vy:0,r:r||s*(.06+Math.random()*.06),temp:Math.random(),ph:Math.random()*6.28,grow:0});
+    bv.textContent=blobs.length;
+  }
+  function seed(){
+    blobs=[];
+    for(var i=0;i<7;i++)add(W*(.2+Math.random()*.6),H*(.3+Math.random()*.65));
+    blobs.forEach(function(b){b.grow=1});
+  }
+  // palette ramp: deep ember -> flame -> amber -> cream core
+  var stops=[[90,10,24],[200,30,30],[255,90,42],[255,179,71],[255,236,200]];
+  function ramp(t,o){
+    t=t<0?0:t>1?1:t;var p=t*(stops.length-1),i=Math.floor(p),f=p-i;
+    if(i>=stops.length-1){i=stops.length-2;f=1}
+    var a=stops[i],b=stops[i+1];
+    o[0]=a[0]+(b[0]-a[0])*f;o[1]=a[1]+(b[1]-a[1])*f;o[2]=a[2]+(b[2]-a[2])*f;
+  }
+  var col=[0,0,0];
+  function step(dt,t){
+    var heat=heatEl.value/100,k=reduced?.25:1;
+    for(var i=0;i<blobs.length;i++){
+      var b=blobs[i];
+      if(b.grow<1)b.grow=Math.min(1,b.grow+dt*1.6);
+      var yn=b.y/H;
+      // heated near the base, cooled near the top
+      b.temp+=((yn>.8?1:0)*heat*.9-(yn<.25?.7:.12)*b.temp)*dt*.6;
+      b.temp=Math.max(0,Math.min(1.2,b.temp));
+      var buoy=(b.temp-.45)*H*.00012;
+      b.vy+=(-buoy)*dt*60*k;
+      b.vx+=Math.sin(t*.0004+b.ph)*.004*k;
+      b.vx*=.985;b.vy*=.975;
+      b.x+=b.vx*dt*60*k;b.y+=b.vy*dt*60*k;
+      var r=b.r*.6;
+      if(b.x<r){b.x=r;b.vx=Math.abs(b.vx)}
+      if(b.x>W-r){b.x=W-r;b.vx=-Math.abs(b.vx)}
+      if(b.y>H-r*.4){b.y=H-r*.4;b.vy=-Math.abs(b.vy)*.3}
+      if(b.y<r*.4){b.y=r*.4;b.vy=Math.abs(b.vy)*.3}
+    }
+  }
+  function render(t){
+    var d=img.data,n=blobs.length,bx=[],by=[],br=[];
+    for(var i=0;i<n;i++){
+      var b=blobs[i],wob=1+Math.sin(t*.0012+b.ph)*.06;
+      bx.push(b.x/STEP);by.push(b.y/STEP);var rr=b.r*wob*b.grow/STEP;br.push(rr*rr);
+    }
+    var p=0;
+    for(var y=0;y<gh;y++){
+      for(var x=0;x<gw;x++){
+        var f=0;
+        for(var j=0;j<n;j++){var dx=x-bx[j],dy=y-by[j];f+=br[j]/(dx*dx+dy*dy+1)}
+        if(f>.35){
+          var a;
+          if(f<1){ // halo
+            var g=(f-.35)/.65;a=g*g*90;ramp(.12,col);
+            if(f>.9){var e=(f-.9)/.1;a=a+(255-a)*e*e;ramp(.3*e+.12*(1-e),col)}
+          }else{
+            a=255;ramp(.3+Math.min((f-1)/2.2,1)*.7,col);
+          }
+          d[p]=col[0];d[p+1]=col[1];d[p+2]=col[2];d[p+3]=a;
+        }else{d[p+3]=0}
+        p+=4;
+      }
+    }
+    octx.putImageData(img,0,0);
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.globalCompositeOperation='source-over';
+    ctx.drawImage(off,0,0,gw*STEP*dpr,gh*STEP*dpr);
+    // soft bloom pass
+    ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.25;
+    ctx.filter='blur('+Math.round(18*dpr)+'px)';
+    ctx.drawImage(off,0,0,gw*STEP*dpr,gh*STEP*dpr);
+    ctx.filter='none';ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  }
+  var last=performance.now();
+  function loop(t){
+    var dt=Math.min(.05,(t-last)/1000);last=t;
+    step(dt,t);render(t);
+    requestAnimationFrame(loop);
+  }
+  cv.addEventListener('click',function(e){add(e.clientX,e.clientY)});
+  heatEl.addEventListener('input',function(){hv.textContent=heatEl.value+'°'});
+  document.getElementById('reset').addEventListener('click',seed);
+  window.addEventListener('resize',function(){var ow=W,oh=H;resize();blobs.forEach(function(b){b.x*=W/ow;b.y*=H/oh})});
+  resize();seed();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

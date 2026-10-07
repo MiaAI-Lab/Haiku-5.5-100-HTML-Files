@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Kestrel — Six Rooms</title>
+<style>
+:root{
+  --ink:#141226;
+  --ink2:#1e1b38;
+  --cream:#f4ecdc;
+  --coral:#ff6b4a;
+  --sage:#9fc2a8;
+  --mute:#8f89b3;
+  --s:min(68vmin,400px);
+  --ease:cubic-bezier(.7,-.02,.18,1.02);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(120% 80% at 50% 0%,#2a2552 0%,var(--ink) 55%,#0b0a17 100%);
+  color:var(--cream);
+  font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+header{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:22px clamp(16px,4vw,48px);
+  gap:12px;flex-wrap:wrap;
+}
+.mark{font-family:Didot,"Bodoni 72","Iowan Old Style",Georgia,serif;font-size:clamp(20px,3vw,28px);letter-spacing:.02em}
+.mark i{color:var(--coral);font-style:italic}
+.coord{font-family:ui-monospace,"SF Mono",Menlo,"Courier New",monospace;font-size:11px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+main{
+  display:grid;place-items:center;
+  perspective:1400px;
+  padding:20px 16px;
+  position:relative;
+}
+.floor{
+  position:absolute;left:50%;top:50%;
+  width:calc(var(--s)*1.8);height:calc(var(--s)*1.8);
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,107,74,.16),transparent 60%);
+  filter:blur(10px);pointer-events:none;
+  animation:breathe 7s ease-in-out infinite;
+}
+@keyframes breathe{50%{transform:translate(-50%,-50%) scale(1.12);opacity:.7}}
+.stage{
+  width:var(--s);height:var(--s);
+  position:relative;
+  transform-style:preserve-3d;
+  cursor:grab;
+  touch-action:none;
+}
+.stage.dragging{cursor:grabbing}
+.cube{
+  position:absolute;inset:0;
+  transform-style:preserve-3d;
+  transition:transform 1.1s var(--ease);
+  transform:translateZ(calc(var(--s) / -2)) rotateX(-8deg) rotateY(12deg);
+}
+.stage.dragging .cube{transition:none}
+.face{
+  position:absolute;inset:0;
+  padding:clamp(18px,4.5vmin,34px);
+  display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid rgba(244,236,220,.18);
+  backface-visibility:hidden;
+  overflow:hidden;
+  user-select:none;
+}
+.face::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.10),transparent 40%,rgba(0,0,0,.25));
+}
+.face .no{font-family:ui-monospace,Menlo,"Courier New",monospace;font-size:11px;letter-spacing:.2em;opacity:.7}
+.face h2{font-family:Didot,"Bodoni 72","Iowan Old Style",Georgia,serif;font-weight:400;font-size:clamp(28px,7.4vmin,50px);line-height:.95;letter-spacing:-.01em}
+.face p{font-size:clamp(12px,2.3vmin,14.5px);line-height:1.55;max-width:30ch;opacity:.88}
+.f0{background:linear-gradient(160deg,#2b2556,#171430);transform:rotateY(0deg) translateZ(calc(var(--s)/2))}
+.f1{background:linear-gradient(160deg,#ff7b5c,#d9452a);color:#1a0d08;transform:rotateY(90deg) translateZ(calc(var(--s)/2))}
+.f2{background:linear-gradient(160deg,#f6eedf,#e2d5bc);color:var(--ink);transform:rotateY(180deg) translateZ(calc(var(--s)/2))}
+.f3{background:linear-gradient(160deg,#a9cdb2,#6f9d7d);color:#0f1f15;transform:rotateY(-90deg) translateZ(calc(var(--s)/2))}
+.f4{background:linear-gradient(160deg,#3a3470,#211d44);transform:rotateX(90deg) translateZ(calc(var(--s)/2))}
+.f5{background:linear-gradient(160deg,#16142a,#0c0b18);transform:rotateX(-90deg) translateZ(calc(var(--s)/2))}
+.glyph{position:absolute;right:-8%;bottom:-10%;width:62%;opacity:.22;pointer-events:none}
+.f2 .glyph,.f1 .glyph,.f3 .glyph{opacity:.28}
+nav{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:6px;
+  padding:18px 16px 28px;
+}
+nav button{
+  appearance:none;border:1px solid rgba(244,236,220,.2);background:rgba(255,255,255,.03);
+  color:var(--cream);font:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  padding:10px 14px;border-radius:999px;cursor:pointer;
+  display:flex;gap:8px;align-items:center;
+  transition:background .3s,border-color .3s,color .3s,transform .3s var(--ease);
+}
+nav button span{font-family:ui-monospace,Menlo,monospace;font-size:10px;opacity:.55}
+nav button:hover{border-color:var(--coral);transform:translateY(-2px)}
+nav button:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+nav button[aria-current="true"]{background:var(--coral);border-color:var(--coral);color:#1a0d08}
+nav button[aria-current="true"] span{opacity:.8}
+.hint{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;opacity:.7}
+@media (max-width:480px){nav button{padding:9px 11px;font-size:11px}nav button span{display:none}}
+@media (prefers-reduced-motion:reduce){
+  .cube{transition:transform .01s}
+  .floor{animation:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="mark">Atelier <i>Kestrel</i></div>
+  <div class="coord" id="coord">Room 01 / 06 · Threshold</div>
+</header>
+<main>
+  <div class="floor"></div>
+  <div class="stage" id="stage" tabindex="0" aria-label="Six-sided navigator. Use arrow keys or drag to turn.">
+    <div class="cube" id="cube">
+      <section class="face f0" aria-label="Threshold">
+        <div class="no">01 — THRESHOLD</div>
+        <div><h2>Every house<br>begins at<br>the door.</h2></div>
+        <p>We design rooms that slow you down. Step in, turn the block, and walk the six chambers of our practice.</p>
+        <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true"><rect x="25" y="10" width="50" height="90" fill="none" stroke="#f4ecdc" stroke-width="3"/><circle cx="66" cy="58" r="3" fill="#f4ecdc"/></svg>
+      </section>
+      <section class="face f1" aria-label="Light">
+        <div class="no">02 — LIGHT</div>
+        <div><h2>We draw<br>with the sun.</h2></div>
+        <p>Clerestories, slots, and wells placed by tracking the year's shadow across a model for twelve months.</p>
+        <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="18" fill="#1a0d08"/><g stroke="#1a0d08" stroke-width="3"><line x1="50" y1="6" x2="50" y2="22"/><line x1="50" y1="78" x2="50" y2="94"/><line x1="6" y1="50" x2="22" y2="50"/><line x1="78" y1="50" x2="94" y2="50"/></g></svg>
+      </section>
+      <section class="face f2" aria-label="Material">
+        <div class="no">03 — MATERIAL</div>
+        <div><h2>Lime, oak,<br>rammed earth.</h2></div>
+        <p>Materials chosen to age gracefully: walls that darken where hands rest, floors that remember footsteps.</p>
+        <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#141226" stroke-width="2.5"><path d="M5 30h90M5 50h90M5 70h90"/><path d="M30 30v20M65 50v20M45 70v20M20 10v20M80 10v20"/></g></svg>
+      </section>
+      <section class="face f3" aria-label="Garden">
+        <div class="no">04 — GARDEN</div>
+        <div><h2>The outside<br>is a room too.</h2></div>
+        <p>Courtyards planted before walls rise, so that the building grows around something already alive.</p>
+        <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 95V40M50 60c-20 0-28-14-28-28 16 0 28 10 28 28zM50 48c18 0 26-12 26-26-15 0-26 9-26 26z" fill="none" stroke="#0f1f15" stroke-width="3"/></svg>
+      </section>
+      <section class="face f4" aria-label="Sound">
+        <div class="no">05 — SOUND</div>
+        <div><h2>Quiet is<br>a material.</h2></div>
+        <p>We tune ceilings like instruments, so a whisper carries across a library and rain lands softly on a roof.</p>
+        <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#f4ecdc" stroke-width="3"><path d="M30 50a20 20 0 0 1 20-20"/><path d="M20 50a30 30 0 0 1 30-30"/><path d="M10 50a40 40 0 0 1 40-40"/></g></svg>
+      </section>
+      <section class="face f5" aria-label="Archive">
+        <div class="no">06 — ARCHIVE</div>
+        <div><h2>Forty years,<br>nineteen houses.</h2></div>
+        <p>Each one still lived in. Write to the studio at the end of the lane in Haverly; we answer every letter by hand.</p>
+        <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#ff6b4a" stroke-width="3"><rect x="15" y="20" width="70" height="60"/><path d="M15 20l35 30 35-30"/></g></svg>
+      </section>
+    </div>
+  </div>
+  <div class="hint">Drag · Arrow keys · Choose a room</div>
+</main>
+<nav id="nav" aria-label="Rooms">
+  <button data-i="0" aria-current="true"><span>01</span>Threshold</button>
+  <button data-i="1"><span>02</span>Light</button>
+  <button data-i="2"><span>03</span>Material</button>
+  <button data-i="3"><span>04</span>Garden</button>
+  <button data-i="4"><span>05</span>Sound</button>
+  <button data-i="5"><span>06</span>Archive</button>
+</nav>
+<script>
+(function(){
+  var cube=document.getElementById('cube'),stage=document.getElementById('stage');
+  var coord=document.getElementById('coord'),btns=[].slice.call(document.querySelectorAll('#nav button'));
+  var names=['Threshold','Light','Material','Garden','Sound','Archive'];
+  // target rotations to face each side front
+  var faces=[[0,0],[0,-90],[0,-180],[0,90],[-90,0],[90,0]];
+  var rx=-8,ry=12,cur=0;
+  function apply(){cube.style.transform='translateZ(calc(var(--s) / -2)) rotateX('+rx+'deg) rotateY('+ry+'deg)';}
+  function nearest(a,t){return t+Math.round((a-t)/360)*360;}
+  function go(i){
+    cur=i;
+    var t=faces[i];
+    rx=t[0]===0?-6:t[0]; // a slight tilt adds depth on side faces
+    ry=nearest(ry,t[1]+(t[0]===0?8:0));
+    apply();
+    btns.forEach(function(b,k){b.setAttribute('aria-current',k===i?'true':'false')});
+    coord.textContent='Room 0'+(i+1)+' / 06 · '+names[i];
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){go(+b.dataset.i)})});
+  // identify the face closest to the viewer from angles
+  function snap(){
+    var x=((rx%360)+360)%360, y=((ry%360)+360)%360;
+    if(x>45&&x<135){go(5);return}
+    if(x>225&&x<315){go(4);return}
+    var flip=(x>=135&&x<=225);
+    var yy=flip?(y+180)%360:y;
+    var idx=[0,3,2,1][Math.round(yy/90)%4];
+    if(flip){rx=0;}
+    go(idx);
+  }
+  var drag=null;
+  stage.addEventListener('pointerdown',function(e){
+    drag={x:e.clientX,y:e.clientY,rx:rx,ry:ry,moved:0};
+    stage.classList.add('dragging');stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener('pointermove',function(e){
+    if(!drag)return;
+    var dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    drag.moved=Math.abs(dx)+Math.abs(dy);
+    ry=drag.ry+dx*.45; rx=Math.max(-100,Math.min(100,drag.rx-dy*.45));
+    apply();
+  });
+  function end(){
+    if(!drag)return;
+    stage.classList.remove('dragging');
+    var moved=drag.moved;drag=null;
+    if(moved>6)snap();
+  }
+  stage.addEventListener('pointerup',end);
+  stage.addEventListener('pointercancel',end);
+  var order=[0,1,2,3];
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k==='ArrowLeft'){
+      var p=order.indexOf(cur); if(p<0)p=0;
+      var n=order[(p+(k==='ArrowRight'?1:3))%4];
+      e.preventDefault();go(n);
+    }else if(k==='ArrowUp'){e.preventDefault();go(cur===5?0:4);}
+    else if(k==='ArrowDown'){e.preventDefault();go(cur===4?0:5);}
+  });
+  go(0);
+})();
+</script>
+</body>
+</html>

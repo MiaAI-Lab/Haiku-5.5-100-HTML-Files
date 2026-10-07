@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flightpath: A Paper Plane's Afternoon</title>
+<style>
+:root{
+  --sky-top:#cfe3f1;
+  --sky-low:#fbe9dc;
+  --ink:#1d2b4a;
+  --ink-soft:#4b5a78;
+  --coral:#ef6a4c;
+  --mint:#7fc4b0;
+  --paper:#fffdf8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0}
+body{
+  color:var(--ink);
+  font-family:"Avenir Next","Avenir","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--sky-top) 0%,#e3eef5 40%,var(--sky-low) 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+.stage{position:fixed;inset:0;pointer-events:none;z-index:2}
+.stage svg{width:100%;height:100%;display:block}
+#route{fill:none;stroke:var(--ink);stroke-opacity:.22;stroke-width:1.4;stroke-dasharray:3 9;stroke-linecap:round}
+#trail{fill:none;stroke:var(--coral);stroke-width:2.4;stroke-linecap:round}
+.plane .top{fill:var(--paper)}
+.plane .under{fill:#dfe4ee}
+.plane .fold{stroke:var(--ink);stroke-width:1.1;fill:none;stroke-linejoin:round}
+.plane-shadow{fill:rgba(29,43,74,.12)}
+.ring{fill:none;stroke:var(--coral);stroke-width:1.5}
+.waypoint circle{fill:var(--paper);stroke:var(--ink);stroke-width:1.2;transition:fill .4s}
+.waypoint.hit circle{fill:var(--coral);stroke:var(--coral)}
+
+.clouds{position:fixed;inset:0;z-index:1;pointer-events:none}
+.cloud{position:absolute;border-radius:999px;background:#fff;opacity:.75;filter:blur(1px)}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:55%;height:160%;left:15%;bottom:20%}
+.cloud::after{width:40%;height:120%;right:12%;bottom:25%}
+
+main{position:relative;z-index:3}
+section{min-height:100vh;display:flex;align-items:center;padding:0 clamp(16px,6vw,96px)}
+section:nth-child(even){justify-content:flex-end}
+.card{
+  max-width:360px;padding:26px 26px 22px;background:rgba(255,253,248,.82);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border-radius:4px;box-shadow:0 1px 0 rgba(29,43,74,.08),0 24px 50px -24px rgba(29,43,74,.35);
+  position:relative;opacity:.0;transform:translateY(30px);
+  transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);
+}
+.card::before{content:"";position:absolute;top:0;right:0;width:26px;height:26px;background:linear-gradient(225deg,var(--sky-top) 50%,#e7e1d6 50%);border-bottom-left-radius:3px}
+.card.in{opacity:1;transform:none}
+.step{font:600 .72rem/1 "Avenir Next","Helvetica Neue",Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--coral)}
+.card h2{font-family:Georgia,"Iowan Old Style",serif;font-weight:normal;font-style:italic;font-size:clamp(1.7rem,4.4vw,2.4rem);margin:10px 0 10px;line-height:1.1}
+.card p{margin:0;color:var(--ink-soft);line-height:1.6;font-size:.98rem}
+.hero h1{font-family:Georgia,"Iowan Old Style",serif;font-weight:normal;font-size:clamp(2.6rem,10vw,6.4rem);line-height:.95;margin:0 0 18px;letter-spacing:-.02em}
+.hero h1 em{color:var(--coral)}
+.hero{flex-direction:column;align-items:flex-start;justify-content:center}
+.hero p{max-width:420px;color:var(--ink-soft);line-height:1.6;margin:0}
+.hint{margin-top:34px;display:flex;align-items:center;gap:12px;font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
+.hint i{display:block;width:1px;height:42px;background:linear-gradient(var(--ink),transparent);animation:drip 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}60%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+
+.hud{position:fixed;right:clamp(12px,3vw,32px);top:50%;transform:translateY(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;font:600 .66rem/1 ui-monospace,"SF Mono",Menlo,"Courier New",monospace;color:var(--ink-soft)}
+.gauge{width:4px;height:160px;background:rgba(29,43,74,.12);border-radius:4px;position:relative;overflow:hidden}
+.gauge b{position:absolute;left:0;right:0;top:0;height:0;background:var(--coral);border-radius:4px}
+.land{flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.land .card{margin:0 auto}
+button.again{
+  margin-top:20px;font:600 .8rem/1 "Avenir Next","Helvetica Neue",Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--paper);background:var(--ink);border:0;padding:14px 22px;border-radius:999px;cursor:pointer;
+  transition:transform .3s cubic-bezier(.3,1.6,.5,1),background .3s;
+}
+button.again:hover{transform:translateY(-3px) rotate(-2deg);background:var(--coral)}
+button.again:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+@media (max-width:600px){
+  section,section:nth-child(even){justify-content:center}
+  .hud{display:none}
+  .card{max-width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hint i{animation:none}
+  .card{transition:none;opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="clouds" id="clouds" aria-hidden="true"></div>
+<div class="stage" aria-hidden="true">
+  <svg id="sky" xmlns="http://www.w3.org/2000/svg">
+    <path id="route"/>
+    <path id="trail"/>
+    <g id="waypoints"></g>
+    <ellipse id="shadow" class="plane-shadow" rx="18" ry="4"/>
+    <g id="plane">
+      <g class="plane" transform="translate(-26,-14)">
+        <path class="under" d="M0 14 L52 14 L18 26 Z"/>
+        <path class="top" d="M0 14 L52 14 L6 0 Z"/>
+        <path class="fold" d="M0 14 L52 14 L6 0 Z M52 14 L18 26 L0 14 M18 14 L18 26"/>
+      </g>
+    </g>
+  </svg>
+</div>
+<main>
+  <section class="hero">
+    <h1>One sheet,<br><em>one afternoon.</em></h1>
+    <p>A sheet of Ledgerline notepaper, folded on a classroom windowsill, followed from the first crease to the last skid across the playground. Scroll, and it flies.</p>
+    <div class="hint"><i></i>Scroll to launch</div>
+  </section>
+  <section><div class="card"><span class="step">01 &middot; Fold</span><h2>Crease the nose</h2><p>Two diagonal folds to a sharp point, pressed flat with a thumbnail. The paper remembers every line you give it.</p></div></section>
+  <section><div class="card"><span class="step">02 &middot; Launch</span><h2>Out the window</h2><p>A flick of the wrist past the radiator and the open sash. For a heartbeat it hangs, nose up, deciding.</p></div></section>
+  <section><div class="card"><span class="step">03 &middot; Updraft</span><h2>Warm air off the bricks</h2><p>The south wall breathes heat into the sky. The plane climbs without trying, wings trembling like a held note.</p></div></section>
+  <section><div class="card"><span class="step">04 &middot; Loop</span><h2>The unplanned loop</h2><p>A gust from the gym roof turns it over once, completely. Nobody saw. It counts anyway.</p></div></section>
+  <section class="land"><div class="card"><span class="step">05 &middot; Landing</span><h2>Skid on the hopscotch</h2><p>It settles across square seven, a little damp, a little proud. Somewhere a bell rings for the end of the day.</p><button class="again" id="again" type="button">Fold another</button></div></section>
+</main>
+<div class="hud" aria-hidden="true"><span>ALT</span><div class="gauge"><b id="gauge"></b></div><span id="pct">000</span></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var svg = document.getElementById('sky');
+  var route = document.getElementById('route');
+  var trail = document.getElementById('trail');
+  var plane = document.getElementById('plane');
+  var shadow = document.getElementById('shadow');
+  var wpG = document.getElementById('waypoints');
+  var gauge = document.getElementById('gauge');
+  var pct = document.getElementById('pct');
+  var len = 0, W = 0, H = 0, target = 0, cur = 0, raf = null, wps = [];
+
+  // normalized flight points (x,y in 0..1 of viewport)
+  var ptsWide = [[.05,.8],[.18,.62],[.36,.7],[.55,.4],[.78,.25],[.86,.45],[.7,.55],[.62,.38],[.8,.3],[.5,.55],[.3,.72],[.55,.86],[.8,.85],[.92,.88]];
+  var ptsTall = [[.1,.94],[.3,.68],[.6,.74],[.82,.5],[.5,.3],[.2,.4],[.32,.56],[.5,.48],[.42,.38],[.7,.42],[.82,.62],[.5,.8],[.25,.86],[.6,.9],[.86,.93]];
+  var stops = [0,.2,.4,.6,.8,1];
+
+  function build(){
+    W = window.innerWidth; H = window.innerHeight;
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    var pts = (W/H < .9 ? ptsTall : ptsWide).map(function(p){return [p[0]*W,p[1]*H];});
+    var d = 'M'+pts[0][0]+' '+pts[0][1];
+    for (var i=0;i<pts.length-1;i++){
+      var p0=pts[i-1]||pts[i], p1=pts[i], p2=pts[i+1], p3=pts[i+2]||p2;
+      d += ' C'+(p1[0]+(p2[0]-p0[0])/6)+' '+(p1[1]+(p2[1]-p0[1])/6)+' '+(p2[0]-(p3[0]-p1[0])/6)+' '+(p2[1]-(p3[1]-p1[1])/6)+' '+p2[0]+' '+p2[1];
+    }
+    route.setAttribute('d',d); trail.setAttribute('d',d);
+    len = route.getTotalLength();
+    trail.style.strokeDasharray = len+' '+len;
+    wpG.innerHTML=''; wps=[];
+    stops.slice(1,-1).forEach(function(s){
+      var p = route.getPointAtLength(s*len);
+      var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('class','waypoint');
+      var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',p.x); c.setAttribute('cy',p.y); c.setAttribute('r',5);
+      g.appendChild(c); wpG.appendChild(g); wps.push({s:s,el:g});
+    });
+    render(cur);
+  }
+
+  function progress(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    return max>0 ? Math.min(1,Math.max(0,window.scrollY/max)) : 0;
+  }
+
+  function render(t){
+    var l = t*len;
+    var p = route.getPointAtLength(l);
+    var q = route.getPointAtLength(Math.min(len,l+2));
+    var b = route.getPointAtLength(Math.max(0,l-2));
+    var ang = Math.atan2(q.y-b.y,q.x-b.x)*180/Math.PI;
+    var flip = Math.abs(ang)>90 ? -1 : 1;
+    var bob = reduce ? 0 : Math.sin(performance.now()/380)*1.6;
+    plane.setAttribute('transform','translate('+p.x+','+(p.y+bob)+') rotate('+ang+') scale(1,'+flip+')');
+    shadow.setAttribute('cx',p.x+10); shadow.setAttribute('cy',Math.min(H-12,p.y+60+ (1-p.y/H)*40));
+    shadow.setAttribute('opacity', (0.3+0.7*(p.y/H)).toFixed(2));
+    trail.style.strokeDashoffset = (len - l);
+    gauge.style.height = (t*100)+'%';
+    pct.textContent = String(Math.round((1-p.y/H)*999)).padStart(3,'0');
+    wps.forEach(function(w){ w.el.classList.toggle('hit', t>=w.s-.001); });
+  }
+
+  function loop(){
+    cur += (target-cur)*(reduce?1:.09);
+    render(cur);
+    if (!reduce || Math.abs(target-cur)>.0005) raf = requestAnimationFrame(loop); else raf=null;
+  }
+  function onScroll(){
+    target = progress();
+    if(!raf) raf = requestAnimationFrame(loop);
+    parallax();
+  }
+
+  // clouds
+  var clouds = document.getElementById('clouds'), cl=[];
+  for (var i=0;i<7;i++){
+    var c=document.createElement('div'); c.className='cloud';
+    var w = 80+Math.random()*160;
+    c.style.width=w+'px'; c.style.height=(w*.32)+'px';
+    c.style.left=(Math.random()*100-10)+'%'; c.style.top=(Math.random()*100)+'%';
+    var depth=.2+Math.random()*.8; c.style.opacity=(.35+depth*.5).toFixed(2);
+    clouds.appendChild(c); cl.push({el:c,d:depth,top:parseFloat(c.style.top)});
+  }
+  function parallax(){
+    var y = window.scrollY;
+    cl.forEach(function(c){ c.el.style.transform='translate3d(0,'+(-(y*c.d*.25)%(window.innerHeight*1.4))+'px,0)'; });
+  }
+
+  // card reveals
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+  },{threshold:.35});
+  document.querySelectorAll('.card').forEach(function(c){ io.observe(c); });
+
+  document.getElementById('again').addEventListener('click', function(){
+    window.scrollTo({top:0,behavior: reduce?'auto':'smooth'});
+  });
+
+  window.addEventListener('scroll', onScroll, {passive:true});
+  var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt=setTimeout(build,120); });
+  build(); target = cur = progress(); onScroll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+Prompt
+
+035 typewriter-poem: typewriter reveal with a blinking caret, ambient background shifts per stanza.
+
+Build a single standalone HTML page, "Letters to the Weather", an original five-stanza poem typed live onto a sheet of paper fed through a fictional "Ondine Model 35" typewriter with a two-colour ribbon. The poem follows one day of weather as an exchange of letters: I Dawn (morning arrives like an unstamped letter), II Noon (the street reads it twice, a window throws its square of gold across the kitchen), III Squall (rain types fast on the roof), IV Dusk (evening edits what was said, the last bus carries off the verbs), V Night (the speaker answers in ink the colour of the dark and leaves it, unstamped, on the step).
+
+Typography: "American Typewriter" falling back to "Courier Prime"/"Courier New" for the title, byline and poem; Georgia italic for the stanza label and the closing signature; system-ui for the brand bar and control buttons. Ink #1f1d1a for the poem, ribbon red #b3312c for the title, Roman stanza numerals in the margin and the block caret.
+
+Ambient: five fixed full-screen gradient layers crossfade over 2.8s, one per stanza: Dawn (peach-to-coral with a warm glow rising from below), Noon (sky blue to butter with a pale sun bloom top-right), Squall (slate and dark teal with a cold glow), Dusk (indigo to plum to amber horizon), Night (deep navy radial). Each stanza also sets --fg (UI text colour, dark for the light skies and pale for the dark ones), --glow (a huge soft box-shadow halo around the paper) and --mote (colour of 16 slowly drifting blurred dust motes that rise and fade on randomized 9-19s loops). Colour and shadow changes are smoothed with CSS transitions.
+
+Layout: a slim top bar with the brand and five round Roman-numeral stanza buttons (the current one filled); a centered italic stanza label that cross-fades on change; a 640px paper sheet with faint fibre texture and a highlight, a dark glossy platen roller drawn across its top edge with a shadow falling onto the paper, title and byline, and the poem area; a signature line that rises in at the end ("Typed on an Ondine 35, ribbon half spent."). A fixed dark frosted pill toolbar at the bottom holds Pause/Resume (primary), Speed (steady, brisk, slow) and Begin again, plus a hint about hurrying.
+
+Typing engine: the poem is compiled into an op list (stanza start, line start, character, delete, end of line, pause, end). A setTimeout chain plays it with human timing: 46-98ms per key, extra after spaces, +230ms after commas and semicolons, +420ms after full stops, 520ms at each carriage return and 1.5s between stanzas, all scaled by the speed setting. A scripted typo ("kitchin") is typed, paused on, backspaced letter by letter and retyped correctly. Every character is its own span with randomized ink density (opacity 0.72-1) and a sub-pixel vertical offset, and lands with a quick blur-to-sharp strike animation. A red block caret follows the last character, holding solid while keys are struck and blinking with steps() while idle. A small red "ding" flashes at each line end. The page auto-scrolls to keep the caret in view. Clicking the paper or pressing Space hurries the current stanza to completion instantly. Stanza dots jump to any stanza (instantly typing everything before it). After the poem ends, an IntersectionObserver lets the ambient sky follow whichever stanza is centered as you scroll. Screen readers get the full poem text in a visually hidden element while the animated layer is aria-hidden. Reduced motion: the whole poem appears at once, motes are hidden, caret does not blink and transitions are instant.
+
+Title: Letters to the Weather
+
+Description: A warm, literary page that watches an original poem being typed onto paper one imperfect keystroke at a time, while the world behind the page changes with every stanza from dawn peach to noon blue, storm slate, dusk violet and finally night. Uneven ink, a solid caret that only blinks when the typist hesitates, pauses at punctuation, a carriage-return bell and a single corrected typo make it feel like a person at a machine, and the soft glowing halo around the sheet ties the paper to the shifting sky.
+
+Visual techniques:
+- Op-list typing engine with punctuation-aware, randomized keystroke timing and scripted backspace correction
+- Per-character spans with random ink opacity and baseline jitter, blur-to-sharp strike keyframes
+- Block caret that is solid while typing and blinks with steps() while idle
+- Five crossfading fixed gradient sky layers, stanza-driven custom properties for text, glow and mote colour
+- Transitioned large box-shadow halo around the paper, CSS-only platen roller with glossy gradient
+- Drifting dust motes using custom-property-randomized keyframe loops
+- IntersectionObserver ambient sync after completion, auto-scroll to keep the caret in view
+- Visually hidden full text for assistive technology, reduced-motion instant rendering
+
+Interaction model: The poem begins typing on its own. Click the paper or press Space to hurry the current stanza; use Pause/Resume to stop the keys, Speed to cycle between steady, brisk and slow, and Begin again to feed a fresh sheet. The Roman-numeral buttons at the top jump straight to any stanza, changing the sky and continuing to type from there. Once the poem is finished, scrolling up and down through the stanzas brings back each one's weather.

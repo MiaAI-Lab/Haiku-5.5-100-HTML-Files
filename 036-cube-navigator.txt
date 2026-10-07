@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page, "cube-navigator": a CSS 3D rotating cube used as site navigation, where the six faces are the six sections of a fictional architecture studio called Atelier Kestrel. Background: a deep ink-indigo radial gradient (#2a2552 at top fading to #141226 and #0b0a17), with a soft coral glow pooled under the cube that slowly breathes (scale and opacity, 7s loop). The cube is sized with a CSS variable --s = min(68vmin, 400px) so it fits a 375px phone; faces are positioned with rotateY/rotateX plus translateZ(--s/2) and the cube is pushed back by translateZ(-s/2) inside a 1400px perspective. Each face has its own palette: 01 Threshold (indigo), 02 Light (coral #ff6b4a gradient, dark text), 03 Material (cream #f4ecdc paper, ink text), 04 Garden (sage #9fc2a8 gradient), 05 Sound (violet, top face), 06 Archive (near-black, bottom face). Every face carries a small monospace index label, a large Didot / Bodoni / Georgia serif headline with tight leading, a short paragraph of studio philosophy in Avenir Next / Helvetica Neue, a large faint line-art SVG glyph bleeding off the bottom-right corner (door, sun, brick coursing, sprout, sound arcs, envelope), and a diagonal sheen overlay. Header: serif wordmark "Atelier Kestrel" with italic coral surname, and a monospace coordinate readout "Room 01 / 06 · Threshold" that updates. Below the cube, a row of pill buttons (number + room name); the active one fills coral. Motion: cube rotations use a 1.1s cubic-bezier(.7,-.02,.18,1.02) ease with a slight tilt so side faces show depth; rotations take the shortest path. Interaction: click a pill, use arrow keys (left/right cycles the four side rooms, up/down to the top and bottom rooms), or drag the cube freely with pointer events; on release it snaps to the nearest face. Reduced motion: transitions become instant and the glow stops breathing.
+
+Title: Six Rooms Cube
+
+Description: A dusky, architectural navigation piece in which a studio's six areas of practice live on the faces of a single floating cube. Each face is a distinct material swatch, from coral sunlight to cream plaster to sage garden, set with an elegant high-contrast serif and quiet monospace indices, so turning the cube feels like walking from room to room in a carefully built house.
+
+Visual techniques:
+- CSS 3D transforms with preserve-3d, perspective, translateZ and backface-visibility
+- Responsive cube size driven by a single CSS custom property using min() and vmin
+- Per-face gradient palettes with a diagonal sheen pseudo-element
+- Inline SVG line-art glyphs as oversized faint watermarks
+- Breathing radial-gradient glow under the object
+- Custom cubic-bezier easing with slight overshoot for rotations
+- Shortest-path angle math so the cube never spins the long way
+
+Interaction model:
+The visitor can click any of the six room pills, press the arrow keys, or grab the cube and drag it around. While dragging, the cube follows the pointer directly; on release it eases to the nearest face and updates the active pill and the header coordinate readout. Focus states are visible on all controls, and the cube itself is keyboard focusable.

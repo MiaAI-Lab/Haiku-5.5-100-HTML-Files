@@ -1,0 +1,24 @@
+Prompt:
+Build a single standalone HTML page titled "Kestrel Relay Control" that feels like a cassette-futurism control room from a 1970s/80s science-fiction film: an orbital relay backup deck for the fictional firm Kestrel Dynamics. Background is a near-black warm brown (#191714) with a soft radial lift at the top. All instruments sit on beige enamel faceplates (#d8cdb4 to #c7b99b vertical gradient) with a light top bevel, dark bottom bevel, deep drop shadow, and two CSS-drawn screw heads in the top corners. Accent colors: burnt orange #e2662b, olive #6f7a3c, amber phosphor #ffb23e, teal #3f8f8a, alarm red #d8392b. Typography: "Helvetica Neue"/"Arial Narrow"/Arial heavy uppercase for the brand header, "Courier New"/ui-monospace for every label, readout and log line, letter-spaced 0.12 to 0.22em.
+
+Layout: a header row with the brand plate (title with "Relay" in orange, a monospace subtitle and four skewed racing stripes in orange, amber, olive, teal) next to a black amber-glowing "Mission elapsed" clock counting DDD:HH:MM:SS. Below, a 12-column grid: tuning bank of three SVG rotary dials (FREQ, GAIN, DRIFT) with tick rings, cream skirt, knurled dark cap and orange pointer, each with an amber value chip; a carrier oscilloscope in a black bezel with rounded CRT screen, amber graticule, scanlines and vignette, drawn on a DPR-aware canvas with phosphor persistence; two analog VU meters in SVG on cream faces with a red overload arc and spring-physics needles; an 8x5 lamp matrix of glowing indicator bulbs; four chunky toggle switches (PWR BUS, COOLANT, UPLINK, ALARM) with chrome levers, springy overshoot and status LEDs; and a full-width operations teletype log with blinking block cursor beside a mechanical split-flap-style tape counter. On tablets the dials, scope and meters go full width; on phones everything stacks.
+
+Motion: oscilloscope sine trace whose frequency, amplitude and wobble follow the dials, with a second teal trace when uplink is on; meter needles chase the gain with damped spring physics and drift-based jitter; the lamp matrix scans diagonal patterns at a rate set by DRIFT; the tape counter rolls while powered; alarm makes every faceplate flash a red outline and floods the lamp bank red in alternating checkerboard. Power off dims the scope and lamps and drops the needles. Reduced motion slows the scope, removes jitter, slows lamp scanning and stops flashing.
+
+Title: Kestrel Relay Control
+
+Description: A tactile cassette-futurism control deck where beige enamel faceplates, amber phosphor screens and chunky toggles make a fictional orbital relay feel physically present. Every instrument is connected: turning the dials reshapes the oscilloscope trace, pushes the VU needles, and changes the rhythm of the lamp matrix, while the master switches change the whole room's state and leave a timestamped trail in the teletype log.
+
+Visual techniques:
+- Layered inset box-shadows for enamel bevels and CSS radial-gradient screw heads
+- Inline SVG rotary dials generated in JavaScript with shared gradient defs and CSS-rotated knob groups
+- SVG VU meters with tick scales, overload arc and spring-damped needle rotation
+- DPR-aware canvas oscilloscope with translucent clearing for phosphor persistence and shadowBlur glow
+- CRT treatment from repeating-linear-gradient scanlines, graticule background grid and radial vignette
+- Radial-gradient lamp bulbs with colored glow via a per-lamp CSS custom property
+- Toggle levers with overshooting cubic-bezier transitions and glowing LEDs tied to aria-pressed
+- Stepped keyframe alarm flashing across all panels and a blinking teletype cursor
+- prefers-reduced-motion branch that slows or stops all motion
+
+Interaction model:
+Drag any dial up or down (or use the mouse wheel, or focus it and use the arrow keys, holding Shift for bigger steps) to set frequency, gain and drift; the scope, meters, readouts and lamp scan respond immediately and the log records the new setting. Click the toggle switches to cut main power, take coolant offline (raising drift noise), open a dual-trace uplink, or raise the master alarm. All controls are keyboard-focusable with visible focus states.

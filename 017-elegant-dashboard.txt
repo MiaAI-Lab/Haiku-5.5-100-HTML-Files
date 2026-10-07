@@ -1,0 +1,33 @@
+PROMPT
+
+Concept 017 elegant-dashboard: dark dashboard with fictional metrics, inline SVG animated charts, glass tiles.
+
+Build a standalone HTML page titled "Steep: Kettle & Kite Atelier Overview", an analytics dashboard for an invented tea-subscription atelier called Kettle & Kite. Background is near-black navy (#07090f) with a fixed, slowly drifting aura of blurred radial gradients in teal (#5eead4), violet (#a78bfa) and amber (#fbbf24). All panels are frosted glass tiles: rgba(255,255,255,.045) fill, 1px rgba(255,255,255,.09) border, 20px radius, backdrop-filter blur(18px) saturate(140%), and a 260px radial spotlight that follows the pointer inside each tile. Rose (#fb7185) is reserved for negative signals.
+
+Type: system-ui / -apple-system / "Segoe UI" for interface text; ui-rounded / "SF Pro Rounded" with tabular numerals for figures. Small uppercase tracked labels for tile headings.
+
+Layout: a 72px icon rail on the left (conic-gradient logo, four stroke-icon buttons, hidden on phones), then a header with a time-aware greeting ("Good evening, Ines"), the title "Kettle & Kite Atelier overview" with a teal-to-violet gradient on the second half, and a segmented 7D / 30D / 90D control with a sliding teal pill. A 12-column grid holds: four KPI tiles (Revenue in euros, Active steepers, Cup rating in stars, Churn %) each with a count-up value, a coloured delta pill (rose when the change is bad, and for churn a decrease counts as good) and a sparkline; a wide "Revenue flow" smoothed line/area chart with a gradient stroke, y-axis euro labels, date ticks, and a hover crosshair, ringed dot and glass tooltip; a "Channel mix" donut (Subscription, Gift boxes, Café wholesale, Workshops) built from four pathLength=100 circles with small gaps, a centre readout, and a legend that highlights segments on hover or focus; a "Cups brewed by hour" bar chart of twelve two-hour windows with a morning and afternoon peak, bars growing from the baseline with staggered delays; a "Brew precision" semicircle gauge with a teal-to-amber gradient arc; and a "Live atelier" activity feed with glowing dots that receives a new invented event every seven seconds. Columns collapse to 2-up at tablet and 1-up on phones.
+
+Data: generated from a seeded mulberry32 PRNG per range so each range is stable. The line chart always has 40 points; switching ranges morphs the old series into the new one over 800ms with ease-out cubic, while KPIs count up, donut segments animate their dash arrays and offsets, bars rescale and the gauge sweeps.
+
+Loading state: every tile starts as a shimmering skeleton for about 700ms, then tiles reveal in a 70ms stagger and the line chart draws itself in with stroke-dashoffset.
+
+Reduced motion: all transitions and animations collapse to instant; values are set directly.
+
+Title: Kettle and Kite Atelier
+
+Description: A premium dark analytics dashboard for a fictional tea-subscription studio. Glass tiles float over a slow aurora of teal, violet and amber light, each with a pointer-following spotlight. The page opens on shimmering skeletons that resolve into count-up KPIs with sparklines, a self-drawing revenue curve with a precise crosshair tooltip, a gapped donut of sales channels, growing hourly bars, a precision gauge and a live feed of small atelier events. Every chart is hand-built inline SVG, and changing the date range makes the whole board morph smoothly to the new numbers.
+
+Visual techniques:
+- Glassmorphism tiles with backdrop-filter and a cursor-tracked radial spotlight
+- Blurred, drifting multi-radial-gradient aura background
+- Catmull-Rom to cubic Bezier smoothing for the line chart, with gradient stroke and area fill
+- JavaScript-tweened morph between data series and count-up numerals with tabular figures
+- Donut segments from pathLength-normalised circles with animated stroke-dasharray and stroke-dashoffset
+- SVG bars scaled with CSS transform (transform-box: fill-box) and staggered transition delays
+- Gradient semicircle gauge driven by stroke-dasharray
+- Skeleton shimmer loading state and staggered tile reveal
+- Sliding pill segmented control
+- Seeded PRNG data generation for stable fictional metrics
+
+Interaction model: Pick 7D, 30D or 90D in the segmented control to morph every metric and chart to that range. Hover or tap along the revenue chart to read the value and date at any point via the crosshair and tooltip. Hover or keyboard-focus a donut segment or legend row to isolate that channel and show its share in the centre. Hover bars for their native tooltips, and watch the live feed add a new event every few seconds.

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prismata Founders' Foil</title>
+<style>
+:root{
+  --bg:#07060d;--ink:#ece8ff;--muted:#8d86ad;--gold:#e8c987;--line:rgba(236,232,255,.12);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --sans:"Avenir Next","Futura","Century Gothic","Helvetica Neue",Arial,sans-serif;
+  --plate:"Copperplate","Copperplate Gothic Light","Palatino Linotype",Palatino,Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{
+  min-height:100vh;color:var(--ink);font-family:var(--sans);overflow-x:hidden;
+  background:
+    radial-gradient(1px 1px at 12% 22%,#fff8,transparent),radial-gradient(1px 1px at 78% 14%,#fff6,transparent),
+    radial-gradient(1.5px 1.5px at 64% 72%,#fff5,transparent),radial-gradient(1px 1px at 32% 84%,#fff5,transparent),
+    radial-gradient(1px 1px at 90% 58%,#fff6,transparent),radial-gradient(1px 1px at 44% 8%,#fff4,transparent),
+    radial-gradient(ellipse 60% 50% at 70% 50%,rgba(98,64,190,.28),transparent 70%),
+    radial-gradient(ellipse 50% 40% at 20% 90%,rgba(30,150,170,.16),transparent 70%),var(--bg);
+}
+.page{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:clamp(24px,5vw,72px);
+  max-width:1180px;margin:0 auto;min-height:100vh;padding:clamp(24px,5vw,64px) clamp(16px,4vw,48px)}
+.copy .kicker{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted)}
+.copy h1{font-family:var(--plate);font-weight:400;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:.02em;margin:.35em 0 .4em;
+  background:linear-gradient(100deg,#ffd6e8,#d8c4ff 30%,#b6f0ff 55%,#fff3c4 80%,#ffd6e8);background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:hue 9s linear infinite}
+@keyframes hue{to{background-position:200% 0}}
+.copy p{color:#c3bddc;line-height:1.7;max-width:40ch;font-size:16px}
+.modes{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.modes button,.flip-btn{font:inherit;font-size:13px;letter-spacing:.08em;color:var(--ink);cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:999px;padding:9px 18px;
+  transition:background .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease)}
+.modes button:hover,.flip-btn:hover{border-color:rgba(236,232,255,.35);transform:translateY(-1px)}
+.modes button[aria-pressed="true"]{background:linear-gradient(100deg,rgba(255,170,210,.25),rgba(170,150,255,.25),rgba(130,230,255,.25));border-color:rgba(236,232,255,.5)}
+button:focus-visible,.card:focus-visible{outline:2px solid #b6f0ff;outline-offset:4px}
+.readout{display:flex;gap:28px;margin-top:30px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.readout b{display:block;font-family:var(--plate);font-weight:400;font-size:24px;letter-spacing:.04em;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums}
+.stage{display:grid;place-items:center;perspective:1100px;padding:20px 0 40px;touch-action:pan-y;position:relative}
+.shadow{position:absolute;left:0;right:0;margin:0 auto;bottom:6px;width:min(300px,62vw);height:34px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(110,80,220,.55),transparent);filter:blur(10px);
+  transform:translateX(calc(var(--ry,0) * -1.4px)) scaleX(calc(1 - var(--hyp,0) * .15))}
+.card{
+  --rx:0;--ry:0;--mx:50%;--my:50%;--hyp:0;--fl:0;
+  width:min(340px,78vw);aspect-ratio:63/88;position:relative;transform-style:preserve-3d;cursor:pointer;border-radius:4.6%/3.3%;
+  transform:rotateX(calc(var(--rx) * 1deg)) rotateY(calc((var(--ry) + var(--fl)) * 1deg));
+  container-type:inline-size;
+}
+.face{position:absolute;inset:0;border-radius:inherit;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;isolation:isolate;
+  box-shadow:0 0 0 1px rgba(255,255,255,.12),0 30px 60px -20px rgba(0,0,0,.8)}
+.front{background:linear-gradient(150deg,#d9c48a,#8c6d34 30%,#e8d49c 55%,#7a5c2a 80%,#cdb377);padding:3.4%}
+.inner{position:relative;height:100%;border-radius:3.2%/2.3%;background:linear-gradient(165deg,#2b2350,#14102a 60%,#0d1a2c);
+  display:flex;flex-direction:column;padding:4.5% 5%;gap:2.6%}
+.titlebar{display:flex;justify-content:space-between;align-items:center}
+.name{font-family:var(--plate);font-size:18px;font-size:7.4cqw;letter-spacing:.06em;color:#f6efda}
+.gems{display:flex;gap:1.6cqw}
+.gems i{width:12px;height:12px;width:4.2cqw;height:4.2cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#b59cff 40%,#4a2f9a);box-shadow:0 0 6px rgba(181,156,255,.8)}
+.art{position:relative;aspect-ratio:4/3;border-radius:2.4%;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(232,201,135,.6),0 0 0 2px rgba(0,0,0,.5)}
+.art svg{width:100%;height:100%;display:block}
+.typeline{display:flex;justify-content:space-between;font-size:10px;font-size:3.6cqw;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+  border-top:1px solid rgba(232,201,135,.35);border-bottom:1px solid rgba(232,201,135,.35);padding:1.4cqw 0}
+.text{flex:1;font-size:11px;font-size:3.9cqw;line-height:1.45;color:#d9d3f2}
+.text b{color:#fff;font-weight:600}
+.text em{display:block;margin-top:2.2cqw;color:#a79fcf;font-family:Georgia,serif}
+.stats{display:flex;justify-content:space-between;align-items:flex-end;font-size:8px;font-size:2.9cqw;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.stats .s{display:flex;gap:3cqw}
+.stats .s span b{display:block;font-family:var(--plate);font-size:15px;font-size:6cqw;color:#fff;letter-spacing:0}
+.back{transform:rotateY(180deg);background:
+  repeating-conic-gradient(from 0deg at 50% 50%,#1a1240 0deg 7.5deg,#120c30 7.5deg 15deg);
+  display:grid;place-items:center}
+.back::before{content:"";position:absolute;inset:4%;border-radius:3.5%/2.5%;border:1px solid rgba(232,201,135,.55);box-shadow:inset 0 0 0 4px rgba(13,9,34,.9),inset 0 0 0 5px rgba(232,201,135,.3)}
+.back svg{width:62%;position:relative}
+.back p{position:absolute;bottom:11%;font-family:var(--plate);letter-spacing:.5em;font-size:12px;font-size:4.4cqw;color:var(--gold);padding-left:.5em}
+.foil,.glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+.foil{
+  mix-blend-mode:color-dodge;opacity:calc(.32 + var(--hyp) * .7);filter:brightness(.62) contrast(1.6) saturate(1.25);
+  --rainbow:repeating-linear-gradient(112deg,hsl(2 90% 62%) 0%,hsl(45 95% 60%) 4%,hsl(110 80% 58%) 8%,hsl(185 90% 60%) 12%,hsl(235 85% 66%) 16%,hsl(300 85% 64%) 20%,hsl(362 90% 62%) 24%);
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.45) 0 1px,transparent 1px 5px),var(--rainbow);
+  background-size:100% 100%,400% 400%;
+  background-position:0 0,calc(var(--mx) * 1.6) calc(var(--my) * 1.6);
+  transition:opacity .4s var(--ease);
+}
+[data-foil="cosmos"] .foil{
+  background-image:
+    radial-gradient(circle at 30% 40%,#fff 0 .8px,transparent 1.6px),
+    radial-gradient(circle at 70% 20%,#fff 0 .6px,transparent 1.4px),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.7) 0 1.2px,transparent 2.4px),
+    var(--rainbow);
+  background-size:23px 29px,37px 31px,61px 53px,400% 400%;
+  background-position:calc(var(--mx) * -.2) calc(var(--my) * -.2),calc(var(--mx) * .3) calc(var(--my) * .25),0 0,calc(var(--mx) * 1.6) calc(var(--my) * 1.6);
+}
+[data-foil="etched"] .foil{
+  background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.55) 0 1.5px,transparent 1.5px 4px),repeating-linear-gradient(-45deg,rgba(0,0,0,.55) 0 1.5px,transparent 1.5px 4px),var(--rainbow);
+  background-size:100% 100%,100% 100%,300% 300%;
+  background-position:0 0,0 0,calc(var(--mx) * 1.3) calc(var(--my) * 1.3);
+  filter:brightness(.75) contrast(1.8) saturate(1.4);
+}
+.glare{mix-blend-mode:overlay;opacity:calc(.35 + var(--hyp) * .6);
+  background:radial-gradient(farthest-corner circle at var(--mx) var(--my),rgba(255,255,255,.85) 0%,rgba(255,255,255,.25) 22%,rgba(0,0,0,.45) 90%)}
+.sweep{position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:soft-light;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.9) 50%,transparent 65%);background-size:300% 100%;background-position:120% 0;opacity:0}
+.intro .front .sweep{animation:sweep 1.6s var(--ease) .9s}
+@keyframes sweep{0%{opacity:1;background-position:120% 0}100%{opacity:1;background-position:-30% 0}}
+.hint{margin-top:22px;font-size:12px;color:var(--muted);letter-spacing:.08em}
+@media (max-width:820px){
+  .page{grid-template-columns:1fr;min-height:0}
+  .stage{order:-1;padding-top:8px}
+  .copy{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  .copy h1{animation:none}
+  .intro .front .sweep{animation:none}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="copy">
+    <span class="kicker">Prismata · Series III · Founders' Foil</span>
+    <h1>Aurelith, Prism Warden</h1>
+    <p>One of only one hundred and eighty founders' cards, laid over a three-layer foil that breaks light into seven bands and puts every one of them to work. Tilt it toward the window and watch the warden decide which color to let through.</p>
+    <div class="modes" role="group" aria-label="Foil pattern">
+      <button type="button" data-mode="prism" aria-pressed="true">Prism</button>
+      <button type="button" data-mode="cosmos" aria-pressed="false">Cosmos</button>
+      <button type="button" data-mode="etched" aria-pressed="false">Etched</button>
+      <button type="button" class="flip-btn" id="flipBtn">Flip card</button>
+    </div>
+    <div class="readout" aria-live="off">
+      <div>Tilt<b id="tilt">0°</b></div>
+      <div>Sheen<b id="sheen">0%</b></div>
+      <div>Band<b id="band">Violet</b></div>
+    </div>
+    <p class="hint">Move across the card to tilt it. Tap or press Enter to flip it. With the card focused, the arrow keys lean it.</p>
+  </section>
+  <section class="stage" id="stage" data-foil="prism">
+    <div class="shadow" id="shadow"></div>
+    <div class="card intro" id="card" tabindex="0" role="button" aria-label="Aurelith, Prism Warden holographic card. Press Enter to flip.">
+      <div class="face front">
+        <div class="inner">
+          <div class="titlebar"><span class="name">Aurelith</span><span class="gems" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="art">
+            <svg viewBox="0 0 200 150" aria-hidden="true">
+              <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b3291"/><stop offset=".6" stop-color="#2a4f86"/><stop offset="1" stop-color="#173049"/></linearGradient>
+                <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe9b8" stop-opacity=".9"/><stop offset=".4" stop-color="#c8a8ff" stop-opacity=".35"/><stop offset="1" stop-color="#c8a8ff" stop-opacity="0"/></radialGradient>
+                <linearGradient id="shardA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3e8ff"/><stop offset="1" stop-color="#8f74e0"/></linearGradient>
+                <linearGradient id="shardB" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9fbff"/><stop offset="1" stop-color="#3d8fb8"/></linearGradient>
+              </defs>
+              <rect width="200" height="150" fill="url(#sky)"/>
+              <circle cx="100" cy="72" r="66" fill="url(#halo)"/>
+              <g fill="none" stroke="#f1dca8" stroke-opacity=".45" stroke-width=".7">
+                <circle cx="100" cy="74" r="52"/><circle cx="100" cy="74" r="40" stroke-dasharray="2 3"/><circle cx="100" cy="74" r="62" stroke-opacity=".2"/>
+              </g>
+              <g fill="#fff"><circle cx="22" cy="20" r=".9"/><circle cx="170" cy="30" r="1.2"/><circle cx="150" cy="12" r=".7"/><circle cx="36" cy="58" r=".7"/><circle cx="182" cy="70" r=".8"/><circle cx="60" cy="14" r="1"/></g>
+              <path d="M0 150 L0 122 L26 106 L44 118 L70 98 L92 120 L118 104 L140 118 L166 96 L200 116 L200 150Z" fill="#101c33"/>
+              <path d="M0 150 L0 134 L34 124 L62 136 L96 126 L130 138 L160 126 L200 136 L200 150Z" fill="#0a1222"/>
+              <g stroke="#fff" stroke-opacity=".7" stroke-width=".6" stroke-linejoin="round">
+                <polygon points="88,64 30,42 46,78 84,88" fill="url(#shardA)"/>
+                <polygon points="112,64 170,42 154,78 116,88" fill="url(#shardA)"/>
+                <polygon points="86,92 40,104 66,120 94,104" fill="url(#shardB)"/>
+                <polygon points="114,92 160,104 134,120 106,104" fill="url(#shardB)"/>
+                <polygon points="100,86 113,108 100,134 87,108" fill="url(#shardB)"/>
+                <polygon points="100,34 116,60 100,88 84,60" fill="url(#shardA)"/>
+                <polygon points="100,34 116,60 100,60" fill="#fff" fill-opacity=".35"/>
+                <polygon points="30,42 46,78 60,62" fill="#fff" fill-opacity=".25"/>
+                <polygon points="170,42 154,78 140,62" fill="#fff" fill-opacity=".25"/>
+              </g>
+              <circle cx="94" cy="60" r="2.2" fill="#ffcf6b"/><circle cx="106" cy="60" r="2.2" fill="#ffcf6b"/>
+              <path d="M100 18 L102 26 L110 28 L102 30 L100 38 L98 30 L90 28 L98 26Z" fill="#fff6d6"/>
+            </svg>
+          </div>
+          <div class="typeline"><span>Celestial Warden</span><span>✦ Founder</span></div>
+          <div class="text"><b>Refraction.</b> When light strikes Aurelith, split it seven ways. Each band guards a different door, and only the warden knows which one is open.<em>"It does not shine. It sorts."</em></div>
+          <div class="stats">
+            <div class="s"><span>Ward<b>9</b></span><span>Lumen<b>12</b></span><span>Reach<b>4</b></span></div>
+            <span>042 / 180<br>Illus. I. Calloway</span>
+          </div>
+        </div>
+        <div class="foil"></div><div class="glare"></div><div class="sweep"></div>
+      </div>
+      <div class="face back">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="none" stroke="#e8c987" stroke-width=".8">
+            <circle cx="50" cy="50" r="46" stroke-opacity=".5"/><circle cx="50" cy="50" r="38" stroke-dasharray="1.5 2.5"/>
+            <polygon points="50,6 60,40 94,50 60,60 50,94 40,60 6,50 40,40"/>
+            <polygon points="50,20 56,44 80,50 56,56 50,80 44,56 20,50 44,44" fill="#e8c987" fill-opacity=".18"/>
+          </g>
+          <circle cx="50" cy="50" r="6" fill="#e8c987"/>
+        </svg>
+        <p>PRISMATA</p>
+        <div class="foil"></div><div class="glare"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function(){
+"use strict";
+const card=document.getElementById('card'),stage=document.getElementById('stage'),shadow=document.getElementById('shadow');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+const tiltEl=document.getElementById('tilt'),sheenEl=document.getElementById('sheen'),bandEl=document.getElementById('band');
+const BANDS=['Red','Amber','Green','Cyan','Blue','Violet','Rose'];
+const S={rx:0,ry:0,mx:50,my:50},V={rx:0,ry:0,mx:0,my:0},T={rx:0,ry:0,mx:50,my:50};
+let active=false,lastMove=0,flipped=false,keyX=0,keyY=0;
+function setTarget(px,py){
+  const amp=reduce.matches?.5:1;
+  T.ry=(px-.5)*30*amp;T.rx=(.5-py)*26*amp;T.mx=px*100;T.my=py*100;
+}
+stage.addEventListener('pointermove',e=>{
+  const b=card.getBoundingClientRect();
+  const px=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),py=Math.max(0,Math.min(1,(e.clientY-b.top)/b.height));
+  active=true;lastMove=performance.now();setTarget(px,py);
+});
+stage.addEventListener('pointerleave',()=>{active=false;T.rx=0;T.ry=0;T.mx=50;T.my=50;});
+let fl=0,flV=0;
+function flip(){flipped=!flipped;if(reduce.matches){fl=flipped?180:0;flV=0;}}
+card.addEventListener('click',flip);
+document.getElementById('flipBtn').addEventListener('click',flip);
+card.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();return;}
+  const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+  if(m){e.preventDefault();keyX=Math.max(-1,Math.min(1,keyX+m[0]*.25));keyY=Math.max(-1,Math.min(1,keyY+m[1]*.25));
+    active=true;lastMove=performance.now();setTarget(.5+keyX*.5,.5+keyY*.5);}
+});
+card.addEventListener('blur',()=>{keyX=keyY=0;});
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{
+  stage.dataset.foil=b.dataset.mode;
+  document.querySelectorAll('[data-mode]').forEach(o=>o.setAttribute('aria-pressed',String(o===b)));
+}));
+let last=performance.now(),acc=0;
+function frame(t){
+  const dt=Math.min(.04,(t-last)/1000);last=t;
+  if(!active&&!reduce.matches&&t-lastMove>1800){
+    const s=t/1000;T.ry=Math.sin(s*.6)*9;T.rx=Math.cos(s*.45)*6;T.mx=50+Math.sin(s*.6)*30;T.my=50-Math.cos(s*.45)*24;
+  }
+  const k=reduce.matches?260:140,damp=Math.exp(-(reduce.matches?30:15)*dt);
+  for(const key in S){V[key]+=(T[key]-S[key])*k*dt;V[key]*=damp;S[key]+=V[key]*dt;}
+  flV+=((flipped?180:0)-fl)*90*dt;flV*=Math.exp(-11*dt);fl+=flV*dt;
+  card.style.setProperty('--fl',fl.toFixed(2));
+  const hyp=Math.min(1,Math.hypot(S.mx-50,S.my-50)/50);
+  card.style.setProperty('--rx',S.rx.toFixed(2));card.style.setProperty('--ry',S.ry.toFixed(2));
+  card.style.setProperty('--mx',S.mx.toFixed(2)+'%');card.style.setProperty('--my',S.my.toFixed(2)+'%');
+  card.style.setProperty('--hyp',hyp.toFixed(3));
+  shadow.style.setProperty('--ry',S.ry.toFixed(2));shadow.style.setProperty('--hyp',hyp.toFixed(3));
+  acc+=dt;if(acc>.1){acc=0;
+    tiltEl.textContent=Math.round(Math.hypot(S.rx,S.ry))+'°';
+    sheenEl.textContent=Math.round((.32+hyp*.68)*100)+'%';
+    bandEl.textContent=BANDS[Math.min(6,Math.floor(((S.mx*1.6+S.my*.6)/22)%7))];
+  }
+  requestAnimationFrame(frame);
+}
+if(!reduce.matches){fl=180;flipped=true;setTimeout(flip,500);}
+setTimeout(()=>card.classList.remove('intro'),3000);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+PROMPT
+
+Build "090 art-deco-travel-poster": an art deco travel poster for the fictional steamship company "Azure Meridian Line", with sunburst rays, gold, and hover effects on the lettering. It hangs like a framed print in a booking hall, beside a set of ticket-style destination selectors. Standalone and offline.
+
+Palette: a dark wall #0b0d14 with faint gold vertical pinstripes; gold leaf #c9a24b with a gilt gradient (#f7e3a1, #c9a24b, #7d5f22); cream #f3e6c4. The poster colours are CSS variables that switch per destination:
+- Port Solenne: night-blue sky #10203a into coral #e46f4f into peach #f6d7a6; sun #fff1c9 to #f2a541; sea #13304f to #08121f; land #1a1430; accent coral.
+- Isle Verrine: #0c2627, jade #3fa38f, pale #e8f0c8; sun #fffbe0 to #e3c35a; sea #0f4a4a to #061d1c; accent jade.
+- Cap Doré: #1d1236, orchid #9b4d8a, apricot #f7c59f; sun #fff0d0 to #e9a23b; sea #2a1a48 to #120a22; accent #c25b8a.
+Gradient stops and fills read the variables through CSS classes and style properties (not presentation attributes), so the whole scene re-tints at once.
+
+Type: the condensed sans "Avenir Next Condensed" / "Arial Narrow" / "Franklin Gothic Medium" / Arial in heavy uppercase for the two-line poster title and the section heading. Copperplate / "Copperplate Gothic Light" / Optima for spaced small-caps labels. Georgia italic for the taglines and body text. Poster text is sized in container query units (cqw) with px fallbacks, so it scales with the poster.
+
+Layout: on desktop a two-column hall: a 2:3 poster (max 560px) with a gilt hairline and a deep drop shadow, and beside it a "Choose your passage" column with three ticket buttons (with punched notches, a perforated dashed stub showing the sailing days, and a conic-gradient swatch). On mobile they stack. Poster composition (SVG viewBox 600x900): a vertical sky gradient; 18 rotating sunburst wedges clipped above the horizon; a half-sunk sun with deco stripes cut out by a mask; a stepped deco skyline on the right; a striped lighthouse on the left with a sweeping light-beam gradient; the sea with gilt reflection bars that shrink with distance; six drifting dashed gold wave lines; a three-funnel ocean liner sailing slowly back and forth; a dark bottom band with a gold rule; a double gold frame with quarter-circle fan ornaments in each corner. HTML overlays: the line name, the giant two-line title, an italic tagline, and a footer with the sailing day, the classes of travel, and a circular gold seal showing "N days to the sun".
+
+Motion: the sunburst rotates slowly (140s), the beam sweeps (7s alternate), the ship sails (46s ease-in-out alternate), the waves flow with dashoffset at staggered speeds, and a diagonal gilt sheen sweeps across the poster on hover. Pointer parallax moves the rays, sun, land and ship layers at different depths. When a destination is chosen, the title letters rise one by one (45ms stagger, blur-to-sharp).
+
+Hover type effect: the hovered title letter lifts, scales slightly and becomes gold leaf (a gradient clipped to the text), and its neighbours lift a little, with springy cubic-bezier easing.
+
+Title: Azure Meridian Posters
+
+Description: A gilded 1930s booking-hall poster brought to life. Sunburst rays turn slowly behind a striped deco sun, a lighthouse beam sweeps the harbour, and a three-funnel liner crosses a sea of gold reflection bars, all inside a double gold frame with fan corners. The heavy condensed title turns to gold leaf letter by letter under the pointer. Ticket stubs beside the poster repaint it for three fictional ports, each with its own sky, sea and sailing schedule.
+
+Visual techniques:
+- Inline SVG scene with gradients, a mask (striped sun), a clipPath (rays above the horizon) and script-generated wedges, waves, reflection bars and corner fans
+- CSS-variable driven gradient stops so the entire palette switches per destination
+- CSS keyframe motion: rotating sunburst, sweeping beam, sailing ship, dashoffset waves
+- Layered pointer parallax using CSS transforms on SVG groups
+- Per-letter spans with gold background-clip:text hover, neighbour easing, staggered entrance
+- Container query units for typography that scales with the poster; a diagonal sheen pseudo-element on hover
+- Ticket buttons with punched-notch pseudo-elements, a dashed perforation and conic-gradient swatches
+
+Interaction model: Hover or drag across the title to gild the letters one at a time. Move over the poster to see the layers shift in parallax and the gilt sheen sweep across. Click or tab to a ticket (Port Solenne, Isle Verrine, Cap Doré) to repaint the poster, retitle it with a staggered letter rise, and update the tagline, schedule and days-to-the-sun seal. Reduced motion stops the rays, beam, ship, waves, parallax and entrance animations, leaving a still, fully styled poster that still responds to hover and selection.

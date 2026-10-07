@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page, "analog-synth-panel": a skeuomorphic synthesizer faceplate for a fictional instrument, the Marrow Instruments MX-4 Chromatone, where the knobs recolor the panel itself. Page backdrop: dark warm charcoal (#1a1714) with a soft radial vignette; above the rig, a small Futura / Century Gothic letter-spaced kicker and an italic Georgia line of copy. The rig is a three-column grid: walnut end cheeks built from layered repeating-linear-gradients (dark grain lines over a #5b2f17 to #7a4322 gradient) and a central faceplate whose color comes from CSS custom properties --h, --s, --l (hsl), finished with fine vertical brushed-metal hairlines, a light top-to-bottom sheen, and four Phillips screws drawn with radial gradients. Text color flips between ink and cream depending on the lightness value. Header: bold Futura "MX-4" with a lighter spaced "CHROMATONE", a thick rule underneath, and four clock LEDs that step in sequence in the --glow accent color. Left: six knobs generated as inline SVG (tick ring of 11 marks, dark radial-gradient skirt with drop shadow, knurled grip lines, brushed silver radial-gradient cap, black pointer line), each with a bold letter-spaced label and a monospace readout. Knobs: TINT (panel hue), CHROMA (saturation), VALUE (lightness), GLOW (accent hue for LEDs, scope trace, and focus rings), DRIFT (oscillator rate), FOLD (wavefolding depth). Right: a recessed black oscilloscope screen with a faint grid and a glowing SVG trace that animates a folded sine wave driven by DRIFT and FOLD, plus a patch bay of eight jacks (OSC 1, OSC 2, LFO, ENV, VCF, VCA, MIX, OUT) drawn as nickel ring radial gradients. Patch cords are an SVG overlay: quadratic Bezier curves sagging with distance and gently swaying, drawn with a drop shadow path, a colored body, a thin specular highlight, and plug ends. Footer row: serial number, "Hand wired in Port Avery", and a live cord count. On mobile the knobs and scope stack in one column. Reduced motion: the scope, LEDs, and cord sway freeze.
+
+Title: Chromatone Bench Unit
+
+Description: A tactile, warm-lit hardware fantasy: a wood-cheeked synth faceplate with chunky silver knobs, a glowing oscilloscope, and colorful patch cords sagging across the bay. The twist is that the instrument's controls tune its own appearance, so dialing TINT, CHROMA, and VALUE repaints the brushed faceplate while GLOW recolors every LED and trace, letting the visitor design their own unit.
+
+Visual techniques:
+- Knobs built as inline SVG with gradients, tick rings, knurling, and rotating caps
+- Panel color driven entirely by CSS custom properties in hsl()
+- Wood grain and brushed metal from layered repeating-linear-gradients
+- Screws, jacks, and LEDs from radial gradients and inset shadows
+- Animated SVG oscilloscope path with a wavefolder function and drop-shadow glow
+- Patch cords as sagging quadratic Bezier paths with shadow, body, and highlight layers
+- Automatic text-color contrast switch based on panel lightness
+
+Interaction model:
+Drag a knob up or down (or sideways), scroll the wheel over it, or focus it and use the arrow, Home, and End keys; each knob is an accessible slider. Turning the color knobs repaints the faceplate and accent glow live, while DRIFT and FOLD reshape the scope trace and LED tempo. Tap one jack and then another to patch a new cord between them; tapping the same pair again pulls the cord out.

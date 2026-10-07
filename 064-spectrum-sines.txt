@@ -1,0 +1,23 @@
+Prompt:
+Build a standalone HTML page, "spectrum-sines": layered sine waves in a rainbow phase sweep, printed onto warm paper, whose amplitude is controlled by scroll. Background is bone paper #f4f1ea with a faint multiply grain from a repeating radial gradient; ink is #16140f with a muted #7a7468 for labels. Typography pairs a high-contrast Didone stack (Didot, Bodoni 72, Bodoni MT, Hoefler Text, Georgia) for huge headlines, often italic, with ui-monospace / SF Mono / Menlo in tracked uppercase for small technical labels.
+Canvas: one fixed full-viewport canvas sized to devicePixelRatio (capped at 2), resized on window resize. It draws 30 polylines (20 on phones) across the width, each the sum of three sines with a sine-shaped edge envelope. Each line's hue steps around the colour wheel (0 to 290 degrees, slowly rotating over time) and its phase is offset by its index, so the bundle reads as a rainbow twisting through itself. Lines are drawn with the multiply composite mode so crossings print darker mixed colours, as if overprinted on paper. Amplitude is driven by scroll: target amplitude is sin(progress times pi) to the power 1.3, so the page starts calm, crests in the middle, and falls quiet again; it eases with a lerp. Scroll velocity adds a decaying shiver to the amplitude. The pointer creates a local Gaussian pressure ripple that bends all lines near it and decays when the pointer stops.
+Content: five full-height centered movements over the canvas, each with a monospace numeral label: I Hush ("Spectrum" in giant italic), II Swell ("The red leans toward the violet"), III Crest ("Full voice" filled with an animated sliding spectral gradient), IV Interference ("Where peaks meet troughs"), V Afterglow ("And then, quiet." with an outlined pill button "Play it again" that smooth-scrolls to top). Body copy sits on a translucent paper chip for legibility. Sections fade and rise in with IntersectionObserver.
+Fixed chrome: top bar with "Spectrum" and the current movement (I / V to V / V); bottom-left readout showing amplitude to two decimals with a thin spectral meter, phase in degrees, and voice count (phase and voices hidden on phones). A scroll hint line ticks downward on the first screen.
+Reduced motion: the time-driven phase and spectral slide stop; the waves are redrawn only on scroll, still reflecting amplitude.
+
+Title: Five Movements in Sine
+
+Description:
+An editorial, almost musical page where thirty rainbow sine lines are overprinted on warm paper and swell and subside as you scroll through five short movements. Large Didone italics float over the bundle, a lab-like monospace readout reports amplitude and phase, and the colours mix where lines cross because they are drawn in multiply mode like inks.
+
+Visual techniques:
+- DPR-aware full-screen canvas with a single requestAnimationFrame loop
+- Summed sine polylines with edge envelopes and per-line hue and phase offsets
+- Multiply compositing so overlapping lines mix like printed inks
+- Scroll progress mapped to an eased amplitude curve, plus decaying scroll-velocity energy
+- Pointer Gaussian ripple that locally bends every line
+- Sliding spectral gradient text via background-clip
+- IntersectionObserver section reveals and a live monospace readout with a gradient meter
+
+Interaction model:
+Scrolling raises and then lowers the amplitude across five movements, and fast scrolling makes the lines shiver. Moving the pointer sends a ripple through the waves around it. The readout and movement counter update live, and the final button returns smoothly to the calm opening.

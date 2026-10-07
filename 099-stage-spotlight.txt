@@ -1,0 +1,18 @@
+Prompt:
+Build "The Lamplighter's Daughter", a standalone HTML page for slot 099 stage-spotlight: theatre curtains, spotlight follows the cursor, program-style layout. The page is an evening programme for a fictional play at the fictional Gaslight Playhouse. Palette: near-black stage #0b0807 with a subtle warm vertical gradient, programme cream #efe4cc for text, antique gold #c9a24a and dark gold #8a6a26 for ornaments and labels, deep velvet reds from #3d070c through #a3222f for the curtains. Typography: Bodoni 72 / Didot / Georgia for the display title and cast names, italic Georgia for the lede, character actors and director's note, Gill Sans / Trebuchet in wide-tracked uppercase for kickers and section labels. Layout: a single centred programme column: kicker, giant title with an italic gold subtitle, a gold-hairline ornament with a star, a lede paragraph, a Dramatis Personae list with dotted leader lines between role and actor, an Order of Scenes grid of three acts with big gold Roman numerals (stacking to one column on phones), and a two-column director's note with signature. Faint perspective floorboards sit at the bottom of the viewport. Stage dressing: two fixed velvet curtains built from repeating-linear-gradient folds with side shading and a gold fringe hem, plus a scalloped valance with a gold fringe across the top; a "Places, please" cue sits centred until curtain-up. On load the curtains part over 2.6s with a theatrical cubic-bezier, leaving a sliver of drape at each side. Spotlight: a fixed overlay whose radial gradient is driven by CSS custom properties --x, --y, --r; it is clear and slightly warm inside the beam, falls off to near-black outside, and a screen-blended warm cone sits beneath. A requestAnimationFrame loop eases the beam toward the pointer, widens it on press, adds a tiny carbon-arc flicker to the radius, follows keyboard focus, and after 3.5s idle slowly wanders the stage on a Lissajous path. A pill button bottom-right toggles house lights (fades the darkness away) with aria-pressed and changing label. Reduced motion: curtains open instantly, beam snaps to the pointer without easing, no flicker or idle wandering, no transitions.
+
+Title: The Lamplighter's Daughter
+
+Description: A dark theatre programme seen through a moving spotlight. Red velvet curtains with a gold-fringed valance part to reveal an elegant Didone-set programme: title, cast list with dotted leaders, a three-act scene guide and a note from the director. Everything outside a warm circular beam stays in near darkness, so the reader literally holds the lamp, echoing the story of a lamplighter on the last night of gas light. A house-lights button brings the whole page up for comfortable reading.
+
+Visual techniques:
+- Fixed radial-gradient darkness overlay driven by CSS custom properties updated in a rAF loop
+- Screen-blended warm light cone under the darkness
+- Eased pointer following, press-to-widen, subtle flicker and Lissajous idle drift
+- Velvet curtains and scalloped valance from layered repeating and radial gradients with gold fringes
+- Theatrical cubic-bezier curtain opening on load
+- Dotted leader lines via flex ordering and a pseudo-element
+- Perspective-rotated floorboard strip and gold hairline ornament
+- House-lights toggle with aria-pressed and focus-following spotlight
+
+Interaction model: After the curtains open, the spotlight follows the pointer or finger with a slight lag and widens while pressed. Tabbing through the page moves the beam to the focused element. If the visitor stops moving, the light drifts slowly around the stage on its own. The house-lights button fades the darkness away for full reading and can dim it again.

@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page titled "torus.sh: Amber Terminal": an animated ASCII donut rendered in monospace inside macOS-like terminal chrome. Palette: warm amber phosphor (#ffb547) on a deep brown-black screen (#1c130a), with a radial brown-to-black page background, chrome bar in dark walnut (#2a1d10 to #3b2916) carrying red, yellow and green window dots. Typography: ui-monospace / SF Mono / Menlo / Consolas / Courier New throughout; letter-spaced uppercase header "torus.sh" with a quiet subtitle. Layout: centered terminal window (max 860px) with a title bar reading "operator@kiln-07: ~/rings", a screen area containing a short typed boot log, a <pre> holding a 72x30 (52x24 on phones) character torus, a shell prompt with a blinking block caret, and a control strip of outlined key buttons (space hold, r ramp, t phosphor, f tempo) plus a live fps and cell counter. Below the window, a three-column footer of short captions about dragging, shading and phosphor. The screen gets CRT scanlines and a vignette via a pseudo-element; the donut text gets a double amber glow text-shadow. Motion: the torus is computed every frame with a z-buffer and per-point luminance mapped onto a character ramp; it rotates on two axes, eases toward a base angular velocity, and the boot log appears line by line before the donut fades to full opacity. Interaction: drag the torus with the pointer to fling it (velocity carries and then eases back to the lazy spin), buttons or keys pause, cycle four character ramps (classic, dense, dots, block shades), cycle phosphor tubes (amber, P1 green, ice blue via body classes that swap CSS variables) and cycle tempo (0.5x to 4x). The shell prompt line rewrites itself to show the command equivalent of each action. Reduced motion: the caret stops blinking, the boot log appears instantly and the donut starts held still (it can still be dragged).
+
+Title: torus.sh Amber Terminal
+
+Description: A warm, retro computing piece where a glowing ASCII torus spins inside a carefully drawn terminal window. The amber phosphor, scanlines and vignette sell the illusion of a warm CRT tube, while a short boot sequence and a self-rewriting shell prompt give the scene a narrative. Every glyph is an actual lighting value calculated from 3D geometry, so the ring reads as a solid, shaded object made entirely of punctuation.
+
+Visual techniques:
+- Real-time 3D torus projection with z-buffer and Lambertian luminance mapped to character ramps
+- Terminal chrome built in CSS with gradient title bar and traffic-light dots
+- CRT scanlines and vignette with a repeating-linear-gradient and radial-gradient overlay
+- Phosphor glow via layered text-shadow
+- Theme swapping through CSS custom properties on body classes
+- Staged boot log with timed line reveals and a steps() blinking caret
+- Live fps counter
+
+Interaction model:
+Drag the donut to spin it by hand; releasing keeps the momentum, which then relaxes back to the default orbit. Buttons (or the space, r, t and f keys) hold the animation, cycle the shading ramp, switch the phosphor colour and change tempo, and the prompt line echoes each action as a shell command.

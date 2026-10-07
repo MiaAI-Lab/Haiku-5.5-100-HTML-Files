@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hearth Soft Thermostat</title>
+<style>
+:root{
+  --bg:#e5eaf1;
+  --hi:#ffffff;
+  --lo:#b9c3d2;
+  --text:#4a5568;
+  --soft:#8d98aa;
+  --accent:#ff8a4c;
+  --ease:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:"SF Pro Rounded","Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+  display:flex;align-items:center;justify-content:center;padding:28px 16px;min-height:100vh;overflow-x:hidden;
+  transition:background 1.2s;
+}
+.device{
+  width:min(420px,100%);border-radius:44px;padding:28px 26px 30px;background:var(--bg);
+  box-shadow:18px 18px 40px var(--lo),-18px -18px 40px var(--hi);
+}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.room{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.room strong{display:block;font-size:17px;letter-spacing:0;text-transform:none;color:var(--text);font-weight:600;margin-top:2px}
+.pill{border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;color:var(--soft);box-shadow:inset 4px 4px 8px var(--lo),inset -4px -4px 8px var(--hi);display:flex;align-items:center;gap:8px}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);transition:background .6s,box-shadow .6s}
+.dial{position:relative;width:100%;aspect-ratio:1;border-radius:50%;margin:0 auto;
+  box-shadow:14px 14px 30px var(--lo),-14px -14px 30px var(--hi);touch-action:none;cursor:grab;outline:none}
+.dial:active{cursor:grabbing}
+.dial:focus-visible{box-shadow:14px 14px 30px var(--lo),-14px -14px 30px var(--hi),0 0 0 4px rgba(255,138,76,.35)}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.well{position:absolute;inset:27%;border-radius:50%;
+  box-shadow:inset 10px 10px 20px var(--lo),inset -10px -10px 20px var(--hi);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.temp{font-size:clamp(46px,14vw,64px);font-weight:300;color:var(--text);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.temp sup{font-size:.38em;vertical-align:top;position:relative;top:.25em;margin-left:2px;color:var(--soft)}
+.label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-top:6px}
+.tick{stroke:var(--lo);stroke-width:2;stroke-linecap:round}
+.tick.major{stroke:var(--soft)}
+.tick.lit{stroke:var(--c,#ff8a4c)}
+.track{fill:none;stroke:#d3dae5;stroke-width:16;stroke-linecap:round}
+.trackHi{fill:none;stroke:#f6f8fb;stroke-width:3;stroke-linecap:round;opacity:.9}
+.value{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke .3s}
+.knob{filter:url(#raise)}
+.needle{stroke-linecap:round}
+.controls{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;margin-top:28px}
+.round{width:56px;height:56px;border-radius:50%;border:0;background:var(--bg);color:var(--text);font-size:24px;font-weight:300;cursor:pointer;
+  box-shadow:7px 7px 14px var(--lo),-7px -7px 14px var(--hi);transition:box-shadow .25s,transform .35s var(--ease)}
+.round:hover{transform:translateY(-2px)}
+.round:active{box-shadow:inset 5px 5px 10px var(--lo),inset -5px -5px 10px var(--hi);transform:scale(.96)}
+.round:focus-visible,.mode:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.modes{display:flex;gap:6px;padding:6px;border-radius:999px;box-shadow:inset 5px 5px 10px var(--lo),inset -5px -5px 10px var(--hi)}
+.mode{flex:1;border:0;background:transparent;border-radius:999px;padding:10px 4px;font:inherit;font-size:12px;font-weight:600;color:var(--soft);cursor:pointer;transition:color .3s,box-shadow .35s,background .35s}
+.mode[aria-pressed="true"]{background:var(--bg);color:var(--text);box-shadow:4px 4px 9px var(--lo),-4px -4px 9px var(--hi)}
+.foot{margin-top:24px;text-align:center;font-size:12px;color:var(--soft);line-height:1.6}
+.foot b{color:var(--text);font-weight:600}
+h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:380px){.device{padding:22px 18px 24px;border-radius:36px}.round{width:48px;height:48px}}
+</style>
+</head>
+<body>
+<main class="device">
+  <h1>Hearth Soft Thermostat</h1>
+  <div class="bar">
+    <div class="room">Living room<strong id="room">Inside 19.4°</strong></div>
+    <div class="pill" id="status"><i></i><span id="statusText">Heating</span></div>
+  </div>
+  <div class="dial" id="dial" tabindex="0" role="slider" aria-label="Target temperature" aria-valuemin="10" aria-valuemax="30" aria-valuenow="22">
+    <svg viewBox="0 0 300 300" aria-hidden="true">
+      <defs>
+        <filter id="raise" x="-60%" y="-60%" width="220%" height="220%">
+          <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="#9aa6b8" flood-opacity=".8"/>
+          <feDropShadow dx="-2" dy="-2" stdDeviation="2" flood-color="#ffffff"/>
+        </filter>
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <g id="ticks"></g>
+      <path class="track" id="track"/>
+      <path class="trackHi" id="trackHi" transform="translate(1.5 2.5)"/>
+      <path class="value" id="glowArc" filter="url(#glow)" opacity=".55"/>
+      <path class="value" id="arc"/>
+      <g id="needle"><line class="needle" id="needleLine" x1="150" y1="150" x2="150" y2="70" stroke-width="3"/></g>
+      <circle class="knob" id="knob" r="13" fill="#e5eaf1"/>
+      <circle id="knobDot" r="4"/>
+    </svg>
+    <div class="well">
+      <div class="temp" id="temp">22<sup>°C</sup></div>
+      <div class="label" id="lbl">Target</div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="round" id="down" type="button" aria-label="Lower temperature">−</button>
+    <div class="modes" role="group" aria-label="Mode">
+      <button class="mode" type="button" data-m="heat" aria-pressed="true">Heat</button>
+      <button class="mode" type="button" data-m="eco" aria-pressed="false">Eco</button>
+      <button class="mode" type="button" data-m="cool" aria-pressed="false">Cool</button>
+    </div>
+    <button class="round" id="up" type="button" aria-label="Raise temperature">+</button>
+  </div>
+  <p class="foot">Drag the ring to set the warmth. <b id="eta">Reaching 22° in about 18 min.</b></p>
+</main>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MIN = 10, MAX = 30, SPAN = 135, C = 150, R = 112;
+  var target = 22, room = 19.4, mode = 'heat';
+  var needle = -SPAN, vel = 0, shown = MIN;
+  var $ = function(id){ return document.getElementById(id); };
+  var dial = $('dial');
+
+  function angleOf(t){ return -SPAN + (t - MIN) / (MAX - MIN) * SPAN * 2; }
+  function pt(a, r){ var rad = a * Math.PI / 180; return [C + r * Math.sin(rad), C - r * Math.cos(rad)]; }
+  function arc(a0, a1, r){
+    var p0 = pt(a0, r), p1 = pt(a1, r), large = (a1 - a0) > 180 ? 1 : 0;
+    return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + large + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2);
+  }
+  function mix(a, b, t){ return a.map(function(v, i){ return Math.round(v + (b[i] - v) * t); }); }
+  function colorFor(t){
+    var k = (t - MIN) / (MAX - MIN);
+    var cool = [76, 141, 255], mid = [140, 120, 220], warm = [255, 122, 61];
+    var c = k < .5 ? mix(cool, mid, k * 2) : mix(mid, warm, (k - .5) * 2);
+    return 'rgb(' + c.join(',') + ')';
+  }
+
+  // ticks
+  var ticks = $('ticks'), tickEls = [];
+  for (var i = 0; i <= 40; i++){
+    var a = -SPAN + i * (SPAN * 2 / 40), major = i % 5 === 0;
+    var p0 = pt(a, major ? 128 : 131), p1 = pt(a, 138);
+    var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', p0[0]); l.setAttribute('y1', p0[1]); l.setAttribute('x2', p1[0]); l.setAttribute('y2', p1[1]);
+    l.setAttribute('class', 'tick' + (major ? ' major' : ''));
+    ticks.appendChild(l); tickEls.push({el:l, a:a});
+  }
+  $('track').setAttribute('d', arc(-SPAN, SPAN, R));
+  $('trackHi').setAttribute('d', arc(-SPAN + 2, SPAN - 2, R + 6));
+
+  function setTarget(t, fromUser){
+    t = Math.max(MIN, Math.min(MAX, Math.round(t * 2) / 2));
+    if (t === target && !fromUser) return;
+    target = t;
+    dial.setAttribute('aria-valuenow', t);
+    dial.setAttribute('aria-valuetext', t + ' degrees Celsius');
+    var col = colorFor(t);
+    document.documentElement.style.setProperty('--accent', col);
+    var diff = t - room;
+    var st = Math.abs(diff) < .3 ? 'Holding' : (diff > 0 ? 'Heating' : 'Cooling');
+    if (mode === 'eco') st = 'Eco · ' + st.toLowerCase();
+    $('statusText').textContent = st;
+    var mins = Math.round(Math.abs(diff) * (mode === 'eco' ? 14 : 7));
+    $('eta').textContent = Math.abs(diff) < .3 ? 'The room is just right.' : 'Reaching ' + fmt(t) + '° in about ' + mins + ' min.';
+  }
+  function fmt(v){ return (Math.round(v * 2) / 2).toFixed(v % 1 ? 1 : 0); }
+
+  function render(){
+    var col = colorFor(shown);
+    var vA = angleOf(target);
+    $('arc').setAttribute('d', arc(-SPAN, Math.max(-SPAN + .01, vA), R));
+    $('glowArc').setAttribute('d', $('arc').getAttribute('d'));
+    $('arc').style.stroke = col; $('glowArc').style.stroke = col;
+    var kp = pt(vA, R);
+    $('knob').setAttribute('cx', kp[0]); $('knob').setAttribute('cy', kp[1]);
+    $('knobDot').setAttribute('cx', kp[0]); $('knobDot').setAttribute('cy', kp[1]);
+    $('knobDot').style.fill = col;
+    $('needle').setAttribute('transform', 'rotate(' + needle.toFixed(2) + ' 150 150)');
+    $('needleLine').style.stroke = col;
+    tickEls.forEach(function(t){
+      var lit = t.a <= needle + .01;
+      t.el.classList.toggle('lit', lit);
+      if (lit) t.el.style.setProperty('--c', col);
+    });
+    var v = Math.round(shown * 2) / 2;
+    $('temp').innerHTML = (v % 1 ? v.toFixed(1) : v) + '<sup>°C</sup>';
+  }
+
+  var last = performance.now();
+  function loop(now){
+    var dt = Math.min(.032, (now - last) / 1000); last = now;
+    var goal = angleOf(target);
+    if (reduce){ needle = goal; vel = 0; }
+    else {
+      var k = 170, c = 11;
+      var steps = 4, h = dt / steps;
+      for (var s = 0; s < steps; s++){
+        var acc = k * (goal - needle) - c * vel;
+        vel += acc * h; needle += vel * h;
+      }
+    }
+    shown = MIN + (needle + SPAN) / (SPAN * 2) * (MAX - MIN);
+    shown = Math.max(MIN, Math.min(MAX, shown));
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  // drag
+  var dragging = false;
+  function fromPointer(e){
+    var r = dial.getBoundingClientRect();
+    var x = e.clientX - (r.left + r.width / 2), y = e.clientY - (r.top + r.height / 2);
+    var a = Math.atan2(x, -y) * 180 / Math.PI;
+    if (Math.abs(a) > 157.5) return;
+    a = Math.max(-SPAN, Math.min(SPAN, a));
+    setTarget(MIN + (a + SPAN) / (SPAN * 2) * (MAX - MIN), true);
+  }
+  dial.addEventListener('pointerdown', function(e){
+    dragging = true; dial.setPointerCapture(e.pointerId); fromPointer(e);
+  });
+  dial.addEventListener('pointermove', function(e){ if (dragging) fromPointer(e); });
+  ['pointerup', 'pointercancel'].forEach(function(t){ dial.addEventListener(t, function(){ dragging = false; }); });
+  dial.addEventListener('keydown', function(e){
+    var d = 0;
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') d = .5;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') d = -.5;
+    if (e.key === 'PageUp') d = 2; if (e.key === 'PageDown') d = -2;
+    if (e.key === 'Home'){ setTarget(MIN, true); e.preventDefault(); }
+    if (e.key === 'End'){ setTarget(MAX, true); e.preventDefault(); }
+    if (d){ setTarget(target + d, true); e.preventDefault(); }
+  });
+  $('up').addEventListener('click', function(){ setTarget(target + .5, true); });
+  $('down').addEventListener('click', function(){ setTarget(target - .5, true); });
+  document.querySelectorAll('.mode').forEach(function(b){
+    b.addEventListener('click', function(){
+      mode = b.getAttribute('data-m');
+      document.querySelectorAll('.mode').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      var preset = {heat:22, eco:18.5, cool:20}[mode];
+      setTarget(preset, true);
+    });
+  });
+
+  // gentle room drift toward target
+  setInterval(function(){
+    room += (target - room) * 0.04;
+    $('room').textContent = 'Inside ' + room.toFixed(1) + '°';
+    setTarget(target, true);
+  }, 4000);
+
+  setTarget(22, true);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

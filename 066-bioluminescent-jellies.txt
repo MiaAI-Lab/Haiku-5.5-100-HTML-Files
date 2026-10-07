@@ -1,0 +1,20 @@
+Prompt:
+Build a standalone HTML page called "Midwater Lanterns": a full-screen canvas of bioluminescent jellyfish with tentacle physics drifting through a dark ocean at about 800 m depth. Palette: near-black navy water (#010309 at the bottom rising to a faint teal-blue #062c44 at the top), with each jelly glowing in one hue from cyan (186), violet (280), magenta (320), sea-green (168), blue (205) and orchid (295). Draw everything with additive ("lighter") compositing so overlapping light blooms. Each jelly has a domed bezier bell with a scalloped rim, a linear-gradient translucent fill, a pale stroke, a glowing inner organ with four radial canals, a row of twinkling rim photophores, and a soft radial halo. The bell pulses on a sine cycle: on contraction it narrows, grows taller and pushes the jelly along its heading; between pulses it relaxes, slows with drag and sinks slightly. Eight tentacles hang from the rim as verlet chains (13 to 17 points, follow-the-leader length constraints, light gravity, slight sideways drift), the two central oral arms thicker and tinted. Jellies wander upward with a slowly drifting heading and wrap around the screen edges. Add 140 specks of marine snow falling with a sideways sway (fewer on phones and with reduced motion).
+Typography: Georgia / Iowan Old Style italic for a large glowing title "Midwater Lanterns", an uppercase tracked subtitle, and a short serif paragraph; ui-monospace for a small eyebrow label ("Station 7 · Twilight Zone"), the hint, the depth and temperature gauge, and pill buttons. Layout: title block top-left, hint top-right (hidden on phones), gauge and controls bottom row that wraps on narrow screens. A CSS veil adds a faint surface light from above and a vignette below.
+Interaction: moving the pointer becomes a lure; jellies within 340 px steer toward it, a faint glow follows the pointer, and the depth gauge shifts with pointer height. Clicking or tapping releases a burst of plankton sparks and startles nearby jellies: they flash brighter, turn away and contract hard. "Release a lantern" adds a new jelly rising from below (max 18). "Lights out" fades the ambient water to black while the photophores and outlines brighten. Reduced motion slows everything to 35% speed and cuts particles. Canvas is DPR-aware (capped at 2) and resizes with a debounce.
+
+Title: Midwater Lanterns
+
+Description: A deep-sea night scene in which translucent, glowing jellyfish pulse slowly through inky water, trailing threads of light. The bells are drawn as scalloped domes with gradient fills, inner organs and twinkling rim lights, and their tentacles sway with simple verlet physics. A restrained serif title and monospace instrument readouts give it the feel of a research-station field note, while additive blending makes every overlap of light bloom softly against the dark.
+
+Visual techniques:
+- Canvas 2D with additive "lighter" compositing for bioluminescent glow
+- Bezier bell shapes with scalloped rims, linear-gradient fills and radial halos
+- Sine-driven bell contraction that propels each jelly along its heading
+- Verlet-chain tentacles with length constraints, gravity and drift
+- Marine snow particle field and spark bursts
+- CSS radial-gradient veil for surface light and vignette
+- DPR-aware canvas sizing, debounced resize, requestAnimationFrame loop
+- prefers-reduced-motion slows the simulation and cuts particle counts
+
+Interaction model: Moving the pointer acts as a lure that draws nearby jellies toward it and nudges the depth gauge. Clicking or tapping sends out a burst of plankton sparks; nearby jellies flash and dart away. The "Release a lantern" button adds a new jelly rising from below, and "Lights out" darkens the water so that only the living light remains.

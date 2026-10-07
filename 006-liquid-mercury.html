@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quicksilver — Liquid Mercury Study</title>
+<style>
+:root{
+  --bg0:#0b0c0f;--bg1:#16181d;--ink:#e9ecf1;--mute:#8a9099;--line:rgba(233,236,241,.14);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(120% 90% at 50% 10%,#1d2027 0%,var(--bg1) 40%,var(--bg0) 100%);
+  color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  overflow:hidden;cursor:none;-webkit-font-smoothing:antialiased;
+}
+svg.stage{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.frame{position:fixed;inset:clamp(14px,3vw,32px);border:1px solid var(--line);pointer-events:none;border-radius:2px}
+header{position:fixed;top:clamp(28px,5vw,56px);left:clamp(28px,5vw,64px);right:clamp(28px,5vw,64px);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;pointer-events:none}
+.eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--mute)}
+h1{font-weight:200;font-size:clamp(40px,9vw,112px);letter-spacing:-.04em;line-height:.9;margin-top:10px;
+  background:linear-gradient(175deg,#fdfdfd 0%,#a9afb8 38%,#4b5059 52%,#dfe3e8 70%,#7b818b 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sym{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:clamp(14px,2vw,18px);color:var(--mute);text-align:right;line-height:1.5}
+.sym b{display:block;font-style:normal;font-family:"Helvetica Neue",Arial,sans-serif;font-weight:200;font-size:clamp(30px,5vw,54px);color:var(--ink);letter-spacing:-.02em}
+footer{position:fixed;bottom:clamp(28px,5vw,56px);left:clamp(28px,5vw,64px);right:clamp(28px,5vw,64px);display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+footer p{max-width:34ch;font-size:13px;line-height:1.6;color:var(--mute);pointer-events:none}
+.ctrl{display:flex;gap:8px}
+button{
+  cursor:pointer;font:inherit;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
+  background:rgba(255,255,255,.04);border:1px solid var(--line);padding:11px 16px;border-radius:999px;
+  transition:background .4s var(--ease),border-color .4s var(--ease),transform .4s var(--ease);
+}
+button:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35);transform:translateY(-2px)}
+button:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.count{font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;pointer-events:none}
+.count span{color:var(--ink)}
+@media (hover:none){body{cursor:auto}}
+@media (max-width:520px){footer p{display:none}.sym{display:none}}
+</style>
+</head>
+<body>
+<svg class="stage" id="stage" aria-label="Pools of liquid mercury following the pointer" role="img">
+  <defs>
+    <radialGradient id="metal" cx="38%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".25" stop-color="#d7dbe1"/>
+      <stop offset=".55" stop-color="#6d737d"/>
+      <stop offset=".8" stop-color="#2a2d33"/>
+      <stop offset="1" stop-color="#9aa0a9"/>
+    </radialGradient>
+    <filter id="goo" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="b"/>
+      <feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -11" result="g"/>
+      <feGaussianBlur in="g" stdDeviation="3" result="gb"/>
+      <feSpecularLighting in="gb" surfaceScale="6" specularConstant="1.1" specularExponent="28" lighting-color="#ffffff" result="spec">
+        <fePointLight id="light" x="200" y="-200" z="420"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="g" operator="in" result="specIn"/>
+      <feComposite in="g" in2="specIn" operator="arithmetic" k1="0" k2="1" k3=".85" k4="0"/>
+    </filter>
+  </defs>
+  <g id="pool" filter="url(#goo)"></g>
+</svg>
+<div class="frame"></div>
+<header>
+  <div>
+    <div class="eyebrow">Material Study Nº 80</div>
+    <h1>Quick&shy;silver</h1>
+  </div>
+  <div class="sym"><b>Hg</b>200.59 · liquid at rest</div>
+</header>
+<footer>
+  <p>The only metal that refuses to stand still. Lead it with your hand; it beads, stretches, tears into droplets and finds itself again.</p>
+  <div class="count">Droplets <span id="n">1</span></div>
+  <div class="ctrl">
+    <button id="split" type="button">Shatter</button>
+    <button id="calm" type="button">Gather</button>
+  </div>
+</footer>
+<script>
+(()=>{
+  const NS="http://www.w3.org/2000/svg";
+  const svg=document.getElementById("stage"),pool=document.getElementById("pool"),light=document.getElementById("light"),nEl=document.getElementById("n");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W=innerWidth,H=innerHeight;
+  const ptr={x:W/2,y:H/2,active:false};
+  const blobs=[];
+  function make(x,y,r,kind,i){
+    const c=document.createElementNS(NS,"circle");
+    c.setAttribute("fill","url(#metal)");c.setAttribute("r",r);pool.appendChild(c);
+    const b={el:c,x,y,vx:0,vy:0,r,r0:r,kind,i,free:0,ox:0,oy:0,ph:Math.random()*6.28};
+    blobs.push(b);return b;
+  }
+  // a leader + tail chain + resting satellites
+  const lead=make(W/2,H/2,Math.min(W,H)*.075+18,"lead",0);
+  const TAIL=7;
+  for(let i=1;i<=TAIL;i++) make(W/2,H/2,lead.r0*(1-i*.09),"tail",i);
+  const SAT=6;
+  for(let i=0;i<SAT;i++){const a=i/SAT*6.28;const b=make(W/2,H/2,lead.r0*(.35+Math.random()*.25),"sat",i);b.ox=Math.cos(a);b.oy=Math.sin(a);}
+
+  function resize(){W=innerWidth;H=innerHeight;svg.setAttribute("viewBox",`0 0 ${W} ${H}`);if(!ptr.active){ptr.x=W/2;ptr.y=H/2;}}
+  resize();addEventListener("resize",resize);
+
+  addEventListener("pointermove",e=>{ptr.x=e.clientX;ptr.y=e.clientY;ptr.active=true;});
+  addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;ptr.x=e.clientX;ptr.y=e.clientY;burst(e.clientX,e.clientY,1);});
+  document.getElementById("split").addEventListener("click",()=>burst(lead.x,lead.y,1.6));
+  document.getElementById("calm").addEventListener("click",()=>{for(const b of blobs){b.free=0;}});
+  addEventListener("keydown",e=>{if(e.code==="Space"&&e.target===document.body){e.preventDefault();burst(lead.x,lead.y,1.3);}});
+
+  function burst(x,y,power){
+    for(const b of blobs){
+      if(b.kind==="lead")continue;
+      const a=Math.random()*6.28,s=(9+Math.random()*14)*power;
+      b.x=x+Math.cos(a)*4;b.y=y+Math.sin(a)*4;b.vx=Math.cos(a)*s;b.vy=Math.sin(a)*s;
+      b.free=110+Math.random()*90;
+    }
+    // shed a few short-lived droplets
+    for(let k=0;k<6;k++){
+      const d=make(x,y,6+Math.random()*12,"drop",k);const a=Math.random()*6.28,s=(6+Math.random()*16)*power;
+      d.vx=Math.cos(a)*s;d.vy=Math.sin(a)*s;d.free=60+Math.random()*60;
+    }
+  }
+
+  let t=0;
+  function step(){
+    t+=reduce?.004:.016;
+    const k=reduce?.04:.14,damp=reduce?.7:.78;
+    // leader: spring toward pointer (or idle lissajous)
+    const tx=ptr.active?ptr.x:W/2+Math.cos(t*.7)*W*.18,ty=ptr.active?ptr.y:H/2+Math.sin(t*1.1)*H*.12;
+    lead.vx=(lead.vx+(tx-lead.x)*k)*damp;lead.vy=(lead.vy+(ty-lead.y)*k)*damp;
+    lead.x+=lead.vx;lead.y+=lead.vy;
+    const sp=Math.hypot(lead.vx,lead.vy);
+    for(let i=blobs.length-1;i>=0;i--){
+      const b=blobs[i];
+      if(b.kind==="lead"){b.r=b.r0*(1-Math.min(sp,40)/160);}
+      else if(b.free>0){
+        b.free--;b.vx*=.94;b.vy*=.94;b.x+=b.vx;b.y+=b.vy;
+        if(b.x<b.r||b.x>W-b.r)b.vx*=-.6;if(b.y<b.r||b.y>H-b.r)b.vy*=-.6;
+        if(b.kind==="drop"){b.r*=.985;if(b.free<=0||b.r<2){b.el.remove();blobs.splice(i,1);continue;}}
+        else if(b.free<40){b.free=0;}
+      }else if(b.kind==="tail"){
+        const prev=blobs[b.i-1];const kk=reduce?.08:.32;
+        b.vx=(b.vx+(prev.x-b.x)*kk)*.62;b.vy=(b.vy+(prev.y-b.y)*kk)*.62;b.x+=b.vx;b.y+=b.vy;
+      }else if(b.kind==="sat"){
+        b.ph+=reduce?.002:.012;
+        const rr=lead.r0*(1.05+.35*Math.sin(b.ph*1.7+b.i));
+        const ax=lead.x+Math.cos(b.ph+b.i)*rr*b.ox*1.4-b.oy*Math.sin(b.ph)*rr*.6;
+        const ay=lead.y+Math.sin(b.ph+b.i)*rr*b.oy*1.4+b.ox*Math.cos(b.ph)*rr*.6;
+        b.vx=(b.vx+(ax-b.x)*.05)*.86;b.vy=(b.vy+(ay-b.y)*.05)*.86;b.x+=b.vx;b.y+=b.vy;
+      }
+      b.el.setAttribute("cx",b.x.toFixed(1));b.el.setAttribute("cy",b.y.toFixed(1));b.el.setAttribute("r",Math.max(1,b.r).toFixed(1));
+    }
+    // light orbits gently, offset from leader
+    light.setAttribute("x",(lead.x-W*.25+Math.cos(t*.5)*80).toFixed(0));
+    light.setAttribute("y",(lead.y-H*.35).toFixed(0));
+    // count distinct pools (rough clustering)
+    if(((t*60)|0)%10===0){
+      let groups=0;const seen=new Set();
+      for(const b of blobs){if(seen.has(b))continue;groups++;const st=[b];seen.add(b);
+        while(st.length){const c=st.pop();for(const o of blobs){if(!seen.has(o)&&Math.hypot(o.x-c.x,o.y-c.y)<(o.r+c.r)*1.05){seen.add(o);st.push(o);}}}}
+      nEl.textContent=groups;
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>

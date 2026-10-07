@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orrery of Halcyne — Floating Planets</title>
+<style>
+:root{
+  --void:#07060d;
+  --cream:#f4ead7;
+  --dim:rgba(244,234,215,.58);
+  --ochre:#e8a64a;
+  --coral:#ff7a59;
+  --line:rgba(244,234,215,.16);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--void);color:var(--cream);overflow:hidden}
+body{font-family:Futura,"Century Gothic","Trebuchet MS",system-ui,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+canvas.hot{cursor:pointer}
+.brand{position:fixed;top:22px;left:22px;z-index:2;pointer-events:none}
+.brand b{display:block;font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--ochre);font-weight:500}
+.brand h1{font-family:Didot,"Bodoni 72","Bodoni MT",Georgia,serif;font-weight:400;font-size:clamp(28px,5vw,46px);letter-spacing:.02em;margin-top:6px;line-height:1}
+.brand p{font-size:13px;color:var(--dim);margin-top:8px;max-width:260px;line-height:1.5}
+.panel{
+  position:fixed;z-index:2;right:22px;bottom:84px;width:min(320px,calc(100vw - 44px));
+  padding:22px 22px 20px;border:1px solid var(--line);border-radius:4px;
+  background:linear-gradient(160deg,rgba(28,22,34,.78),rgba(10,8,16,.72));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transform:translateY(16px);opacity:0;pointer-events:none;
+  transition:opacity .6s var(--ease),transform .8s var(--ease);
+}
+.panel.show{opacity:1;transform:none;pointer-events:auto}
+.panel .idx{font-size:11px;letter-spacing:.3em;color:var(--ochre);text-transform:uppercase}
+.panel h2{font-family:Didot,"Bodoni 72",Georgia,serif;font-weight:400;font-size:34px;margin:8px 0 10px}
+.panel p{font-size:14px;line-height:1.6;color:var(--dim)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.stats div{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.stats strong{display:block;font-size:17px;letter-spacing:0;color:var(--cream);font-weight:500;margin-top:4px}
+.close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--cream);font-size:16px;cursor:pointer;transition:background .3s,transform .4s var(--ease)}
+.close:hover,.close:focus-visible{background:rgba(232,166,74,.18);transform:rotate(90deg);outline:none}
+nav{position:fixed;z-index:2;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 16px}
+nav button{
+  font:inherit;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+  background:rgba(7,6,13,.55);border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;transition:color .3s,border-color .3s,background .3s,transform .4s var(--ease)}
+nav button i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+nav button:hover,nav button:focus-visible{color:var(--cream);border-color:rgba(244,234,215,.45);transform:translateY(-2px);outline:none}
+nav button[aria-pressed="true"]{color:var(--void);background:var(--cream);border-color:var(--cream)}
+.hint{position:fixed;z-index:2;top:26px;right:22px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);text-align:right;transition:opacity .6s}
+.hint.gone{opacity:0}
+@media (max-width:600px){
+  .brand p,.hint{display:none}
+  .panel{bottom:118px;right:22px;padding:18px}
+  .panel h2{font-size:28px}
+  nav button{padding:8px 10px;font-size:10px;letter-spacing:.12em}
+}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-label="An animated orrery of six fictional planets orbiting a star"></canvas>
+<header class="brand">
+  <b>Halcyne System</b>
+  <h1>The Floating Orrery</h1>
+  <p>Six worlds turning around a tired amber sun. Choose one and the telescope will drift to meet it.</p>
+</header>
+<div class="hint" id="hint">Click a planet<br>to travel</div>
+<aside class="panel" id="panel" aria-live="polite">
+  <button class="close" id="close" aria-label="Return to the whole system">×</button>
+  <div class="idx" id="pIdx">World I</div>
+  <h2 id="pName">Name</h2>
+  <p id="pText">Description</p>
+  <div class="stats">
+    <div>Orbit<strong id="pOrbit">0</strong></div>
+    <div>Day<strong id="pDay">0</strong></div>
+    <div>Moons<strong id="pMoons">0</strong></div>
+  </div>
+</aside>
+<nav id="nav" aria-label="Planets"></nav>
+
+<script>
+(function(){
+  var canvas = document.getElementById('sky');
+  var ctx = canvas.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, DPR = 1, fit = 1;
+
+  var planets = [
+    {name:'Ossery', orbit:70, size:7, speed:1.6, a:0.4, c1:'#ffd9a8', c2:'#8a4b22', day:'31 h', moons:0, year:'64 days',
+      text:'A scorched pebble skimming the sun. Its glass dunes ring like bells when the dawn wind passes.'},
+    {name:'Velune', orbit:118, size:12, speed:1.05, a:2.1, c1:'#ffb3a1', c2:'#7c2b3a', day:'19 h', moons:1, year:'0.4 yr',
+      text:'Rose-tinted cloud seas hide a single continent of salt cathedrals and slow copper rivers.'},
+    {name:'Thalassa Minor', orbit:172, size:15, speed:.74, a:4.0, c1:'#a9e4ff', c2:'#1c3f74', day:'26 h', moons:2, year:'1.1 yr',
+      text:'An ocean world with violet tides. Floating kelp forests drift between its twin moons.'},
+    {name:'Garrow', orbit:238, size:26, speed:.46, a:1.2, c1:'#f2c98a', c2:'#6b3d1c', day:'11 h', moons:14, year:'7.8 yr', ring:true,
+      text:'The banded giant. Its ring of ice shards throws long amber shadows across fourteen moons.'},
+    {name:'Ilmarin', orbit:300, size:18, speed:.32, a:5.3, c1:'#c9f7e1', c2:'#1d5e57', day:'16 h', moons:5, year:'14 yr',
+      text:'A pale green ice world whose geysers paint aurora across a sky that never fully darkens.'},
+    {name:'Nemor', orbit:356, size:9, speed:.22, a:3.1, c1:'#d6ccff', c2:'#3b2f6e', day:'90 h', moons:3, year:'31 yr',
+      text:'The far sentinel, cold and violet, carrying the oldest frozen weather in the system.'}
+  ];
+  var maxOrbit = 356 + 40;
+
+  var cam = {x:0, y:0, z:1, fy:0.5}, target = -1;
+  var hover = -1;
+  var layers = [[],[],[]];
+  function seedStars(){
+    var counts = [140, 80, 34];
+    for (var l = 0; l < 3; l++){
+      layers[l] = [];
+      for (var i = 0; i < counts[l]; i++) layers[l].push({x:Math.random(), y:Math.random(), r:(l+1)*0.45 + Math.random()*0.5, t:Math.random()*6.28});
+    }
+  }
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    fit = Math.min(W, H) / (maxOrbit * 2.1);
+  }
+  function pos(p){ return {x:Math.cos(p.a) * p.orbit, y:Math.sin(p.a) * p.orbit * 0.92}; }
+
+  function toScreen(wx, wy){
+    var s = fit * cam.z;
+    return {x:(wx - cam.x) * s + W/2, y:(wy - cam.y) * s + H * cam.fy, s:s};
+  }
+
+  // UI
+  var nav = document.getElementById('nav');
+  var panel = document.getElementById('panel');
+  var hint = document.getElementById('hint');
+  var roman = ['I','II','III','IV','V','VI'];
+  var buttons = planets.map(function(p, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.style.setProperty('--c', p.c1);
+    b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = '<i></i>' + p.name;
+    b.addEventListener('click', function(){ select(target === i ? -1 : i); });
+    nav.appendChild(b);
+    return b;
+  });
+  function select(i){
+    target = i;
+    buttons.forEach(function(b, j){ b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    if (i < 0){ panel.classList.remove('show'); return; }
+    hint.classList.add('gone');
+    var p = planets[i];
+    document.getElementById('pIdx').textContent = 'World ' + roman[i];
+    document.getElementById('pName').textContent = p.name;
+    document.getElementById('pText').textContent = p.text;
+    document.getElementById('pOrbit').textContent = p.year;
+    document.getElementById('pDay').textContent = p.day;
+    document.getElementById('pMoons').textContent = p.moons;
+    panel.classList.remove('show'); void panel.offsetWidth; panel.classList.add('show');
+  }
+  document.getElementById('close').addEventListener('click', function(){ select(-1); });
+  window.addEventListener('keydown', function(e){ if (e.key === 'Escape') select(-1); });
+
+  function pick(sx, sy){
+    var best = -1, bd = Infinity;
+    planets.forEach(function(p, i){
+      var w = pos(p), s = toScreen(w.x, w.y);
+      var d = Math.hypot(sx - s.x, sy - s.y);
+      var rad = Math.max(16, p.size * s.s * 1.5);
+      if (d < rad && d < bd){ bd = d; best = i; }
+    });
+    return best;
+  }
+  canvas.addEventListener('click', function(e){
+    var i = pick(e.clientX, e.clientY);
+    if (i >= 0) select(i); else if (target >= 0) select(-1);
+  });
+  canvas.addEventListener('pointermove', function(e){
+    hover = pick(e.clientX, e.clientY);
+    canvas.classList.toggle('hot', hover >= 0);
+  });
+
+  var last = performance.now(), time = 0;
+  function frame(now){
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    time += dt;
+    var spd = reduce ? 0.12 : 1;
+    planets.forEach(function(p){ p.a += p.speed * 0.18 * dt * spd; });
+
+    var tx = 0, ty = 0, tz = 1;
+    if (target >= 0){
+      var tp = pos(planets[target]);
+      tx = tp.x; ty = tp.y; tz = Math.min(5.2, 120 / planets[target].size * 0.36 + 1.4);
+    }
+    var k = reduce ? 1 : 1 - Math.pow(0.0009, dt);
+    var tfy = (target >= 0 && W < 600) ? 0.27 : 0.5;
+    cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; cam.z += (tz - cam.z) * k; cam.fy += (tfy - cam.fy) * k;
+
+    // background
+    var g = ctx.createRadialGradient(W*0.5, H*0.5, 0, W*0.5, H*0.5, Math.max(W, H)*0.75);
+    g.addColorStop(0, '#120e1c'); g.addColorStop(1, '#07060d');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    // parallax stars
+    for (var l = 0; l < 3; l++){
+      var depth = [0.04, 0.1, 0.22][l];
+      var ox = -cam.x * fit * depth * cam.z, oy = -cam.y * fit * depth * cam.z;
+      var arr = layers[l];
+      for (var i = 0; i < arr.length; i++){
+        var s = arr[i];
+        var x = ((s.x * W + ox) % W + W) % W;
+        var y = ((s.y * H + oy) % H + H) % H;
+        var tw = reduce ? 0.7 : 0.55 + 0.45 * Math.sin(time * 1.3 + s.t);
+        ctx.globalAlpha = tw * (0.35 + l * 0.25);
+        ctx.fillStyle = l === 2 ? '#ffe6c2' : '#f4ead7';
+        ctx.fillRect(x, y, s.r, s.r);
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    // orbits
+    var sun = toScreen(0, 0);
+    ctx.lineWidth = 1;
+    planets.forEach(function(p, i){
+      ctx.strokeStyle = i === target ? 'rgba(232,166,74,.45)' : 'rgba(244,234,215,.09)';
+      ctx.beginPath();
+      ctx.ellipse(sun.x, sun.y, p.orbit * sun.s, p.orbit * 0.92 * sun.s, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+
+    // sun
+    var sr = 30 * sun.s;
+    var halo = ctx.createRadialGradient(sun.x, sun.y, sr * 0.3, sun.x, sun.y, sr * 4.5);
+    halo.addColorStop(0, 'rgba(255,170,80,.55)'); halo.addColorStop(.35, 'rgba(255,110,60,.14)'); halo.addColorStop(1, 'rgba(255,110,60,0)');
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(sun.x, sun.y, sr * 4.5, 0, 6.283); ctx.fill();
+    var core = ctx.createRadialGradient(sun.x - sr*0.25, sun.y - sr*0.25, 0, sun.x, sun.y, sr);
+    core.addColorStop(0, '#fff4d6'); core.addColorStop(.55, '#ffb24d'); core.addColorStop(1, '#ff6a3d');
+    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(sun.x, sun.y, sr * (1 + (reduce ? 0 : Math.sin(time*1.4)*0.015)), 0, 6.283); ctx.fill();
+
+    // planets
+    planets.forEach(function(p, i){
+      var w = pos(p), s = toScreen(w.x, w.y);
+      var r = p.size * s.s;
+      if (s.x < -r*4 || s.x > W + r*4 || s.y < -r*4 || s.y > H + r*4) return;
+      var ang = Math.atan2(w.y, w.x);
+      var lx = s.x - Math.cos(ang) * r * 0.45, ly = s.y - Math.sin(ang) * r * 0.45;
+      if (p.ring){
+        ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(-0.38);
+        ctx.strokeStyle = 'rgba(242,201,138,.35)'; ctx.lineWidth = r * 0.22;
+        ctx.beginPath(); ctx.ellipse(0, 0, r * 2.05, r * 0.55, 0, Math.PI, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+      }
+      var pg = ctx.createRadialGradient(lx, ly, r * 0.1, s.x, s.y, r * 1.05);
+      pg.addColorStop(0, p.c1); pg.addColorStop(.7, p.c2); pg.addColorStop(1, '#05040a');
+      ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.283); ctx.fill();
+      if (p.ring){
+        ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(-0.38);
+        ctx.strokeStyle = 'rgba(255,224,170,.55)'; ctx.lineWidth = r * 0.22;
+        ctx.beginPath(); ctx.ellipse(0, 0, r * 2.05, r * 0.55, 0, 0, Math.PI); ctx.stroke();
+        ctx.restore();
+      }
+      if (i === hover || i === target){
+        ctx.strokeStyle = i === target ? 'rgba(232,166,74,.9)' : 'rgba(244,234,215,.6)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
+        ctx.beginPath(); ctx.arc(s.x, s.y, r + 8 + (reduce ? 0 : Math.sin(time*3)*2), 0, 6.283); ctx.stroke();
+        ctx.setLineDash([]);
+        if (i === hover && i !== target){
+          ctx.fillStyle = '#f4ead7'; ctx.font = '11px Futura, "Century Gothic", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.name.toUpperCase(), s.x, s.y - r - 16);
+        }
+      }
+    });
+
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', resize);
+  resize(); seedStars();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

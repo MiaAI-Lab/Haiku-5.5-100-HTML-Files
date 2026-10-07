@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page, "double-pendulum-lab": a dark laboratory instrument for exploring chaos with a canvas double pendulum, labeled "Bench 04 · Nonlinear Dynamics". Palette: graphite #0d1012 stage with a 40px engineering grid in #262c31 and a radial vignette, a slightly lighter control rail #13171a, text #d7dde0 and dim #6f7a81, with three electric accents: lime #d4ff3a (primary pendulum and controls), cyan #38e1ff (fast trail), rose #ff4f7b (twin pendulum). Type: Helvetica Neue in light and bold weights for the big "Double Pendulum" title, ui-monospace / SF Mono / Menlo for every label, readout and button. Layout: a two-column grid with the full-height stage on the left and a 320px parameter rail on the right; below 820px they stack with the stage at about 62vh. The stage holds a top-left HUD (lime kicker, title, short explanation of sensitivity to initial conditions) and a bottom-left readout row for time, θ1, θ2, and total energy. Physics: the standard Lagrangian double-pendulum equations integrated with RK4 in 8 substeps per frame, masses m1 = 1 and m2 set by a ratio slider, lengths in meters scaled to fit 40 percent of the smaller stage dimension with the pivot at 46 percent height. Rendering on a devicePixelRatio-sized canvas: thin pale rods, a hollow upper bob, a glowing filled lower bob with canvas shadowBlur, a small pivot mount, and a fading trail of the lower bob drawn as segments whose alpha and width grow with recency and whose hue shifts from lime to cyan with speed. Rail: sliders for upper arm length, lower arm length, mass ratio, gravity (1 to 25 m/s²), and trail persistence (0 to 1200 points), styled as hairline tracks with a lime progress fill and diamond thumbs that glow on hover; buttons PAUSE/RUN, RESET, and TWIN; a small phase-portrait canvas plotting θ1 against θ2 as slowly fading dots; and a note explaining the twin. TWIN spawns a rose pendulum offset by 0.001 rad so the two trails visibly diverge. Users can drag either bob to set new angles, which clears the trails and restarts time. Reduced motion: the simulation starts held and only runs when the user presses RUN.
+
+Title: Chaos Bench Pendulum
+
+Description: A precise, instrument-grade simulation of a double pendulum set on a dark engineering grid. A lime bob whips through looping arcs, leaving a luminous trail that brightens toward cyan when it moves fast, while a side rail of hairline sliders lets the visitor change arm lengths, mass ratio, gravity, and trail length. A twin pendulum and a live phase portrait make the butterfly effect visible: two nearly identical starts that soon trace completely different paths.
+
+Visual techniques:
+- RK4 numerical integration of the double-pendulum equations of motion with substeps
+- devicePixelRatio-aware canvas with resize handling and a single requestAnimationFrame loop
+- Fading, velocity-colored trail built from per-segment alpha, width, and HSL hue
+- Glowing bobs via canvas shadowBlur on a grid background made from CSS gradients
+- Secondary phase-space canvas that accumulates and slowly fades plotted points
+- Custom range inputs with CSS-variable progress fills and rotated diamond thumbs
+- Live numeric readouts for time, angles, and conserved energy
+
+Interaction model:
+Drag either bob on the stage to pose the pendulum at any angle, then release to let it swing. Sliders change the arm lengths, mass ratio, gravity, and trail persistence in real time. PAUSE and RUN hold or release the simulation (the space bar also toggles it), RESET returns to the default start, and TWIN adds a second pendulum offset by a thousandth of a radian so the visitor can watch the two diverge, both on the stage and in the phase portrait.

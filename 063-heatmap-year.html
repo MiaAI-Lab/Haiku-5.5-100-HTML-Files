@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kestrel Ridge Observatory: A Year of Night</title>
+<style>
+:root{
+  --bg:#0a0d12;
+  --panel:#11161e;
+  --line:#1e2632;
+  --text:#e8e4dc;
+  --muted:#7d8796;
+  --c0:#171d27;
+  --c1:#2b2350;
+  --c2:#5a2d82;
+  --c3:#a8347a;
+  --c4:#ef6640;
+  --c5:#ffd27a;
+  --accent:#ffd27a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh;background:
+    radial-gradient(900px 500px at 85% -10%, rgba(168,52,122,.16), transparent 60%),
+    radial-gradient(700px 400px at -10% 110%, rgba(90,45,130,.18), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  padding:clamp(20px,5vw,64px) clamp(16px,4vw,56px);
+  overflow-x:hidden;
+}
+.wrap{max-width:1180px;margin:0 auto}
+.eyebrow{font:500 .72rem/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+h1{font-weight:300;font-size:clamp(2rem,5.5vw,3.6rem);letter-spacing:-.03em;margin:14px 0 6px;line-height:1.02}
+h1 b{font-weight:700;background:linear-gradient(90deg,var(--c3),var(--c4),var(--c5));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--muted);max-width:560px;line-height:1.6;margin:0}
+
+.bar{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;margin:34px 0 18px}
+.tabs{display:inline-flex;padding:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;position:relative}
+.tabs button{position:relative;z-index:1;font:500 .82rem/1 system-ui,sans-serif;color:var(--muted);background:none;border:0;padding:10px 16px;border-radius:999px;cursor:pointer;transition:color .3s}
+.tabs button[aria-selected="true"]{color:var(--bg)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pill{position:absolute;top:4px;bottom:4px;left:4px;border-radius:999px;background:linear-gradient(90deg,var(--c4),var(--c5));transition:transform .5s cubic-bezier(.6,0,.2,1),width .5s cubic-bezier(.6,0,.2,1)}
+.legend{display:flex;align-items:center;gap:6px;font:.72rem ui-monospace,Menlo,monospace;color:var(--muted)}
+.legend i{width:12px;height:12px;border-radius:3px;display:block}
+
+.board{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(14px,3vw,28px)}
+.months{display:grid;grid-template-columns:repeat(53,1fr);gap:4px;margin:0 0 8px 30px;font:.68rem ui-monospace,Menlo,monospace;color:var(--muted)}
+.months span{white-space:nowrap;cursor:default;transition:color .2s}
+.months span.hot{color:var(--accent)}
+.gridwrap{display:flex;gap:8px}
+.days{display:grid;grid-template-rows:repeat(7,1fr);gap:4px;width:22px;font:.62rem ui-monospace,Menlo,monospace;color:var(--muted);align-items:center}
+.grid{flex:1;display:grid;grid-template-rows:repeat(7,auto);grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;outline:none}
+.cell{aspect-ratio:1;border-radius:3px;background:var(--c0);transform:scale(.2);opacity:0;
+  transition:transform .55s cubic-bezier(.3,1.5,.5,1),opacity .4s,background-color .6s ease,box-shadow .2s;
+}
+.cell.on{transform:scale(1);opacity:1}
+.cell.blank{visibility:hidden}
+.cell:hover,.cell.focus{box-shadow:0 0 0 2px var(--text);transform:scale(1.25);z-index:2;position:relative}
+.cell.dim{opacity:.18}
+.grid:focus-visible{box-shadow:0 0 0 2px rgba(255,210,122,.35);border-radius:4px}
+
+.tip{position:fixed;z-index:10;pointer-events:none;min-width:170px;padding:10px 12px;border-radius:10px;
+  background:rgba(17,22,30,.92);border:1px solid #2c3646;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 16px 40px rgba(0,0,0,.5);font-size:.8rem;opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s}
+.tip.show{opacity:1;transform:none}
+.tip .d{font:.7rem ui-monospace,Menlo,monospace;color:var(--muted);letter-spacing:.08em}
+.tip .v{font-size:1.4rem;font-weight:600;margin:4px 0 2px}
+.tip .v small{font-size:.75rem;color:var(--muted);font-weight:400}
+.tip .n{color:#c9c3b8;font-style:italic}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.stat .k{font:.66rem ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.stat .val{font-size:clamp(1.4rem,3vw,2rem);font-weight:600;margin-top:8px;font-variant-numeric:tabular-nums}
+.stat .sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:38px;margin-top:10px}
+.spark b{flex:1;background:linear-gradient(var(--c4),var(--c2));border-radius:2px 2px 0 0;transition:height .7s cubic-bezier(.6,0,.2,1);min-height:2px}
+.foot{margin-top:22px;font:.7rem ui-monospace,Menlo,monospace;color:var(--muted);letter-spacing:.06em}
+
+@media (max-width:760px){
+  .months,.days{display:none}
+  .grid{grid-auto-flow:row;grid-template-rows:none;grid-template-columns:repeat(7,1fr);gap:5px;max-width:360px;margin:0 auto}
+  .cell.monthstart{box-shadow:inset 0 2px 0 rgba(255,210,122,.6)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .bar{flex-direction:column;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){
+  .cell{transition:background-color .01ms,opacity .01ms;transform:none}
+  .eyebrow::before{animation:none}
+  .pill,.spark b{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Kestrel Ridge Observatory &middot; Logbook 2025</p>
+  <h1>A year of <b>night</b>, square by square.</h1>
+  <p class="lede">Every evening the dome opened, someone wrote a number in the ledger. Here are all 365 of them, shaded from cloud-bound grey to the rare nights when the sky ran gold.</p>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Choose metric" id="tabs">
+      <span class="pill" id="pill" aria-hidden="true"></span>
+      <button role="tab" aria-selected="true" data-m="0" type="button">Clear-sky hours</button>
+      <button role="tab" aria-selected="false" data-m="1" type="button">Meteors logged</button>
+      <button role="tab" aria-selected="false" data-m="2" type="button">Kettles boiled</button>
+    </div>
+    <div class="legend" aria-hidden="true">Less <i style="background:var(--c0)"></i><i style="background:var(--c1)"></i><i style="background:var(--c2)"></i><i style="background:var(--c3)"></i><i style="background:var(--c4)"></i><i style="background:var(--c5)"></i> More</div>
+  </div>
+
+  <div class="board">
+    <div class="months" id="months" aria-hidden="true"></div>
+    <div class="gridwrap">
+      <div class="days" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span>Sun</span></div>
+      <div class="grid" id="grid" tabindex="0" role="grid" aria-label="Daily values for 2025. Use arrow keys to move between days."></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Year total</div><div class="val" id="sTotal">0</div><div class="sub" id="sUnit">hours</div></div>
+    <div class="stat"><div class="k">Best night</div><div class="val" id="sBest">0</div><div class="sub" id="sBestD">&nbsp;</div></div>
+    <div class="stat"><div class="k">Longest streak</div><div class="val" id="sStreak">0</div><div class="sub">nights above zero</div></div>
+    <div class="stat"><div class="k">By month</div><div class="spark" id="spark"></div></div>
+  </div>
+  <p class="foot" id="foot">Hover a square for the ledger entry. Hover a month to isolate it.</p>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"><div class="d"></div><div class="v"></div><div class="n"></div></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var YEAR = 2025, MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var DAYN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var grid = document.getElementById('grid'), monthsEl = document.getElementById('months'), tip = document.getElementById('tip');
+  var colors = ['--c0','--c1','--c2','--c3','--c4','--c5'].map(function(v){return 'var('+v+')';});
+
+  function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  var notesA = ['Fog off the reservoir until two.','Seeing steady, Jupiter crisp.','Wind rattled the dome shutters.','Frost on the eyepiece cap.','Clouds parted at midnight for an hour.','Perfect transparency. Nobody slept.','Rain. Catalogued plates instead.','Moon too bright for faint work.'];
+  var notesB = ['Two bright Perseids before dusk ended.','A green fireball, slow and silent.','Counted from the deck chair.','Sporadics only.','Shower peak; lost count twice.','One meteor, very long, very orange.'];
+  var notesC = ['Rationing the good tea.','Visitor night: urn on all evening.','Thermos broke. Kettle worked overtime.','Quiet. One pot.','Frozen pipes; melted snow.','Midnight soup counts as a kettle.'];
+
+  var metrics = [
+    {unit:'hours', notes:notesA, seed:11, gen:function(d,r){ var season = .5+.5*Math.cos((d-15)/365*2*Math.PI); var v = (r()*r()*1.3+season*.45)*11; if(r()<.22) v=0; return Math.round(Math.min(12,v)*10)/10; }},
+    {unit:'meteors', notes:notesB, seed:42, gen:function(d,r){ var base = r()*6; var peak = 70*Math.exp(-Math.pow((d-223)/4,2)) + 55*Math.exp(-Math.pow((d-347)/3.5,2)) + 20*Math.exp(-Math.pow((d-2)/2.5,2)) + 14*Math.exp(-Math.pow((d-293)/3,2)); var v = base + peak*(.6+.4*r()); if(r()<.25) v=0; return Math.round(v); }},
+    {unit:'kettles', notes:notesC, seed:7, gen:function(d,r){ var cold = .5+.5*Math.cos((d-20)/365*2*Math.PI); var dow = new Date(YEAR,0,1+d).getDay(); var v = 1+cold*5+r()*3+(dow===6?3:0); return Math.round(v); }}
+  ];
+
+  var start = new Date(YEAR,0,1), days = 365;
+  var lead = (start.getDay()+6)%7; // Monday-first
+  var cells = [], data = [];
+
+  // build cells
+  for (var i=0;i<lead;i++){ var b=document.createElement('div'); b.className='cell blank'; grid.appendChild(b); }
+  for (var d=0; d<days; d++){
+    var dt = new Date(YEAR,0,1+d);
+    var c = document.createElement('div');
+    c.className='cell'; c.dataset.i=d; c.setAttribute('role','gridcell');
+    if (dt.getDate()===1) c.classList.add('monthstart');
+    grid.appendChild(c); cells.push({el:c,date:dt,month:dt.getMonth()});
+  }
+  // month labels at their week column
+  var cols = Math.ceil((lead+days)/7);
+  monthsEl.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+  MONTHS.forEach(function(m,mi){
+    var first = new Date(YEAR,mi,1); var doy = Math.round((first-start)/864e5);
+    var s = document.createElement('span'); s.textContent=m; s.style.gridColumn = (Math.floor((doy+lead)/7)+1)+' / span 3';
+    s.style.gridRow='1'; s.dataset.m=mi; monthsEl.appendChild(s);
+    s.addEventListener('pointerenter',function(){ isolate(mi,s); });
+    s.addEventListener('pointerleave',function(){ isolate(-1,s); });
+  });
+
+  function isolate(mi,s){
+    s.classList.toggle('hot', mi>=0);
+    cells.forEach(function(c){ c.el.classList.toggle('dim', mi>=0 && c.month!==mi); });
+  }
+
+  var current = 0;
+  function apply(mi, first){
+    var m = metrics[mi], r = rng(m.seed);
+    data = cells.map(function(c,d){ return m.gen(d,r); });
+    var max = Math.max.apply(null,data) || 1;
+    cells.forEach(function(c,d){
+      var v = data[d], lvl = v<=0 ? 0 : Math.min(5, 1+Math.floor(Math.pow(v/max,.7)*4.999));
+      var delay = reduce ? 0 : (first ? (Math.floor((d+lead)/7)*14 + ((d+lead)%7)*20) : (d%7)*12 + Math.floor((d+lead)/7)*5);
+      c.el.style.transitionDelay = delay+'ms';
+      c.el.style.backgroundColor = colors[lvl];
+      c.note = m.notes[(d*7+mi*3)%m.notes.length];
+      c.el.setAttribute('aria-label', fmt(c.date)+': '+v+' '+m.unit);
+    });
+    if (first) requestAnimationFrame(function(){ requestAnimationFrame(function(){ cells.forEach(function(c){ c.el.classList.add('on'); }); }); });
+    setTimeout(function(){ cells.forEach(function(c){ c.el.style.transitionDelay='0ms'; }); }, first ? 1900 : 900);
+    stats(m);
+  }
+
+  function fmt(dt){ return DAYN[dt.getDay()]+', '+MONTHS[dt.getMonth()]+' '+dt.getDate(); }
+
+  function countTo(el, to, dec){
+    var from = parseFloat(el.textContent.replace(/,/g,''))||0, t0 = performance.now(), dur = reduce?1:900;
+    function f(now){ var k = Math.min(1,(now-t0)/dur); k = 1-Math.pow(1-k,3); var v = from+(to-from)*k; el.textContent = dec? v.toFixed(1) : Math.round(v).toLocaleString('en-US'); if(k<1) requestAnimationFrame(f); }
+    requestAnimationFrame(f);
+  }
+  function stats(m){
+    var total = data.reduce(function(a,b){return a+b;},0);
+    var best = 0, bi = 0; data.forEach(function(v,i){ if(v>best){best=v;bi=i;} });
+    var run=0, longest=0; data.forEach(function(v){ run = v>0 ? run+1 : 0; if(run>longest) longest=run; });
+    countTo(document.getElementById('sTotal'), total, m.unit==='hours');
+    countTo(document.getElementById('sBest'), best, m.unit==='hours');
+    countTo(document.getElementById('sStreak'), longest, false);
+    document.getElementById('sUnit').textContent = m.unit;
+    document.getElementById('sBestD').textContent = fmt(cells[bi].date);
+    var mon = new Array(12).fill(0); cells.forEach(function(c,i){ mon[c.month]+=data[i]; });
+    var mx = Math.max.apply(null,mon)||1, sp = document.getElementById('spark');
+    if (!sp.children.length) for (var k=0;k<12;k++){ var b=document.createElement('b'); b.title=MONTHS[k]; sp.appendChild(b); }
+    mon.forEach(function(v,k){ sp.children[k].style.height = (8+v/mx*92)+'%'; sp.children[k].title = MONTHS[k]+': '+(Math.round(v*10)/10)+' '+m.unit; });
+  }
+
+  // tooltip
+  var tD = tip.querySelector('.d'), tV = tip.querySelector('.v'), tN = tip.querySelector('.n');
+  function show(i, x, y){
+    var c = cells[i], v = data[i], u = metrics[current].unit;
+    tD.textContent = fmt(c.date).toUpperCase();
+    tV.innerHTML = ''; tV.appendChild(document.createTextNode(v+' ')); var sm=document.createElement('small'); sm.textContent=u; tV.appendChild(sm);
+    tN.textContent = v<=0 && current<2 ? 'Overcast. Dome stayed shut.' : c.note;
+    tip.classList.add('show');
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var left = Math.min(window.innerWidth-w-8, Math.max(8, x - w/2));
+    var top = y - h - 14; if (top < 8) top = y + 20;
+    tip.style.left = left+'px'; tip.style.top = top+'px';
+  }
+  function hide(){ tip.classList.remove('show'); }
+  grid.addEventListener('pointerover', function(e){
+    var t = e.target; if (!t.dataset || t.dataset.i===undefined) return;
+    var r = t.getBoundingClientRect(); show(+t.dataset.i, r.left+r.width/2, r.top);
+  });
+  grid.addEventListener('pointerleave', hide);
+
+  // keyboard roving focus
+  var focusI = -1;
+  function setFocus(i){
+    if (focusI>=0) cells[focusI].el.classList.remove('focus');
+    focusI = Math.max(0, Math.min(days-1, i));
+    var el = cells[focusI].el; el.classList.add('focus');
+    var r = el.getBoundingClientRect(); show(focusI, r.left+r.width/2, r.top);
+  }
+  grid.addEventListener('keydown', function(e){
+    var mobile = window.matchMedia('(max-width:760px)').matches;
+    var map = mobile ? {ArrowRight:1,ArrowLeft:-1,ArrowDown:7,ArrowUp:-7} : {ArrowRight:7,ArrowLeft:-7,ArrowDown:1,ArrowUp:-1};
+    if (e.key in map){ e.preventDefault(); setFocus(focusI<0?0:focusI+map[e.key]); }
+    else if (e.key==='Home'){ e.preventDefault(); setFocus(0); }
+    else if (e.key==='End'){ e.preventDefault(); setFocus(days-1); }
+  });
+  grid.addEventListener('focus', function(){ if(focusI<0) setFocus(0); else setFocus(focusI); });
+  grid.addEventListener('blur', function(){ if(focusI>=0) cells[focusI].el.classList.remove('focus'); hide(); });
+  window.addEventListener('scroll', hide, {passive:true});
+
+  // tabs
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('#tabs button')), pill = document.getElementById('pill');
+  function placePill(){ var b = tabs[current]; pill.style.width = b.offsetWidth+'px'; pill.style.transform = 'translateX('+(b.offsetLeft-4)+'px)'; }
+  tabs.forEach(function(b,i){
+    b.addEventListener('click', function(){
+      if (i===current) return; current = i;
+      tabs.forEach(function(x,j){ x.setAttribute('aria-selected', j===i?'true':'false'); });
+      placePill(); hide(); apply(i,false);
+    });
+    b.addEventListener('keydown', function(e){
+      if (e.key==='ArrowRight'||e.key==='ArrowLeft'){ var n = (i+(e.key==='ArrowRight'?1:2))%3; tabs[n].focus(); tabs[n].click(); }
+    });
+  });
+  window.addEventListener('resize', placePill);
+  placePill();
+  apply(0,true);
+})();
+</script>
+</body>
+</html>

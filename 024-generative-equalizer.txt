@@ -1,0 +1,22 @@
+Prompt:
+Build a standalone page for an invented hardware-style plug-in, "Halcyon EQ-10": a ten-band graphic equalizer that visualizes a groove generated in code, with no audio at all. Palette: midnight ink #0a0d1c with a raised panel gradient #151a3c to #0e1230, hairlines rgba(160,170,255,.14), text #e9eaff, muted lavender #8a8fbf, and a bar gradient from electric violet #7c5cff through coral #ff6b6b to amber #ffd166, plus a mint #5ef2c4 accent for the response curve. Soft violet and coral radial glows sit at the top and bottom-right of the page. Type: Futura / "Century Gothic" / "Avenir Next" geometric sans for the title, with "EQ-10" in a gradient-clipped bold; ui-monospace / "SF Mono" / Menlo with tabular numerals for every readout.
+Layout: a centered column (max 980px). The header holds the title, a one-line tagline, and two blinking status LEDs (Signal steady, Beat tied to the tempo through a --beat custom property). Below is a rounded device panel with a deep inset screen (canvas, height clamp(200px, 42vh, 340px)) overlaid with a monospace bar and beat counter and "GEN · 48 kHz · NO AUDIO". Under the screen is a 10-column fader bank (32 Hz to 16 kHz), each with a live dB readout (amber when boosted, ice blue when cut, muted at zero), then a row of preset chips (Flat, Bass lift, Vocal, Air, Smile, Surprise) and a gradient Tempo slider (70 to 160 BPM). A short usage note sits underneath.
+Faders: custom role="slider" elements with a track, centre zero line, gradient fill from zero to thumb, and a glossy cap thumb that scales up with a springy ease and a violet glow on hover, focus or drag. Pointer capture handles dragging, double-click resets, and the keyboard supports arrows (0.5 dB, Shift for 3 dB), Home, End and 0. ARIA valuenow and valuetext are kept current. Presets tween all gains over 620ms with an ease-out cubic; Surprise produces a random sine-shaped curve.
+Generator and canvas: a devicePixelRatio-aware canvas with N display bars (20, 28 or 36 depending on width), each mapped to a log-frequency position u. Energy combines smooth value noise, a kick envelope on the low bands every beat, a snare on beats 2 and 4 in the mids, fast hi-hat ticks on eighth notes in the highs, and a wandering melodic Gaussian bump with a harmonic. Each bar's energy is multiplied by 10^(dB/20), using a Catmull-Rom interpolation of the ten fader gains, then smoothed with fast attack and slow release. Bars draw as stacked rounded LED segments coloured by height from a precomputed 41-step gradient. White glowing peak caps fall back with accelerating gravity, a faint mirrored reflection fades into the floor, and a glowing mint response curve with node dots and a dashed 0 dB line is drawn over the bars. Reduced motion slows time to 0.35x, smooths the bars heavily and stops the LED blinking.
+
+Title: Halcyon Generative EQ
+
+Description: A sleek dark equalizer that listens to music that does not exist. A procedural groove with kick, snare, hats and a drifting melody drives a segmented LED spectrum with falling peak caps and a soft reflection. Ten tactile faders, presets and a tempo control reshape that spectrum live, and a glowing response curve drawn over the bars shows the EQ shape you have set.
+
+Visual techniques:
+- Canvas spectrum with rounded LED segments coloured from a precomputed multi-stop gradient
+- Procedural rhythm energy model (kick, snare, hat and melody envelopes plus value noise)
+- Catmull-Rom interpolation of ten band gains into a smooth response curve
+- Attack and release smoothing and gravity-driven peak caps
+- Mirrored low-alpha reflection with a gradient floor fade
+- Glowing curve rendered with canvas shadowBlur and a dashed reference line
+- Custom accessible vertical sliders with pointer capture and keyboard control
+- Eased preset tweening and gradient-clipped title text
+- CSS LED indicators whose blink rate is synced to tempo through a custom property
+
+Interaction model: Drag any of the ten faders up or down, or focus one and use the arrow keys, to boost or cut that band. The bars and response curve react instantly. Preset chips glide the whole fader bank into a new shape, Surprise invents a random curve, double-clicking a fader resets it to 0 dB, and the Tempo slider changes the groove's speed, the bar counter and the beat LED.

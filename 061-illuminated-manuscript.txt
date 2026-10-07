@@ -1,0 +1,27 @@
+Prompt:
+Build a standalone HTML page, "illuminated-manuscript": a single manuscript folio from a fictional abbey (Saint Wendel), titled "The Book of Lamplight". The page sits on a dark candlelit backdrop (deep brown-black radial gradient) with a warm radial glow that eases after the pointer like lamplight. The folio is a centered vellum sheet (max 880px) built from layered gradients: cream #f1e4c4 to #e3cfa0, with faint repeating-linear-gradient fibres in multiply blend and an inset brown vignette. It arrives with a slow rise and slight rotation settle.
+Border: an inline SVG gilt frame stretched over the folio with a gold linear gradient (#7a5412, #d9a940, #fff0b8, #8c6118) whose middle stop slowly glints between gold and pale gold, plus a thin vermilion inner rule.
+Header: small-caps vermilion rubric line with wide tracking, italic lapis (#1f3a7a) title in Palatino Linotype / Book Antiqua / Iowan Old Style / Georgia, and an SVG flourish whose stroke draws itself with stroke-dashoffset.
+Body: two-column justified text (columns: 2 300px, gilt column rule) that collapses to one column on phones. The first paragraph opens with an SVG illuminated initial "I": a lapis square framed in gilt, gold vines that draw themselves, verdigris leaves that bud in with a springy scale, vermilion berries, and a gilt letterform. The initial floats left with drop shadow.
+Copy: four short paragraphs about monks keeping one lamp burning through a comet winter, grinding lapis, and burnishing gold leaf. Certain words ("the patient flame", "lapis", "dog's tooth") are glosses: hovering, focusing, or tapping them draws a vermilion underline and reveals a marginal note card whose text appears as if ink is being wiped on, using a sliding linear-gradient mask.
+Hidden verse: a final dashed-ruled block whose text is invisible until the reader rests the pointer on it; a circular pool of ink spreads from the touch point (radial-gradient background clipped to text, radius animated with requestAnimationFrame), pausing when the pointer leaves, then settling into solid ink.
+A small verdigris vine sits in the right margin on desktop. Colophon in small caps: "Here ends the twelfth folio, Deo gratias".
+Reduced motion: all animations collapse to instant; lamplight follows directly; ink reveals immediately.
+
+Title: The Book of Lamplight
+
+Description:
+A warm, reverent single-page folio that feels like a page lifted from a medieval scriptorium. Cream vellum with fibrous texture sits under a moving pool of candlelight, wrapped in a glinting gilt frame. A lapis-and-gold illuminated initial grows its vines on load, the body reads in two justified columns of Palatino, and vermilion glosses and an ink-shy hidden verse reward slow, attentive reading.
+
+Visual techniques:
+- Layered radial and repeating-linear gradients for vellum, fibres, and vignette
+- Inline SVG gilt border with an animated gradient stop for a glint
+- SVG illuminated initial with stroke-dashoffset vine drawing and spring-scaled leaves
+- CSS columns with a gilt column rule and shape-outside float for the initial
+- Gradient mask transitions to make gloss notes appear as wiped ink
+- Radial-gradient background-clip:text driven by a CSS custom property for the spreading ink reveal
+- Pointer-eased radial lamplight via custom properties and requestAnimationFrame
+- prefers-reduced-motion fallback that disables animation
+
+Interaction model:
+Moving the pointer drags a soft lamplight glow across the backdrop. Hovering, focusing, or tapping a glossed word underlines it in vermilion and reveals a marginal note; tapping elsewhere closes it. Resting the pointer or a finger on the hidden verse makes ink spread outward from that point until the whole verse is written; leaving pauses the spread.

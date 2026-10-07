@@ -1,0 +1,34 @@
+PROMPT
+
+Build a single standalone HTML5 landing page for a fictional deep-space communications company, "Lumen Relay". Its signature moment is the loading sequence: an orbit loader does not fade away. It physically morphs into the page. The loader's ring, core and three satellites each fly to their real counterparts in the layout.
+
+Palette: midnight #0a0c1b and #12162e backgrounds, peach #ff8a5b as the main accent, ice blue #cfe3ff for satellites and focus rings, lilac #9d8cff in the headline gradient, text #e9eefc, muted #8e97b8, hairlines rgba(207,227,255,.14). The page background has tiled tiny radial-gradient stars plus a soft peach glow at the upper right and a lilac glow at the lower left.
+
+Typography: "Avenir Next", "Helvetica Neue", system-ui for display and body. The h1 is 600 weight, clamp(40px, 6.2vw, 84px), tight -0.025em tracking, and its last word "home." is italic with a peach-to-lilac gradient clip. ui-monospace/SF Mono/Menlo is used for the loader counter, status, eyebrow, telemetry and footer, with wide uppercase tracking.
+
+Loader (about 2.7 s): a fixed overlay with a radial midnight background. At its centre are a dashed 1px ice ring (radius up to 70px), a 44px planet core (radial gradient #ffe0cc to peach to #b2465a to #2a1838 with an inset shadow and a peach glow), and three glowing ice satellites, 120 degrees apart. A requestAnimationFrame loop sets each satellite's left/top so it orbits, accelerating as progress rises. A mono counter ticks 000 to 100 in irregular bursts, with a status line that steps through "Acquiring carrier", "Locking Doppler shift", "Decoding frame" and "Handshake complete".
+
+Morph and reveal: when the counter hits 100, the overlay background and text fade out. With the Web Animations API, each loader piece animates its left/top/width/height to the getBoundingClientRect of its target over 1150 ms with cubic-bezier(.75,0,.2,1), staggered. Animating geometry instead of scale keeps the 1px dashed borders crisp. The ring becomes the hero's dashed orbit ring and the core becomes the large hero planet. The satellites go to the hero's orbiting moon, the dot in the nav logo and the dot inside the primary CTA. Targets stay visibility:hidden until the hand-off, then swap in seamlessly. Elements that contain targets fade without translating, so the landing positions are exact. Meanwhile the content rises in with staggered opacity/translate transitions. After hand-off, scroll unlocks, the hero moon begins a slow 26 s orbit and the telemetry numbers count up with a quartic ease-out.
+
+Page: the nav has the logo with the orbit mark, links (Network, Missions, Signal log) and a pill "Replay sequence" button. The two-column hero has an eyebrow ("Deep-space relay network · est. 2041"), the headline "Every signal finds its way home.", a lede about thirty-eight relay stations, a peach primary CTA "Send a transmission" with a glowing dot and a ghost CTA. On the right is the planet stage: a banded planet with a soft-light stripe overlay, a dashed orbit ring and a peach halo. A four-cell mono telemetry strip follows: 38 relays, 1.4 light-hours, 99.982% integrity, 0 lost messages. Then three bordered feature panels (Patient routing, Cold-storage echoes, Quiet hours), each with a mini orbit icon whose moon starts circling on hover, and a mono footer.
+
+Responsive: below 820px the links hide, the planet moves above the text at min(62vw, 280px), telemetry becomes 2x2 and features stack. Nothing scrolls horizontally at 375px.
+
+Reduced motion: the loader is skipped and content simply fades in. Orbits and the count-up animation are disabled, and the numbers show their final values.
+
+Title: Lumen Relay Orbit Reveal
+
+Description: A premium dark landing page for an invented interplanetary relay network that opens with an orbit loader. Satellites circle a small planet while a mono signal counter climbs. When it completes, the loader morphs into the page: the ring grows into the hero orbit, the core swells into the hero planet, and each satellite flies to its home in the logo, the call-to-action and the hero's moon. Copy, telemetry and feature panels then rise into place. The palette is midnight, peach and ice-blue, and the type pairs Avenir with a mono.
+
+Visual techniques:
+- requestAnimationFrame orbit loader with progress-driven speed and a bursty, time-bounded counter
+- FLIP-style hand-off using getBoundingClientRect targets and Web Animations API geometry tweens
+- Hidden target elements swapped in at hand-off for a seamless morph
+- Staggered reveal via CSS custom-property delays (--i)
+- Radial-gradient planet with inset shading, a soft-light band overlay and a halo
+- Tiled radial-gradient starfield background
+- Gradient-clipped italic headline accent
+- Eased count-up telemetry and CSS hover-activated mini orbits
+- Scroll lock during loading, a Replay control and prefers-reduced-motion fallbacks
+
+Interaction model: The sequence plays automatically on load. After the reveal the page scrolls normally. Buttons and feature panels respond to hover with lifts, glows and orbiting icons, and all links and buttons show clear focus outlines. The "Replay sequence" button scrolls to the top, rebuilds the loader and runs the whole orbit-to-page morph again. It is guarded so it cannot overlap a run in progress.

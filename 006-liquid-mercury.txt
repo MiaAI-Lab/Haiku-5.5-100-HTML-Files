@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page called "Quicksilver", a material study of liquid mercury. Concept: SVG goo-filter metaballs that follow the pointer and split and merge. Full-viewport inline SVG on a deep graphite radial background (#1d2027 to #0b0c0f). Inside, a group of circles filled with a chrome radial gradient (white highlight, cool greys, near-black band, pale rim) is rendered through one SVG filter: Gaussian blur (stdDeviation 14) plus an alpha-threshold color matrix (alpha 26, offset -11) to fuse circles into metaballs, then a small blur feeding feSpecularLighting with a point light, composited back inside the shape so the liquid gets a wet specular sheen. Blob system: one leader blob spring-chases the pointer (stiffness about 0.14, damping 0.78) and shrinks slightly when moving fast; a tail of seven decreasing circles follows it link by link so it stretches like a bead of metal; six satellite droplets orbit the leader in drifting Lissajous paths, constantly budding off and re-merging. When the pointer is idle the leader traces a slow Lissajous loop. Clicking or tapping (or pressing Space, or the "Shatter" button) bursts every follower outward with random velocity and sheds six short-lived droplets that shrink and vanish; followers bounce off the edges and after a while are pulled back to merge. "Gather" recalls everything immediately. The point light trails the leader so highlights slide across the surface. A live "Droplets" counter clusters touching circles to report how many separate pools exist. Typography: Helvetica Neue ultra-light (weight 200) for a huge "Quicksilver" headline filled with a metallic linear-gradient text clip; Georgia italic for the element note "Hg 200.59 · liquid at rest"; tiny tracked uppercase eyebrow "Material Study Nº 80". A thin hairline frame inset from the viewport edges. Pill buttons in translucent glass with lift on hover and visible focus rings. Custom cursor hidden on hover-capable devices so the mercury itself is the cursor. Reduced motion: much softer springs and slower orbits. Responsive: footer copy and element note hide under 520px.
+
+Title: Quicksilver Mercury Study
+
+Description: A dark, gallery-like specimen page where a pool of liquid mercury lives on screen. The metal is built entirely from SVG circles fused with a goo threshold filter and lit with a specular lighting pass, so it reads as a reflective, heavy liquid. It trails the pointer like a stretched bead, sheds and reabsorbs satellite droplets, and shatters into scattered beads that slowly find each other again. Ultra-light chrome headline type, a serif italic chemistry footnote and hairline framing give it a restrained museum-placard feel.
+
+Visual techniques:
+- SVG filter chain: feGaussianBlur + feColorMatrix alpha threshold for metaball fusion
+- feSpecularLighting with an animated fePointLight composited inside the goo shape
+- Chrome radialGradient fill on every circle
+- Spring physics leader, chained tail followers, and orbiting satellites
+- Burst particles with damping, edge bounce, shrink and removal
+- Flood-fill clustering to count separate droplets live
+- Metallic gradient text via background-clip:text
+- Hairline inset frame, glass pill buttons, prefers-reduced-motion softening
+
+Interaction model: Move the pointer and the mercury follows, stretching into a tail while satellite beads orbit and merge. Click or tap anywhere, press Space, or use "Shatter" to burst the metal into droplets that drift, bounce and come back together; "Gather" pulls everything home at once. The droplet counter shows how many separate pools exist. When left alone, the mercury wanders on its own slow loop.

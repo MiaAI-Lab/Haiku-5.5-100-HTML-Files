@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Azure Meridian Line Posters</title>
+<style>
+:root{--sky1:#10203a;--sky2:#e46f4f;--sky3:#f6d7a6;--sun1:#fff1c9;--sun2:#f2a541;--sea1:#13304f;--sea2:#08121f;--land:#1a1430;--accent:#e46f4f;
+--cream:#f3e6c4;--gold:#c9a24b;--wall:#0b0d14;--px:0;--py:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--wall)}
+body{min-height:100vh;overflow-x:hidden;color:var(--cream);font-family:"Avenir Next Condensed","Arial Narrow","Franklin Gothic Medium","Helvetica Neue",Arial,sans-serif;
+background:linear-gradient(90deg,rgba(201,162,75,.05) 1px,transparent 1px) 0 0/22px 100%,radial-gradient(80% 60% at 50% 30%,#1a1e2c,var(--wall) 70%)}
+.cp{font-family:Copperplate,"Copperplate Gothic Light","Copperplate Gothic",Optima,"Gill Sans",serif;letter-spacing:.24em;text-transform:uppercase}
+.hall{max-width:1120px;margin:0 auto;padding:28px 16px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:32px;justify-items:center}
+@media(min-width:900px){.hall{grid-template-columns:minmax(0,560px) minmax(0,340px);justify-content:center;align-items:center;gap:64px;padding:48px 32px 72px}}
+.poster{position:relative;width:min(100%,560px);aspect-ratio:2/3;container-type:inline-size;overflow:hidden;box-shadow:0 2px 0 #5c4a20,0 40px 80px -30px #000,0 0 0 1px rgba(201,162,75,.35);background:var(--sea2)}
+.poster svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.poster::after{content:"";position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 40%,rgba(255,240,200,.18) 50%,transparent 60%);transform:translateX(-70%);transition:transform 1.4s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.poster:hover::after{transform:translateX(70%)}
+.top{position:absolute;left:0;right:0;top:7.5%;text-align:center}
+.line-co{font-size:11px;font-size:2.3cqw;color:var(--gold)}
+.ttl{margin-top:2.4cqw;font-weight:700;text-transform:uppercase;line-height:.86;font-size:56px;font-size:14.5cqw;letter-spacing:.04em;font-stretch:condensed}
+.ttl div{display:flex;justify-content:center}
+.ttl span{display:inline-block;cursor:default;color:var(--cream);transition:transform .45s cubic-bezier(.2,1.6,.4,1),color .3s ease,text-shadow .3s ease;text-shadow:0 .04em 0 rgba(0,0,0,.35)}
+.ttl span.warm{transform:translateY(-4%)}
+.ttl span.hot{transform:translateY(-10%) scale(1.06);color:transparent;background:linear-gradient(180deg,#fff4cf 10%,#e6c26a 50%,#9a7428 90%);-webkit-background-clip:text;background-clip:text;text-shadow:none}
+.ttl span.in{animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{transform:translateY(55%);opacity:0;filter:blur(3px)}to{transform:none;opacity:1;filter:none}}
+.tag{margin:3cqw auto 0;max-width:72%;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:13px;font-size:3cqw;line-height:1.35;color:rgba(243,230,196,.92);transition:opacity .4s ease}
+.foot{position:absolute;left:5.5%;right:5.5%;bottom:4.6%;display:flex;justify-content:space-between;align-items:flex-end;gap:3cqw}
+.foot .cp{font-size:9px;font-size:1.9cqw;line-height:1.7;color:var(--cream)}
+.foot .cp b{display:block;color:var(--gold);font-weight:400;font-size:3.4cqw;letter-spacing:.18em}
+.seal{flex:none;width:15cqw;height:15cqw;border-radius:50%;border:1px solid var(--gold);display:grid;place-items:center;text-align:center;font-size:1.6cqw;color:var(--gold);line-height:1.3;background:radial-gradient(circle,rgba(201,162,75,.12),transparent 70%)}
+.seal strong{display:block;font-size:4cqw;font-weight:400;letter-spacing:0;color:var(--cream)}
+.side{width:100%;max-width:560px}
+.side h2{font-weight:700;text-transform:uppercase;font-size:clamp(1.9rem,5vw,2.6rem);letter-spacing:.05em;line-height:1;margin:10px 0 12px}
+.side p.intro{font-family:Georgia,serif;line-height:1.6;color:rgba(243,230,196,.78);margin-bottom:22px}
+.kick{font-size:.72rem;color:var(--gold)}
+.tickets{display:grid;gap:12px}
+.tk{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;color:var(--cream);background:linear-gradient(90deg,rgba(243,230,196,.06),rgba(243,230,196,.02));border:1px solid rgba(201,162,75,.35);padding:14px 16px;cursor:pointer;transition:background .3s ease,border-color .3s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
+.tk::before,.tk::after{content:"";position:absolute;right:76px;width:12px;height:12px;border-radius:50%;background:var(--wall);border:1px solid rgba(201,162,75,.35)}
+.tk::before{top:-7px}.tk::after{bottom:-7px}
+.tk:hover{transform:translateX(6px);border-color:var(--gold)}
+.tk:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.tk[aria-pressed="true"]{background:linear-gradient(90deg,rgba(201,162,75,.22),rgba(201,162,75,.04));border-color:var(--gold)}
+.sw{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--a) 0 25%,var(--b) 0 50%,var(--a) 0 75%,var(--b) 0)}
+.tk .nm{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:1.15rem}
+.tk .nm small{display:block;font-weight:400;font-family:Georgia,serif;text-transform:none;letter-spacing:0;font-size:.85rem;opacity:.7;margin-top:2px}
+.tk .days{padding-left:18px;border-left:1px dashed rgba(201,162,75,.45);font-size:.7rem;text-align:center;color:var(--gold);min-width:58px}
+.tk .days b{display:block;font-size:1.3rem;color:var(--cream);letter-spacing:0}
+.hint{margin-top:18px;font-size:.68rem;color:rgba(243,230,196,.5)}
+.rays{animation:spin 140s linear infinite;transform-origin:300px 560px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ship{animation:sail 46s ease-in-out infinite alternate}
+@keyframes sail{from{transform:translateX(250px)}to{transform:translateX(345px)}}
+.beam{transform-origin:100px 362px;animation:sweep 7s ease-in-out infinite alternate}
+@keyframes sweep{from{transform:rotate(-9deg)}to{transform:rotate(7deg)}}
+.wave{stroke-dasharray:34 16;animation:flow 9s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-200}}
+.s1{stop-color:var(--sky1)}.s2{stop-color:var(--sky2)}.s3{stop-color:var(--sky3)}.u1{stop-color:var(--sun1)}.u2{stop-color:var(--sun2)}.e1{stop-color:var(--sea1)}.e2{stop-color:var(--sea2)}
+.land{fill:var(--land)}.acc{fill:var(--accent)}
+.lyr{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion: reduce){.rays,.ship,.beam,.wave{animation:none}.ship{transform:translateX(300px)}.ttl span.in{animation:none}.lyr,.ttl span,.poster::after,.tk{transition:none}}
+</style>
+</head>
+<body>
+<main class="hall">
+  <article class="poster" id="poster" aria-label="Travel poster">
+    <svg viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop class="s1" offset="0"/><stop class="s1" offset=".28"/><stop class="s2" offset=".7"/><stop class="s3" offset="1"/></linearGradient>
+        <radialGradient id="sunG" cx=".5" cy=".35" r=".7"><stop class="u1" offset="0"/><stop class="u2" offset="1"/></radialGradient>
+        <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop class="e1" offset="0"/><stop class="e2" offset="1"/></linearGradient>
+        <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7e3a1"/><stop offset=".5" stop-color="#c9a24b"/><stop offset="1" stop-color="#7d5f22"/></linearGradient>
+        <linearGradient id="beamG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff6d8" stop-opacity=".55"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></linearGradient>
+        <clipPath id="above"><rect width="600" height="560"/></clipPath>
+        <mask id="stripes"><rect width="600" height="900" fill="#fff"/><rect x="0" y="508" width="600" height="3" fill="#000"/><rect x="0" y="522" width="600" height="4" fill="#000"/><rect x="0" y="535" width="600" height="5" fill="#000"/><rect x="0" y="547" width="600" height="6" fill="#000"/></mask>
+      </defs>
+      <rect width="600" height="560" fill="url(#sky)"/>
+      <g clip-path="url(#above)"><g class="lyr" id="lRays"><g class="rays" id="rays"></g></g></g>
+      <g class="lyr" id="lSun"><circle cx="300" cy="560" r="132" fill="url(#sunG)" mask="url(#stripes)"/></g>
+      <g class="lyr" id="lLand">
+        <path class="land" d="M380 560V470h18v-22h14v-30h10v30h14v22h14v-48h12v-18h8v18h12v48h16v-26h22v-14h10v14h14v26h16V560z"/>
+        <path class="land" d="M0 560V520q40-22 70-14l10 4V560z"/>
+        <polygon class="beam" points="100,362 640,300 640,430" fill="url(#beamG)"/>
+        <path d="M82 560L89 380h22l7 180z" fill="#f3e6c4"/>
+        <path class="acc" d="M85.8 470h28.4l1.3 30H84.5zM88.3 410h23.4l1.1 26H87.2z"/>
+        <rect class="land" x="80" y="372" width="40" height="8"/>
+        <rect x="90" y="350" width="20" height="22" fill="url(#gold)"/>
+        <path class="land" d="M86 350l14-14 14 14z"/>
+      </g>
+      <rect y="560" width="600" height="340" fill="url(#sea)"/>
+      <g id="refl" fill="url(#gold)" opacity=".75"></g>
+      <g id="waves" fill="none" stroke="#c9a24b" stroke-opacity=".4" stroke-width="1.4"></g>
+      <g class="lyr" id="lShip"><g class="ship"><g transform="translate(-90 568)">
+        <path d="M0 18h180l-14 22H14z" fill="#0b0d14"/>
+        <path d="M2 18h176l-2 4H4z" fill="#f3e6c4"/>
+        <rect x="30" y="6" width="120" height="12" fill="#f3e6c4"/>
+        <rect x="46" y="-2" width="88" height="8" fill="#f3e6c4"/>
+        <g class="acc"><path d="M58-26h16l-3 24H61z"/><path d="M84-26h16l-3 24H87z"/><path d="M110-26h16l-3 24h-10z"/></g>
+        <g fill="#0b0d14"><rect x="58" y="-26" width="16" height="5"/><rect x="84" y="-26" width="16" height="5"/><rect x="110" y="-26" width="16" height="5"/></g>
+        <g fill="#0b0d14" opacity=".5"><rect x="36" y="10" width="108" height="2"/></g>
+      </g></g></g>
+      <rect x="0" y="760" width="600" height="140" style="fill:var(--sea2)" opacity=".86"/>
+      <rect x="0" y="760" width="600" height="2" fill="url(#gold)"/>
+      <g fill="none" stroke="url(#gold)">
+        <rect x="14" y="14" width="572" height="872" stroke-width="3"/>
+        <rect x="24" y="24" width="552" height="852" stroke-width="1"/>
+      </g>
+      <g id="fans" fill="none" stroke="#c9a24b" stroke-width="1"></g>
+    </svg>
+    <div class="top">
+      <p class="cp line-co">Azure Meridian Line</p>
+      <h1 class="ttl" id="ttl" aria-live="polite"></h1>
+      <p class="tag" id="tag"></p>
+    </div>
+    <div class="foot">
+      <p class="cp"><b id="sail">Every Thursday</b>From the quays of Halvern<br>first class &middot; promenade &middot; tourist</p>
+      <div class="seal cp"><div><strong id="days">3</strong>days<br>to the sun</div></div>
+    </div>
+  </article>
+  <section class="side" aria-label="Choose a destination">
+    <p class="cp kick">Season of 1931 &middot; Summer sailings</p>
+    <h2>Choose your passage</h2>
+    <p class="intro">Three ports on the Meridian route, each painted for the booking hall in gold leaf and gouache. Pick a ticket to change the poster, and run a finger along the lettering to catch the gilt.</p>
+    <div class="tickets" id="tickets"></div>
+    <p class="cp hint">Hover the title letters &middot; move across the poster</p>
+  </section>
+</main>
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg",reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var D=[{t:["Port","Solenne"],sub:"Seven lighthouses",g:"Where seven lighthouses keep the sun up late and the promenade smells of oranges.",d:3,s:"Every Thursday",
+  v:{sky1:"#10203a",sky2:"#e46f4f",sky3:"#f6d7a6",sun1:"#fff1c9",sun2:"#f2a541",sea1:"#13304f",sea2:"#08121f",land:"#1a1430",accent:"#e46f4f"}},
+ {t:["Isle","Verrine"],sub:"The glass lagoon",g:"Glass-green water, white stone steps, and the slowest afternoons anywhere on the Meridian.",d:5,s:"Alternate Mondays",
+  v:{sky1:"#0c2627",sky2:"#3fa38f",sky3:"#e8f0c8",sun1:"#fffbe0",sun2:"#e3c35a",sea1:"#0f4a4a",sea2:"#061d1c",land:"#0b1f22",accent:"#3fa38f"}},
+ {t:["Cap","Doré"],sub:"The gilded cape",g:"A cape that turns to gold leaf at dusk, and a harbour full of white sails coming home.",d:4,s:"Saturdays at dusk",
+  v:{sky1:"#1d1236",sky2:"#9b4d8a",sky3:"#f7c59f",sun1:"#fff0d0",sun2:"#e9a23b",sea1:"#2a1a48",sea2:"#120a22",land:"#170d26",accent:"#c25b8a"}}];
+function el(tag,a,p){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
+/* rays */
+var rays=document.getElementById("rays");
+for(var i=0;i<36;i+=2){var a1=i/36*Math.PI*2,a2=(i+1)/36*Math.PI*2;
+  el("polygon",{points:"300,560 "+(300+Math.cos(a1)*900).toFixed(1)+","+(560+Math.sin(a1)*900).toFixed(1)+" "+(300+Math.cos(a2)*900).toFixed(1)+","+(560+Math.sin(a2)*900).toFixed(1),style:"fill:var(--sky3)","fill-opacity":".16"},rays)}
+/* reflection bars */
+var refl=document.getElementById("refl");
+for(i=0;i<9;i++){var w=230-i*24;el("rect",{x:300-w/2,y:570+i*15,width:w,height:Math.max(1.5,5-i*.4),rx:2},refl)}
+/* waves */
+var wv=document.getElementById("waves");
+for(i=0;i<6;i++){var y=650+i*20,d="M-20 "+y;for(var x=-20;x<620;x+=40)d+=" q20 "+(i%2?-6:6)+" 40 0";el("path",{d:d,"class":"wave",style:"animation-duration:"+(8+i*1.6)+"s"},wv)}
+/* corner fans */
+var fans=document.getElementById("fans");
+[[24,24,0],[576,24,90],[576,876,180],[24,876,270]].forEach(function(c){var g=el("g",{transform:"translate("+c[0]+" "+c[1]+") rotate("+c[2]+")"},fans);
+  [16,26,36].forEach(function(r){el("path",{d:"M"+r+" 0A"+r+" "+r+" 0 0 1 0 "+r},g)});
+  for(var k=1;k<6;k++){var a=k/6*Math.PI/2;el("line",{x1:0,y1:0,x2:(36*Math.cos(a)).toFixed(1),y2:(36*Math.sin(a)).toFixed(1)},g)}});
+/* title */
+var ttl=document.getElementById("ttl"),tag=document.getElementById("tag"),spans=[];
+function setTitle(lines,animate){ttl.textContent="";spans=[];var n=0;ttl.setAttribute("aria-label",lines.join(" "));
+  lines.forEach(function(L){var row=document.createElement("div");row.setAttribute("aria-hidden","true");
+    for(var c=0;c<L.length;c++){var s=document.createElement("span");s.textContent=L[c];if(animate&&!reduce){s.className="in";s.style.animationDelay=(n*45)+"ms"}
+      s.addEventListener("animationend",function(){this.classList.remove("in")});
+      s.dataset.i=n++;row.appendChild(s);spans.push(s)}ttl.appendChild(row)})}
+function heat(i){spans.forEach(function(s,k){s.classList.toggle("hot",k===i);s.classList.toggle("warm",Math.abs(k-i)===1)})}
+ttl.addEventListener("pointerover",function(e){if(e.target.tagName==="SPAN")heat(+e.target.dataset.i)});
+ttl.addEventListener("pointerleave",function(){heat(-1)});
+/* tickets */
+var tk=document.getElementById("tickets"),root=document.documentElement;
+function choose(k,anim){var o=D[k];for(var v in o.v)root.style.setProperty("--"+v,o.v[v]);
+  setTitle(o.t,anim);tag.textContent=o.g;document.getElementById("days").textContent=o.d;document.getElementById("sail").textContent=o.s;
+  Array.prototype.forEach.call(tk.children,function(b,j){b.setAttribute("aria-pressed",j===k?"true":"false")})}
+D.forEach(function(o,k){var b=document.createElement("button");b.type="button";b.className="tk";b.style.setProperty("--a",o.v.sky2);b.style.setProperty("--b",o.v.sun2);
+  b.innerHTML='<span class="sw"></span><span class="nm">'+o.t.join(" ")+'<small>'+o.sub+'</small></span><span class="days cp"><b>'+o.d+'</b>days</span>';
+  b.addEventListener("click",function(){choose(k,true)});tk.appendChild(b)});
+choose(0,true);
+/* parallax */
+var poster=document.getElementById("poster"),L={lRays:4,lSun:8,lLand:14,lShip:22};
+function par(x,y){for(var id in L){document.getElementById(id).style.transform="translate("+(x*L[id]).toFixed(1)+"px,"+(y*L[id]*.5).toFixed(1)+"px)"}}
+if(!reduce){poster.addEventListener("pointermove",function(e){var r=poster.getBoundingClientRect();par((e.clientX-r.left)/r.width-.5,(e.clientY-r.top)/r.height-.5)});
+  poster.addEventListener("pointerleave",function(){par(0,0)})}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+Prompt:
+Build a standalone HTML page called "The Patient Train": interlocking SVG gears where scrolling drives the rotation, with correct meshing logic. Concept: a long-form showcase from a fictional horology workshop, "Marrow & Vell, Clerkenwell, est. 1791", explaining a ten-wheel gear train while the train turns beside the text. Palette: dark walnut (#160f0a to #24170e) with faint vertical wood-grain stripes made from two repeating linear gradients, cream text (#efe3c8), muted parchment labels (#a8916b), brass accent (#c9a14a) and an oxblood small-caps kicker color (#b0442f). Brass wheels use a diagonal gradient from #f6da8a to #c4913a to #6d4518; steel pinions use #eef0f3 to #9097a1 to #44484f. Typography: Didot / Bodoni 72 / Bodoni MT for display headings, Iowan Old Style / Palatino / Georgia for body text, small caps with wide tracking for labels, and ui-monospace for the formulas.
+
+Layout: a two-column grid, max width 1400px. The left column is the article of tall sections. The right column is a sticky full-height stage with a warm radial light, the SVG gear train, a vertical brass "reserve" bar that empties as you scroll, and a HUD under the train showing the current wheel's name, tooth count, speed ratio to the driver with its direction, and the turns it has made in tabular figures. Under 860px it becomes one column: the stage sticks to the top 54% of the screen with a shadow fade and the article scrolls up beneath it.
+
+Gear construction (JavaScript-generated SVG, viewBox 0 100 600 500): module m = 4, so pitch radius r = m*N/2, addendum m and dedendum 1.25m. Each tooth is a trapezoid sampled at five points per pitch, with the tooth center at angle 0. Wheels with 24 or more teeth get five or six circular lightening windows cut with the evenodd fill rule; each wheel also has an engraved ring, a steel hub and a screw slot so the rotation can be read. A static radial "glint" circle sits over each wheel without rotating, so the highlight stays fixed while the metal turns under it, and one feDropShadow filter covers the whole train. Ten wheels are placed by (parent, angle), so each center sits exactly r1 + r2 from its parent: Great Wheel 48 (driver), Centre Pinion 20, Centre Wheel 32, Third Pinion 14, Idler 24, Fourth Wheel 40, Escape Pinion 16, Motion Wheel 36, Escape Wheel 12, Winding Wheel 28. Meshing: child angle = c0 − (Np/Nc)·parent angle, with c0 = φ + 180 + 180/Nc + (Np/Nc)·φ, where φ is the placement direction. This guarantees that a tooth always meets a gap.
+
+Motion: the driver's target angle is scrollY*0.34 plus a hand-drag offset plus a slow 1.2 degrees per second idle drift; the shown angle eases toward the target with frame-rate-independent exponential smoothing. Sections fade and rise in as they reach the middle of the viewport (IntersectionObserver). The active section lights its wheels with a pale gold outline and dims the rest of the train to 38% opacity. A scroll-hint mouse icon animates in the hero. Under prefers-reduced-motion there is no drift and no easing (the wheels follow scroll and drag exactly), and the section fades and hint animation are removed.
+
+Copy: hero "The Patient Train" with counts (10 wheels, 270 teeth, module 4), then sections on the Great Wheel, the Centre Pinion and Wheel, the Idler and Fourth Wheel, the Third Pinion and Escape, the Motion and Winding Wheels, and a closing note on why the teeth agree, which shows the formulas.
+
+Title: The Patient Train
+
+Description: An editorial page for an invented clockmaker. A walnut-and-brass gear train of ten wheels turns as you read. Every wheel is generated from real gear geometry and placed at its exact meshing distance, and each one turns in the opposite direction to its neighbour at the right ratio, with a half-tooth phase offset so tooth always meets gap. Serif typography in Didot and small caps tells the story of each wheel. As each section comes into view, its wheels glow and the rest of the train recedes.
+
+Visual techniques:
+- Procedural SVG gear paths with trapezoidal teeth and evenodd lightening windows
+- Exact meshing math: center distance r1+r2, inverse ratio rotation and half-pitch phase alignment
+- Brass and steel linear gradients, a static glint overlay over rotating parts, and an feDropShadow on the train
+- Sticky stage over a scrolling article, with a one-column sticky-top layout on mobile
+- Frame-rate-independent eased rotation driven by scroll position
+- IntersectionObserver section reveals that light and dim individual wheels
+- Wood grain from layered repeating linear gradients
+- Live HUD with ratio, direction and turn count, and a draining power-reserve bar
+
+Interaction model: Scrolling winds the great wheel and the whole train follows. You can also grab any wheel and turn it by hand; the drag is converted through that wheel's ratio so the train stays meshed. Hovering or focusing a wheel shows its name, tooth count, ratio and turns in the HUD. Arrow keys turn a focused wheel, and Shift makes the steps larger. Reading through the sections highlights the wheels that each section describes.

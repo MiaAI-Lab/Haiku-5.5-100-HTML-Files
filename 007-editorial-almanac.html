@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Almanac of Small Weathers — Hearthstead Quarterly</title>
+<style>
+:root{
+  --cream:#f4ecdc;--paper:#f8f2e6;--ink:#2a1a17;--soft:#6b5750;--ox:#6e1a1f;--ox2:#8c2a2c;--rule:#d8c9b0;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --display:Didot,"Bodoni 72","Bodoni MT",Georgia,"Times New Roman",serif;
+  --sans:"Gill Sans","Gill Sans MT","Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.2,.7,.1,1);--fs:1.18rem;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--serif);font-size:var(--fs);line-height:1.7;
+  background-image:radial-gradient(rgba(110,26,31,.035) 1px,transparent 1.2px);background-size:5px 5px;overflow-x:hidden;transition:font-size .3s}
+.progress{position:fixed;top:0;left:0;height:3px;width:100%;background:var(--ox);transform-origin:0 50%;transform:scaleX(0);z-index:10}
+.mast{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px clamp(16px,4vw,48px);
+  background:rgba(244,236,220,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--rule);font-family:var(--sans);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+.mast b{color:var(--ox);font-weight:600}
+.tools{display:flex;gap:6px}
+.tools button{font:inherit;letter-spacing:.1em;background:none;border:1px solid var(--rule);color:var(--ink);padding:5px 9px;cursor:pointer;border-radius:2px;transition:background .3s,color .3s,border-color .3s}
+.tools button:hover,.tools button:focus-visible{background:var(--ox);color:var(--paper);border-color:var(--ox);outline:none}
+.hero{max-width:1100px;margin:0 auto;padding:clamp(48px,10vw,120px) clamp(16px,4vw,48px) 40px;text-align:center}
+.kicker{font-family:var(--sans);font-size:12px;letter-spacing:.38em;text-transform:uppercase;color:var(--ox)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,9vw,6.4rem);line-height:.95;letter-spacing:-.02em;margin:.3em 0 .25em}
+h1 em{color:var(--ox);font-style:italic}
+.dek{font-style:italic;font-size:clamp(1.1rem,2.4vw,1.45rem);color:var(--soft);max-width:38ch;margin:0 auto}
+.byline{margin-top:28px;font-family:var(--sans);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+.orn{display:flex;align-items:center;justify-content:center;gap:14px;margin:40px auto;color:var(--ox);max-width:420px}
+.orn::before,.orn::after{content:"";flex:1;height:1px;background:var(--ox);opacity:.5}
+article{max-width:1100px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 80px;display:grid;grid-template-columns:1fr minmax(0,36rem) 1fr;column-gap:40px}
+article>*{grid-column:2}
+p{margin:0 0 1.15em;hyphens:auto;-webkit-hyphens:auto}
+.lead::first-letter{float:left;font-family:var(--display);font-size:5.4em;line-height:.78;padding:.08em .1em 0 0;color:var(--ox);font-weight:400}
+.lead::first-line{font-variant:small-caps;letter-spacing:.05em}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.1;margin:1.6em 0 .6em}
+h2 span{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--ox);margin-bottom:10px}
+blockquote{grid-column:1/-1;margin:1.6em 0;padding:1em 0;border-top:2px solid var(--ox);border-bottom:1px solid var(--ox);text-align:center;
+  font-family:var(--display);font-style:italic;font-size:clamp(1.6rem,4.4vw,2.9rem);line-height:1.18;color:var(--ox)}
+blockquote cite{display:block;margin-top:.8em;font-family:var(--sans);font-style:normal;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft)}
+aside.note{grid-column:3;grid-row:span 2;align-self:start;font-family:var(--sans);font-size:.78rem;line-height:1.55;color:var(--soft);border-left:2px solid var(--ox);padding-left:12px;margin-top:.4em}
+aside.note b{display:block;color:var(--ox);letter-spacing:.2em;text-transform:uppercase;font-size:10px;margin-bottom:4px}
+.table{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin:1.4em 0 2em}
+.table div{padding:18px 14px;border-right:1px solid var(--rule);transition:background .4s var(--ease)}
+.table div:last-child{border-right:0}
+.table div:hover{background:var(--paper)}
+.table small{display:block;font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ox)}
+.table strong{display:block;font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.1;margin:6px 0 4px}
+.table span{font-size:.85rem;color:var(--soft);font-style:italic;line-height:1.4;display:block}
+.end{text-align:center;color:var(--ox);font-size:1.4rem;margin-top:1em}
+footer{border-top:1px solid var(--rule);padding:32px 16px 48px;text-align:center;font-family:var(--sans);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+.rv{opacity:0;transform:translateY(22px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+blockquote.rv{transform:scale(.97)}
+blockquote.rv.in{transform:none}
+::selection{background:var(--ox);color:var(--paper)}
+@media (max-width:860px){
+  article{grid-template-columns:minmax(0,1fr)}
+  article>*,aside.note,blockquote,.table{grid-column:1}
+  aside.note{grid-row:auto;margin:0 0 1.4em}
+  .table{grid-template-columns:repeat(2,1fr)}
+  .table div:nth-child(2){border-right:0}
+  .table div:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+}
+@media (max-width:480px){.mast .ed{display:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="mast">
+  <span><b>Hearthstead</b> Quarterly <span class="ed">· Vol. XIV · Autumn</span></span>
+  <span class="tools" aria-label="Text size"><button type="button" id="smaller" aria-label="Smaller text">A−</button><button type="button" id="larger" aria-label="Larger text">A+</button></span>
+</div>
+
+<header class="hero">
+  <div class="kicker">Long Read · Field &amp; Season</div>
+  <h1>The Almanac of <em>Small</em> Weathers</h1>
+  <p class="dek">For ninety-one years, one family has kept a record of the weather nobody else bothered to write down.</p>
+  <div class="byline">By Ottilie Marchbank · Fourteen-minute read</div>
+  <div class="orn" aria-hidden="true">❦</div>
+</header>
+
+<article>
+  <p class="lead rv">There is a ledger on a shelf above the stove in the Penhallow farmhouse, and it is not about rain. Rain has its own instruments, its own government offices, its own radio voice at six in the morning. The ledger is about the other weathers: the hour the frost lets go of the gate latch, the first evening the swifts stop screaming over the barn, the week the kitchen smells of wet wool for no reason anyone can name.</p>
+  <aside class="note rv"><b>On the Ledger</b>Eleven volumes, bound in oxblood calfskin by a saddler in Wethercombe. The first entry is dated 3 March 1934.</aside>
+  <p class="rv">Agnes Penhallow began it the spring her husband went north for work. She was, by her own account in the margin of page one, &ldquo;lonely enough to talk to the weather and sensible enough to write down what it said back.&rdquo; Her daughter kept it after her, then a grandson who had wanted to be a sailor and settled for the next best thing, which was to watch the sky from a hill two hundred miles from any sea.</p>
+
+  <h2 class="rv"><span>I · Method</span>What counts as a weather</h2>
+  <p class="rv">The rules, such as they are, were never written down in one place. They have to be inferred, the way you learn the rules of a card game by losing at it. A weather, in the Penhallow sense, is anything that changes the mood of the house and arrives from outside it. A fox crossing the lower field at noon is a weather. A letter is not. The church bell sounding flat on a humid evening is a weather. The bell itself is not.</p>
+  <aside class="note rv"><b>Margin, 1951</b>&ldquo;Heard the bell go sour. Thunder by supper. Bell knew first.&rdquo;</aside>
+  <p class="rv">What emerges, across ninety-one years and some forty thousand entries, is something like a second climate. It runs alongside the official one and occasionally contradicts it. The official record says the summer of 1976 was a drought. The ledger says it was &ldquo;the summer the dog slept in the dairy,&rdquo; and lists, with real tenderness, every cool stone floor in the parish.</p>
+
+  <blockquote class="rv">&ldquo;Lonely enough to talk to the weather, and sensible enough to write down what it said back.&rdquo;<cite>Agnes Penhallow, page one</cite></blockquote>
+
+  <h2 class="rv"><span>II · Measures</span>A calendar kept by hand</h2>
+  <p class="rv">Leafing through the volumes, certain dates surface again and again, each one marked in the same hand-drawn symbols that Agnes invented and nobody since has dared to change: a small crescent for a first frost, a hook for the swifts, a closed eye for fog thick enough that the hens refuse to leave the coop.</p>
+  <div class="table rv" role="group" aria-label="Average dates from the ledger">
+    <div><small>First frost</small><strong>Oct 19</strong><span>Moved eleven days later since 1934</span></div>
+    <div><small>Swifts depart</small><strong>Aug 06</strong><span>Never once before the fair</span></div>
+    <div><small>Hen fogs</small><strong>23</strong><span>Per year, on average</span></div>
+    <div><small>Sour bells</small><strong>4</strong><span>Each followed by thunder</span></div>
+  </div>
+  <p class="rv">The drift in the first frost is the line that brought meteorologists to the farmhouse door. Eleven days across a single lifetime is not a statistic you can argue with when it is written in three different hands, in ink and pencil and once in what appears to be blackberry juice.</p>
+
+  <h2 class="rv"><span>III · Inheritance</span>Who keeps it now</h2>
+  <p class="rv">Wren Penhallow is twenty-six and came home from the city to look after the ledger the way some people come home to look after a parent. She writes in it each night at the kitchen table, under the same lamp, in a fountain pen she admits is mostly for ceremony.</p>
+  <aside class="note rv"><b>Wren, 2024</b>&ldquo;Pylons humming. First time in my life I've noticed. Gran would have.&rdquo;</aside>
+  <p class="rv">She has added one rule of her own. Each autumn, on the evening of the first frost, she reads aloud the entry from the same date fifty years earlier. Then she steps outside and checks whether the gate latch is cold enough to hold her fingertip. Some years it is. More often, now, it is not, and she comes back inside and writes that down too.</p>
+  <p class="rv">&ldquo;People ask if it's sad,&rdquo; she says, closing the eleventh volume and setting the pen across it like a bookmark. &ldquo;It isn't. It's just attention. The weather has always been talking. Somebody in this house has always been listening. I'd hate to be the one who stopped.&rdquo;</p>
+  <div class="end rv" aria-hidden="true">■</div>
+</article>
+
+<footer>Hearthstead Quarterly · Printed on the hill · Set in Iowan &amp; Didot</footer>
+
+<script>
+(()=>{
+  const bar=document.getElementById("progress");
+  let ticking=false;
+  function upd(){const h=document.documentElement.scrollHeight-innerHeight;bar.style.transform="scaleX("+(h>0?Math.min(1,scrollY/h):0)+")";ticking=false;}
+  addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(upd);}},{passive:true});
+  addEventListener("resize",upd);upd();
+
+  const els=document.querySelectorAll(".rv");
+  if("IntersectionObserver" in window){
+    const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px",threshold:.12});
+    els.forEach(el=>io.observe(el));
+  }else els.forEach(el=>el.classList.add("in"));
+
+  let size=1.18;const root=document.documentElement;
+  function setSize(d){size=Math.max(1,Math.min(1.5,size+d));root.style.setProperty("--fs",size.toFixed(2)+"rem");upd();}
+  document.getElementById("smaller").addEventListener("click",()=>setSize(-.08));
+  document.getElementById("larger").addEventListener("click",()=>setSize(.08));
+})();
+</script>
+</body>
+</html>

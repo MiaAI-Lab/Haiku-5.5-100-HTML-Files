@@ -1,0 +1,19 @@
+Prompt:
+Build a standalone HTML page for "quantum-probability": a full-screen dot grid where probability clouds bloom around the pointer on hover, with click-to-measure collapse. Palette: a violet-black void (#07050f) with a soft radial lift (#140c2a) at the center; idle dots as faint lavender-grey specks (#8a84ad at low alpha); probability glows from electric cyan (#4ff0e6) at the cloud's center to hot magenta (#ff5fd2) at its edges; measurement hits flash in warm white (#fff0c8). Typography: ultralight Helvetica Neue for the title "Probability Field" with "Field" in a cyan-to-magenta gradient clip, and ui-monospace / SF Mono / Menlo for the sub-copy, live stats and controls. Layout: a canvas fills the viewport and draws a centered grid of dots (22px pitch, 17px on phones). Title and explanatory line sit top left; a monospace stats block at top right shows the current state, the positional spread delta-x in grid cells, and the measurement count (hidden on phones). A frosted toolbar at bottom center offers orbital states 1s, 2p, 3d and a double-slit pattern, plus a clear button; the active state takes a cyan-to-magenta gradient fill. A centered breathing ring with "Move to observe" is the empty state and fades on first movement. Motion: a cloud follows the pointer with 0.09 lerp. Each dot's probability is a Gaussian envelope shaped by the chosen state (cos squared lobes for 2p, cos squared of 2 theta for 3d, cosine-squared fringes for the slit), modulated by a slow outward ripple, with the lobes slowly rotating. Dot radius, alpha and halo scale with probability, and only dots within a bounding box are evaluated to keep the loop cheap. With no pointer, the cloud dims to 42 percent and drifts in a gentle Lissajous path. Clicking samples one dot weighted by probability, marks it with a persistent warm accumulating hit, emits an expanding ring, and collapses the cloud amplitude to zero so it visibly re-spreads. The crosshair cursor is drawn on canvas. Canvas sizes to devicePixelRatio (capped at 2) and rebuilds the grid on resize. Reduced motion: no ripple, no rotation, no idle drift, no lerp lag, faster ring fade.
+
+Title: Probability Field
+
+Description: An interactive meditation on quantum uncertainty. A calm field of faint dots wakes up wherever the pointer goes, swelling into a glowing cyan and magenta cloud whose shape follows the chosen orbital: a soft sphere, a two-lobed dumbbell, a four-petal clover, or double-slit fringes. Clicking performs a measurement: one dot is chosen according to the odds, flashes white and keeps the mark, and the cloud collapses before spreading out again. Over many clicks the marks build up into a histogram of where the particle turned up.
+
+Visual techniques:
+- Canvas dot grid with per-dot probability computed from analytic orbital-like functions
+- Gaussian envelopes with angular cos-squared modulation and a time-varying radial ripple
+- Probability-weighted random sampling for measurements, with accumulating hit marks
+- Radius, alpha, halo and cyan-to-magenta color mapped to probability and distance
+- Expanding ring and flash animation on collapse, followed by amplitude regrowth
+- Bounding-box culling and fillRect for idle dots to keep the frame loop cheap
+- Live variance-based spread readout updated every ten frames
+- Gradient-clipped title text, frosted toolbar, breathing empty-state ring, canvas-drawn crosshair
+- devicePixelRatio sizing, resize handling and a reduced-motion path
+
+Interaction model: Move the pointer (or drag a finger) across the grid to carry the probability cloud with you. Pick 1s, 2p, 3d or slit to change the shape of the cloud. Click or tap to measure: one position is chosen by chance, marked, and the cloud collapses and regrows. "Clear" erases the accumulated measurement marks and resets the counter.

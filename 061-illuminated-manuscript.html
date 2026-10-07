@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folio XII: The Book of Lamplight</title>
+<style>
+:root{
+  --vellum:#f1e4c4;
+  --vellum-deep:#e3cfa0;
+  --ink:#2b1a10;
+  --ink-soft:#5a3d28;
+  --vermilion:#b2341f;
+  --lapis:#1f3a7a;
+  --verdigris:#2f6b57;
+  --gold-1:#7a5412;
+  --gold-2:#d9a940;
+  --gold-3:#fff0b8;
+  --night:#1b130c;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(1200px 700px at var(--lx,50%) var(--ly,30%), rgba(255,190,90,.18), transparent 60%),
+    radial-gradient(circle at 50% 120%, #2a1a0e, var(--night) 70%);
+  color:var(--ink);
+  font-family:"Palatino Linotype","Book Antiqua",Palatino,"Iowan Old Style",Georgia,serif;
+  padding:clamp(16px,4vw,56px) clamp(12px,3vw,40px) 64px;
+  overflow-x:hidden;
+}
+.folio{
+  position:relative;
+  max-width:880px;
+  margin:0 auto;
+  padding:clamp(34px,7vw,84px) clamp(26px,7vw,90px) clamp(40px,7vw,80px);
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.35), transparent 50%),
+    radial-gradient(ellipse at 90% 95%, rgba(120,80,30,.22), transparent 55%),
+    radial-gradient(ellipse at 5% 80%, rgba(120,80,30,.16), transparent 40%),
+    linear-gradient(170deg,var(--vellum),var(--vellum-deep));
+  box-shadow:0 40px 90px rgba(0,0,0,.6), inset 0 0 120px rgba(110,70,20,.35);
+  border-radius:3px;
+  opacity:0;transform:translateY(18px) rotate(-.4deg);
+  animation:arrive 1.6s cubic-bezier(.2,.7,.2,1) .1s forwards;
+}
+@keyframes arrive{to{opacity:1;transform:none}}
+.folio::before{ /* vellum fibres */
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:repeating-linear-gradient(97deg,rgba(90,60,20,.035) 0 2px,transparent 2px 7px),
+             repeating-linear-gradient(12deg,rgba(255,255,255,.05) 0 1px,transparent 1px 11px);
+  mix-blend-mode:multiply;
+}
+.border{position:absolute;inset:clamp(8px,2vw,22px);width:calc(100% - 2*clamp(8px,2vw,22px));height:calc(100% - 2*clamp(8px,2vw,22px));pointer-events:none}
+.border .frame{fill:none;stroke:url(#gilt);stroke-width:3}
+.border .frame2{fill:none;stroke:var(--vermilion);stroke-width:1;opacity:.7}
+.border .dots{fill:var(--lapis)}
+.gilt-stop{animation:glint 6s ease-in-out infinite}
+@keyframes glint{0%,100%{stop-color:var(--gold-2)}50%{stop-color:var(--gold-3)}}
+
+header{text-align:center;position:relative;margin-bottom:28px}
+.rubric{font-variant:small-caps;letter-spacing:.32em;color:var(--vermilion);font-size:.8rem;margin:0 0 10px}
+h1{
+  margin:0;font-weight:normal;font-size:clamp(1.9rem,5.4vw,3.2rem);line-height:1.05;letter-spacing:.02em;
+  color:var(--lapis);font-style:italic;
+}
+.flourish{display:block;margin:14px auto 0;width:min(260px,70%);height:18px}
+.flourish path{fill:none;stroke:var(--gold-1);stroke-width:1.2;stroke-dasharray:400;stroke-dashoffset:400;animation:draw 2.4s ease-out 1s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.text{position:relative;columns:2 300px;column-gap:44px;column-rule:1px solid rgba(122,84,18,.3);font-size:clamp(1rem,2.1vw,1.12rem);line-height:1.72;text-align:justify;hyphens:auto}
+.text p{margin:0 0 1em}
+.initial{float:left;width:clamp(96px,22vw,150px);height:auto;margin:4px 16px 6px 0;shape-outside:margin-box;filter:drop-shadow(0 2px 2px rgba(60,30,0,.35))}
+.initial .bg{fill:var(--lapis)}
+.initial .vine{fill:none;stroke:var(--gold-2);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:300;stroke-dashoffset:300;animation:draw 3s ease-out .8s forwards}
+.initial .leaf{fill:var(--verdigris);transform-origin:center;transform-box:fill-box;animation:bud 1.2s cubic-bezier(.3,1.6,.5,1) both}
+.initial .berry{fill:var(--vermilion)}
+.initial .letter{fill:url(#gilt);stroke:var(--gold-1);stroke-width:1.5;font-family:Georgia,"Times New Roman",serif;font-weight:bold}
+@keyframes bud{from{transform:scale(0)}to{transform:scale(1)}}
+
+.gloss{
+  position:relative;cursor:help;
+  background:linear-gradient(var(--vermilion),var(--vermilion)) 0 100%/0 1px no-repeat;
+  color:var(--ink);
+  transition:background-size .5s cubic-bezier(.6,0,.2,1),color .4s;
+  outline:none;border-radius:2px;
+}
+.gloss:hover,.gloss:focus-visible,.gloss.open{background-size:100% 1px;color:var(--vermilion)}
+.gloss:focus-visible{box-shadow:0 0 0 2px rgba(31,58,122,.35)}
+.gloss .note{
+  position:absolute;left:50%;bottom:calc(100% + 10px);z-index:5;
+  width:min(240px,70vw);transform:translateX(-50%);
+  padding:12px 14px;font-size:.86rem;line-height:1.45;font-style:italic;text-align:left;
+  color:var(--ink-soft);background:linear-gradient(#f6ecd2,#ead8ae);
+  border:1px solid rgba(122,84,18,.5);box-shadow:0 10px 24px rgba(40,20,0,.3);
+  pointer-events:none;
+  -webkit-mask:linear-gradient(90deg,#000 40%,transparent 60%) 100% 0/250% 100% no-repeat;
+          mask:linear-gradient(90deg,#000 40%,transparent 60%) 100% 0/250% 100% no-repeat;
+  opacity:0;transition:mask-position .9s ease,-webkit-mask-position .9s ease,opacity .3s;
+}
+.gloss .note b{display:block;font-style:normal;font-variant:small-caps;letter-spacing:.14em;color:var(--lapis);margin-bottom:4px;font-size:.78rem}
+.gloss:hover .note,.gloss:focus-visible .note,.gloss.open .note{opacity:1;-webkit-mask-position:0 0;mask-position:0 0}
+
+.ink-reveal{color:transparent;background:radial-gradient(circle at var(--ix,50%) var(--iy,50%),var(--ink) 0,var(--ink) var(--ir,0%),transparent calc(var(--ir,0%) + 8%));-webkit-background-clip:text;background-clip:text;transition:--ir 1s}
+.ink-reveal.inked{color:var(--ink);transition:color 1.4s ease .2s}
+.hidden-verse{margin-top:6px;padding:14px 0 0;border-top:1px dashed rgba(122,84,18,.4);font-style:italic;color:var(--ink-soft);break-inside:avoid}
+.hidden-verse .hint{display:block;font-style:normal;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-1);margin-bottom:6px}
+
+.marg{position:absolute;right:clamp(-4px,1vw,14px);top:46%;width:40px;height:120px;opacity:.85}
+.marg path{fill:none;stroke:var(--verdigris);stroke-width:1.4}
+.colophon{margin-top:28px;text-align:center;font-variant:small-caps;letter-spacing:.24em;font-size:.8rem;color:var(--ink-soft)}
+.colophon span{color:var(--vermilion)}
+.pilcrow{color:var(--vermilion);font-weight:bold}
+
+@media (max-width:620px){
+  .marg{display:none}
+  .text{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+  .folio{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<article class="folio" id="folio" aria-labelledby="title">
+  <svg class="border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="gilt" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#7a5412"/>
+        <stop class="gilt-stop" offset=".45" stop-color="#d9a940"/>
+        <stop offset=".55" stop-color="#fff0b8"/>
+        <stop offset="1" stop-color="#8c6118"/>
+      </linearGradient>
+    </defs>
+    <rect class="frame" x="0.5" y="0.5" width="99" height="99" vector-effect="non-scaling-stroke"/>
+    <rect class="frame2" x="1.6" y="1.2" width="96.8" height="97.6" vector-effect="non-scaling-stroke"/>
+  </svg>
+
+  <header>
+    <p class="rubric">Folio the twelfth &middot; of the Abbey of Saint Wendel</p>
+    <h1 id="title">The Book of Lamplight</h1>
+    <svg class="flourish" viewBox="0 0 260 18" aria-hidden="true"><path d="M2 9 C40 -4 70 22 110 9 S 150 -4 130 9 S 160 20 200 9 S 250 2 258 9"/></svg>
+  </header>
+
+  <div class="text">
+    <svg class="initial" viewBox="0 0 150 150" role="img" aria-label="Illuminated initial letter I">
+      <rect class="bg" x="6" y="6" width="138" height="138" rx="4"/>
+      <rect x="6" y="6" width="138" height="138" rx="4" fill="none" stroke="url(#gilt)" stroke-width="5"/>
+      <path class="vine" d="M20 130 C 30 90, 60 120, 50 80 S 30 40, 60 30 S 110 20, 125 50 S 110 110, 130 125"/>
+      <path class="vine" d="M25 25 C 45 40, 30 60, 45 70 M 125 25 C 110 45, 128 60, 112 80"/>
+      <ellipse class="leaf" style="animation-delay:1.6s" cx="50" cy="80" rx="7" ry="3.5" transform="rotate(-30 50 80)"/>
+      <ellipse class="leaf" style="animation-delay:1.9s" cx="60" cy="30" rx="7" ry="3.5"/>
+      <ellipse class="leaf" style="animation-delay:2.2s" cx="125" cy="50" rx="7" ry="3.5" transform="rotate(60 125 50)"/>
+      <ellipse class="leaf" style="animation-delay:2.5s" cx="45" cy="70" rx="6" ry="3" transform="rotate(20 45 70)"/>
+      <circle class="berry" cx="130" cy="125" r="4"/><circle class="berry" cx="20" cy="130" r="4"/>
+      <circle class="berry" cx="112" cy="80" r="3"/>
+      <text class="letter" x="75" y="116" text-anchor="middle" font-size="112">I</text>
+    </svg>
+    <p>n the long winter of the comet, when the river froze to the mill wheel and the bells rang hollow, the brothers of Saint Wendel kept one lamp burning in the scriptorium. They called it <span class="gloss" tabindex="0">the patient flame<span class="note" role="note"><b>Gloss</b>A lamp of rendered tallow and hawthorn oil, trimmed every third hour by the youngest novice.</span></span>, and it was said that no word copied beneath it was ever lost.</p>
+    <p>Brother Aldric ground the blue from stones carried over three mountains. He mixed it with egg and patience, and laid it down so thickly that the sky in his pages looked deeper than the sky outside. Of <span class="gloss" tabindex="0">lapis<span class="note" role="note"><b>Marginal note</b>Worth more than its weight in silver. Aldric kept the grinding stone under his pillow.</span></span> he said only that it was the colour of things remembered.</p>
+    <p>The gold came last. Leaf thinner than breath, pressed onto a bed of gesso and burnished with a <span class="gloss" tabindex="0">dog's tooth<span class="note" role="note"><b>Instrument</b>Set in a handle of ash wood. Polished gold catches lamplight and returns it doubled.</span></span> until the letters seemed to hold their own small fire. Readers who turned the folio at night swore the initials kept glowing after the candle was snuffed.</p>
+    <p><span class="pilcrow">&para;</span> What follows was written in an ink that would not show itself to the impatient. Rest your hand upon it and wait.</p>
+    <div class="hidden-verse">
+      <span class="hint">Hover or touch the verse to ink it</span>
+      <p class="ink-reveal" tabindex="0">Keep the lamp low and the margin wide; leave room for the reader who comes after you. Every page is a window left open in a cold house, and the light we copy is never only our own.</p>
+    </div>
+  </div>
+
+  <svg class="marg" viewBox="0 0 40 120" aria-hidden="true"><path d="M20 0 C 0 20, 40 40, 20 60 S 0 100, 20 120 M20 30 q 10 -6 16 0 M20 80 q -10 -6 -16 0"/></svg>
+
+  <p class="colophon">Here ends the twelfth folio &middot; <span>Deo gratias</span></p>
+</article>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  var tx=50, ty=30, cx=50, cy=30, raf=null;
+  function step(){
+    cx += (tx-cx)*0.08; cy += (ty-cy)*0.08;
+    root.style.setProperty('--lx', cx.toFixed(2)+'%');
+    root.style.setProperty('--ly', cy.toFixed(2)+'%');
+    if (Math.abs(tx-cx)>0.05 || Math.abs(ty-cy)>0.05) raf=requestAnimationFrame(step); else raf=null;
+  }
+  window.addEventListener('pointermove', function(e){
+    tx = e.clientX/window.innerWidth*100; ty = e.clientY/window.innerHeight*100;
+    if (reduce){ cx=tx; cy=ty; step(); return; }
+    if(!raf) raf=requestAnimationFrame(step);
+  }, {passive:true});
+
+  // touch toggles glosses
+  var glosses = document.querySelectorAll('.gloss');
+  glosses.forEach(function(g){
+    g.addEventListener('click', function(e){
+      var was = g.classList.contains('open');
+      glosses.forEach(function(o){o.classList.remove('open');});
+      if(!was) g.classList.add('open');
+      e.stopPropagation();
+    });
+  });
+  document.addEventListener('click', function(){ glosses.forEach(function(o){o.classList.remove('open');}); });
+
+  // ink reveal: a pool of ink spreads from the pointer
+  var verse = document.querySelector('.ink-reveal');
+  var r = 0, growing = false, anim = null, done = false;
+  function grow(){
+    r += reduce ? 200 : 1.6;
+    verse.style.setProperty('--ir', Math.min(r,140)+'%');
+    if (r < 140 && growing) anim = requestAnimationFrame(grow);
+    else if (r >= 140){ done = true; verse.classList.add('inked'); }
+  }
+  function begin(e){
+    if (done) return;
+    var b = verse.getBoundingClientRect();
+    if (e && e.clientX !== undefined){
+      verse.style.setProperty('--ix', ((e.clientX-b.left)/b.width*100)+'%');
+      verse.style.setProperty('--iy', ((e.clientY-b.top)/b.height*100)+'%');
+    }
+    growing = true; cancelAnimationFrame(anim); anim = requestAnimationFrame(grow);
+  }
+  function pause(){ growing = false; }
+  verse.addEventListener('pointerenter', begin);
+  verse.addEventListener('pointerdown', begin);
+  verse.addEventListener('pointerleave', pause);
+  verse.addEventListener('focus', begin);
+})();
+</script>
+</body>
+</html>

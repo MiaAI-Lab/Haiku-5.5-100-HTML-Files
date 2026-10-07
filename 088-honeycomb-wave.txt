@@ -1,0 +1,32 @@
+PROMPT
+
+Build "088 honeycomb-wave": a full-bleed canvas hex grid that lights in waves spreading out from the cursor, in a honey palette, presented as the cover of an almanac for the fictional Hollowell Apiary "on the chalk downs". Standalone and offline.
+
+Palette (three switchable honey varieties, each a four-stop ramp from wax-dark to pale peak):
+- Wildflower: #1f1309, #9a4f12, #efa630, #fff0c2 (wax accent #c58a3c)
+- Heather: #1c0d0b, #7a2614, #c8641e, #ffd69a (accent #b0623e)
+- Lime blossom: #141509, #6a6516, #d9c94a, #fbf7cf (accent #a9a04a)
+Cream text #fff3d1. The body background is the darkest stop, so the gaps between hexes read as dark wax walls. CSS variables (--base, --honey, --wax) cross-fade when the variety changes.
+
+Type: a Didot / "Bodoni 72" / "Bodoni MT" / Georgia high-contrast serif for the headline, badge numeral and stat numbers. Gill Sans / "Gill Sans MT" / Optima / Candara for body copy and wide-tracked uppercase labels.
+
+Layout: a fixed full-viewport canvas behind everything. The overlay shell is a flex column with pointer-events off. At the top: the "Hollowell Apiary / On the chalk downs" wordmark on the left and a hexagonal clip-path badge with the variety number and name on the right. At the bottom left: a copy block on a dark radial/linear scrim with the headline "Every cell remembers the summer." ("remembers" in honey italic), a lede paragraph, three pill buttons for the honey varieties (each with a small hexagon swatch), two live stats (cells capped, waves sent), and a hint line.
+
+Grid: pointy-top hexagons with a circumradius of 15 to 26px depending on width, drawn 1.6px smaller to leave wax gaps. Cells are grouped into 40 brightness buckets so each bucket is filled with a single path (one fillStyle per bucket), which keeps the frame cheap.
+
+Motion: each wave is a ring expanding at 560px/s with a Gaussian band (sigma 36px) whose amplitude decays as exp(-1.05t). Cell light eases toward its target (0.28 per frame). There is a soft glow under the pointer. Moving the pointer more than 70px sends a 0.55-strength wave, a click or tap sends a 1.25 wave, and the hive sends gentle idle waves at random every 2.6 to 4.8 seconds. Pouring fills cells within about 4.2 cells with "honey" that decays slowly (x0.9984 per frame). Cells above the capped threshold get a pale wax-cap highlight stroke and count toward "Cells capped". Choosing a variety sends a central wave. Space pours at a random spot.
+
+Title: Hollowell Honeycomb
+
+Description: A dark, warm, editorial cover where the whole background is living comb. The light runs outward through the hexagons in soft rings from wherever you move, as if passing a waggle dance through the hive. Tapping pours honey into nearby cells, which glow and then get a wax-cap highlight before slowly fading. A Bodoni headline and Gill Sans copy sit on a smoky scrim, and three honey varieties recolour the comb, the badge and the accents.
+
+Visual techniques:
+- Canvas hex tiling sized to devicePixelRatio and rebuilt on resize
+- Superposed travelling Gaussian ring waves with exponential decay, plus a pointer glow
+- Brightness-bucketed batch path filling (40 precomputed colour ramps per variety)
+- Persistent decaying "honey" layer with batched cap-highlight strokes
+- clip-path hexagon badge and swatches; CSS-variable palette cross-fades
+- Radial and linear scrims to keep the text readable over the motion
+- Springy pill buttons with an aria-pressed state
+
+Interaction model: Move the pointer over the comb to send waves of light. Click or tap to pour honey and send a strong wave. Space pours at a random spot. The Wildflower, Heather and Lime blossom buttons recolour the hive. The counters track capped cells and waves sent. Reduced motion turns off travelling and idle waves; the comb shows only a still glow under the pointer, and pouring still fills and caps cells.

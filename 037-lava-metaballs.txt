@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page, "lava-metaballs": a full-screen canvas lava lamp for a fictional lighting maker, Ember & Vale, Lamp No. 7, titled "Molten Hours". Background in CSS: a radial gradient glowing from the bottom center (#5a1220 to #3a0b16 to near-black #16040a), with a faint overlay grain made from a repeating radial gradient in overlay blend. Render metaballs on a low-resolution offscreen canvas (one cell per 5 to 7 CSS pixels) by summing r^2/d^2 for every blob, then upscale to the DPR-sized main canvas with smoothing so edges come out soft and waxy. Color the field through a five-stop warm ramp (deep ember #5a0a18, red #c81e1e, flame #ff5a2a, amber #ffb347, cream core #ffecc8): a dim translucent halo below the threshold, a quickly brightening rim near it, and hotter, paler cores where blobs overlap. Add a cheap bloom pass by drawing the same small image again blurred with additive blending at low alpha. Physics: each blob has a temperature; it heats near the base (rate set by a Heat slider), cools near the top, and buoyancy follows temperature so blobs rise, stall, and sink in a convincing lava-lamp cycle; add slow sinusoidal sideways drift, damping, soft wall bounces, and a gentle radius wobble. New blobs grow in over half a second. Typography: top left, a small letter-spaced rose label, then a huge "Arial Black" headline "Molten / Hours" with "Molten" as an outlined stroke in screen blend and "Hours" solid cream, followed by an italic Georgia line of copy. Bottom right: a frosted dark glass panel with a Heat slider (gradient track ember to amber, glowing cream thumb), a monospace bead counter, and a pill button "Settle the wax" that reseeds the lamp. On mobile the panel spans the width. Cap at 16 blobs and show a small "The lamp is full" toast when the cap is reached. Reduced motion: all velocities run at a quarter speed.
+
+Title: Molten Hours
+
+Description: A warm, hypnotic lava lamp that fills the whole screen with glowing wax. Blobs of amber and flame-colored wax swell, merge, and pull apart as they heat at the base and cool near the top, with hot cream cores where they touch. Heavy outlined display type and a small frosted control panel make it read like a luxury product page for a lamp you can play with.
+
+Visual techniques:
+- Metaball field computed per cell into ImageData on a low-resolution offscreen canvas
+- Smooth upscaling to a devicePixelRatio-sized canvas for soft, organic edges
+- Multi-stop color ramp mapped from field strength, with halo, rim, and core zones
+- Additive blurred bloom pass using canvas filter and lighter compositing
+- Temperature-driven buoyancy simulation with damping and wall bounces
+- Outlined text via -webkit-text-stroke with mix-blend-mode screen
+- Frosted glass control panel with backdrop-filter and custom range styling
+
+Interaction model:
+Click or tap anywhere on the lamp to pour in a new bead of wax, which grows in at that spot and joins the convection cycle. The Heat slider changes how strongly the base warms the wax, speeding up or calming the rise and fall. "Settle the wax" resets the lamp to a fresh set of blobs, and a toast appears if the lamp is full.

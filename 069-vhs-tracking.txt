@@ -1,0 +1,21 @@
+Prompt:
+Build a standalone HTML page that recreates watching an old home video on a living-room VCR, with VHS tracking distortion, a timecode overlay and mostly CSS keyframe effects. The tape is "Lake Ostra, July '89". Layout, centred on a dark plum-black room (#0e0c11 with a faint purple glow): a small mono kicker line, a rounded 4:3 CRT television in a dark gradient bezel, a silver-black VCR deck (fictional brand "Okami HQ-90") and a handwritten cassette label card on lined paper, slightly rotated.
+The scene inside the screen is built only from CSS gradients and clip-paths: a dusk sky going from indigo to magenta to coral to apricot, a glowing sun disc, two layers of violet hills, a jagged tree-line silhouette, a lake with a rolling horizontal ripple pattern and a shimmering sun glint (a masked repeating gradient), a dark pier with posts, and a small rowboat drifting slowly.
+VHS layers, from bottom to top: an SVG filter for chromatic aberration (red and green-blue channels split with feOffset, then screen-blended), plus saturate, contrast and a slight blur; a stepped jitter keyframe on the whole tape; two JS clones of the scene clipped into thin horizontal strips with stepped clip-path keyframes and shifted sideways by calc(var(--trk) * px) to make tracking tears; a rolling white noise band moving down the picture; a skewed head-switching noise strip at the bottom; feTurbulence static that jumps between positions with steps(); scanlines; a vignette; and a blue "VIDEO 1" or STOP screen. The OSD uses bold Courier New with red and cyan text-shadow fringing: PLAY ▶ / PAUSE ❚❚ (blinking) / ◀◀ REW / FF ▶▶ / STOP ■ top-left, SP top-right, a date stamp "JUL 14 1989 PM 6:42" bottom-left, and a live H:MM:SS:FF timecode bottom-right that runs at 30 fps, at 8x speed for rewind and fast-forward, and stops on pause.
+Interaction: a single CSS variable --trk (0 to 1), set from a TRACKING slider (−50 to +50, starting badly misaligned at +28), scales every distortion: tear offsets, noise band opacity, static opacity, jitter amplitude and the chromatic offset in the SVG filter. Dragging the picture up or down or pressing the arrow keys also adjusts tracking. An OSD meter of ▮▯ blocks appears while adjusting and shows "AUTO TRACKING OK" when locked near zero, and the deck LED reads LOCKED. Chunky transport keys (rewind, play, pause, fast-forward, stop) press in with aria-pressed and a green LED glow; Space toggles play and pause. On load the screen is blue with "VIDEO 1", then playback starts. Reduced motion removes jitter, tears, the rolling band, static movement and scene animation, leaving static scanlines.
+
+Title: Lake Ostra, Tape 3
+
+Description: A nostalgic home-video piece: a dusk lake scene made entirely of CSS gradients plays on a rounded CRT, smeared by the faults of worn magnetic tape. Strips of picture tear sideways, a white noise band rolls down the screen, the colors fringe red and cyan, and a blocky on-screen display counts frames. A tactile VCR deck and a handwritten cassette label finish the scene, and the tracking control lets the viewer pull the picture back into focus.
+
+Visual techniques:
+- Pure CSS gradient and clip-path landscape (sky, sun, hills, trees, lake, pier, boat)
+- SVG feColorMatrix and feOffset chromatic aberration with offsets updated from JS
+- Cloned scene strips with stepped clip-path and translate keyframes as tracking tears
+- Rolling noise band, skewed head-switching strip and stepped feTurbulence static
+- CSS custom property (--trk) that scales every distortion through calc()
+- Scanlines, vignette, OSD text with RGB fringing via text-shadow
+- requestAnimationFrame timecode with play, pause, rewind, fast-forward and stop states
+- Skeuomorphic deck keys, a styled range slider and a lined-paper cassette label
+
+Interaction model: Use the TRACKING slider, drag the picture up or down, or press the arrow keys to bring the image into alignment; the on-screen meter confirms when tracking is locked. The transport keys switch between play, pause, rewind, fast-forward and stop, which changes the OSD, the timecode speed and the scene motion. Space toggles play and pause.

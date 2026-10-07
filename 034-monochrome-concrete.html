@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Béton Brut: Atlas of Poured Stone</title>
+<style>
+:root{--c0:#0f0f0e;--c1:#1c1c1b;--c2:#383735;--c3:#6a6864;--c4:#9d9a94;--c5:#c9c6bf;--c6:#ebe8e2;--sun:.35;--sunY:.9;--slow:cubic-bezier(.16,1,.3,1);
+--tex:repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0 1px,transparent 1px 13px),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 5px,rgba(0,0,0,.035) 5px 6px,transparent 6px 11px),radial-gradient(circle,rgba(0,0,0,.2) .7px,transparent 1.3px) 0 0/7px 9px,radial-gradient(circle,rgba(255,255,255,.14) .7px,transparent 1.3px) 3px 4px/11px 6px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--c1)}
+body{background:var(--c1);color:var(--c6);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.mono{font-family:"Courier New",ui-monospace,monospace}
+.cond{font-family:"Arial Narrow","Helvetica Neue Condensed","Helvetica Neue",Arial,sans-serif;font-stretch:condensed}
+.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--c4)}
+/* hero */
+.hero{position:relative;min-height:100vh;min-height:100svh;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto;padding:clamp(18px,3vw,36px) clamp(16px,4vw,56px);background:linear-gradient(180deg,#2a2a28 0%,#4a4946 58%,#232322 58.2%,#141413 100%)}
+.hero .sun{position:absolute;width:clamp(60px,9vw,120px);aspect-ratio:1;border-radius:50%;left:calc(8% + var(--sun) * 78%);top:calc(48% - var(--sunY) * 34%);background:radial-gradient(circle,var(--c6) 0 46%,rgba(235,232,226,.22) 48%,transparent 70%);transform:translate(-50%,-50%);pointer-events:none}
+.top{display:flex;justify-content:space-between;gap:16px;position:relative;z-index:3}
+h1{position:absolute;left:0;right:0;top:20%;text-align:center;font-weight:800;font-size:clamp(84px,24vw,360px);line-height:.82;letter-spacing:-.04em;text-transform:uppercase;color:var(--c5);opacity:.9;z-index:1}
+h1 span{display:block;transform:translateY(30%);opacity:0;transition:transform 2.4s var(--slow),opacity 2s ease}
+h1 span+span{transition-delay:.25s;color:transparent;-webkit-text-stroke:1.5px var(--c5)}
+.loaded h1 span{transform:none;opacity:1}
+.hero-build{position:relative;z-index:2;align-self:end;display:flex;align-items:flex-end;justify-content:center;gap:0;height:46vh;margin:0 -4%}
+.blk{position:relative;background:var(--tex),var(--tone,var(--c3));box-shadow:calc((.5 - var(--sun)) * 46px) 0 0 rgba(0,0,0,.38);transform:translateY(100%);transition:transform 2.6s var(--slow);transition-delay:calc(var(--d) * .18s + .3s)}
+.loaded .blk{transform:none}
+.blk::before,.slab::before,.tower::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.26),transparent 70%);opacity:calc(1 - var(--sun));pointer-events:none}
+.blk::after,.slab::after,.tower::after{content:"";position:absolute;inset:0;background:linear-gradient(270deg,rgba(255,255,255,.26),transparent 70%);opacity:var(--sun);pointer-events:none}
+.lede{position:relative;z-index:3;max-width:30em;margin-top:22px;font-size:clamp(15px,1.5vw,18px);line-height:1.55;color:var(--c5);opacity:0;transition:opacity 2s ease 1.6s}
+.loaded .lede{opacity:1}
+.curtain{position:absolute;inset:0;background:var(--c0);z-index:5;transform-origin:top;transition:transform 2.2s var(--slow) .15s;pointer-events:none}
+.loaded .curtain{transform:scaleY(0)}
+/* plates */
+.plate{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:end;padding:clamp(64px,10vw,140px) clamp(16px,4vw,56px);border-top:1px solid var(--c2);position:relative}
+.plate:nth-of-type(even){grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}
+.plate:nth-of-type(even) .fig{order:2}
+.fig{position:relative;aspect-ratio:5/4;overflow:hidden;background:linear-gradient(180deg,#3b3a37,#5a5854 70%,#2a2a28 70.2%,#1a1a19)}
+.txt .num{font-size:clamp(64px,10vw,140px);line-height:.8;font-weight:800;color:var(--c2);letter-spacing:-.04em}
+.txt h2{font-size:clamp(30px,4vw,54px);line-height:.95;font-weight:800;text-transform:uppercase;letter-spacing:-.02em;margin:18px 0 8px}
+.txt .sub{font:italic 17px/1.4 Georgia,"Times New Roman",serif;color:var(--c4)}
+.txt p.body{margin-top:18px;font-size:16px;line-height:1.65;color:var(--c5);max-width:32em}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin-top:24px;padding-top:16px;border-top:1px solid var(--c2);font-size:12px;letter-spacing:.06em}
+dt{color:var(--c3);text-transform:uppercase}dd{color:var(--c5)}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 1.8s ease,transform 2.2s var(--slow)}
+.reveal.in{opacity:1;transform:none}
+.fig .rise{clip-path:inset(100% 0 0 0);transition:clip-path 2.6s var(--slow);transition-delay:calc(var(--i,0) * .22s + .2s)}
+.in .rise{clip-path:inset(-60px -90px -60px -90px)}
+/* plate I stepped hall */
+.step{position:absolute;left:8%;right:8%;bottom:30%;display:flex;flex-direction:column;align-items:center}
+.slab{position:relative;height:clamp(26px,5.5vw,62px);background:var(--tex),var(--c4);border-bottom:6px solid var(--c2);box-shadow:calc((.5 - var(--sun)) * 40px) 20px 0 rgba(0,0,0,.42);z-index:calc(10 - var(--i))}
+.slab .band{position:absolute;left:4%;right:4%;top:38%;height:22%;background:repeating-linear-gradient(90deg,#141414 0 22px,var(--c3) 22px 26px);opacity:.9}
+.piloti{display:flex;justify-content:space-between;width:46%;height:clamp(30px,6vw,70px)}
+.piloti i{width:7%;background:linear-gradient(90deg,var(--c4),var(--c3));display:block}
+/* plate II coffered wall */
+.wall{position:absolute;left:10%;right:10%;top:10%;bottom:30%;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(6,minmax(0,1fr));padding:2.5%;background:var(--tex),var(--c4);box-shadow:calc((.5 - var(--sun)) * 60px) 24px 0 rgba(0,0,0,.4)}
+.win{position:relative;margin:13%;border:0;padding:0;cursor:pointer;background:var(--c2);box-shadow:inset calc((.5 - var(--sun)) * 26px) 9px 0 rgba(0,0,0,.7);transition:box-shadow .2s linear}
+.win::after{content:"";position:absolute;inset:24%;background:#121212;transition:background .5s ease,box-shadow .7s ease}
+.win:hover::after{background:#262626}
+.win.lit::after{background:var(--c6);box-shadow:0 0 18px 4px rgba(235,232,226,.35)}
+.win:focus-visible{outline:2px solid var(--c6);outline-offset:1px}
+.count{position:absolute;left:10%;bottom:12%;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--c4)}
+/* plate III tower */
+.tower{position:absolute;left:43%;width:14%;bottom:30%;height:62%;background:repeating-linear-gradient(90deg,var(--c5) 0 4px,var(--c3) 4px 7px,var(--c4) 7px 14px),var(--c4)}
+.tower .cap{position:absolute;left:-20%;right:-20%;top:-7%;height:9%;background:var(--tex),var(--c4);border-bottom:5px solid var(--c2)}
+.tower .slot{position:absolute;left:0;right:0;top:30%;height:4%;background:var(--c0)}
+.shadow{position:absolute;left:43%;width:14%;top:70%;height:22%;transform-origin:top center;transform:skewX(calc((var(--sun) - .5) * 140deg));background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.18))}
+.fig .disc{position:absolute;width:7%;aspect-ratio:1;border-radius:50%;background:var(--c6);left:calc(6% + var(--sun) * 88%);top:calc(60% - var(--sunY) * 50%);transform:translate(-50%,-50%);box-shadow:0 0 30px 8px rgba(235,232,226,.25)}
+/* close */
+.close{padding:clamp(80px,12vw,160px) clamp(16px,4vw,56px);text-align:center;background:var(--tex),var(--c0);border-top:1px solid var(--c2)}
+blockquote{font:italic clamp(26px,4vw,52px)/1.2 Georgia,"Times New Roman",serif;max-width:20em;margin:0 auto;color:var(--c6)}
+cite{display:block;margin-top:22px;font-style:normal}
+.colo{margin-top:64px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--c3)}
+/* dial */
+.dial{position:fixed;right:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:9;background:rgba(15,15,14,.82);border:1px solid var(--c2);padding:10px 14px 8px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.dial svg{width:72px;height:40px;overflow:visible}
+.dial path{fill:none;stroke:var(--c3);stroke-width:1;stroke-dasharray:2 3}
+.dial circle{fill:var(--c6)}
+.dial b{display:block;font-size:20px;font-weight:400;letter-spacing:.04em;color:var(--c6)}
+.dial span{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--c3)}
+@media (max-width:760px){
+  .plate,.plate:nth-of-type(even){grid-template-columns:minmax(0,1fr)}
+  .plate:nth-of-type(even) .fig{order:0}
+  .hero-build{height:38vh}
+  h1{top:24%}
+  .top{flex-direction:column;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01s!important;transition-delay:0s!important}
+  .curtain{display:none}
+}
+</style>
+</head>
+<body>
+<header class="hero" id="hero">
+  <div class="sun" aria-hidden="true"></div>
+  <div class="top"><p class="eyebrow mono">Atlas of Poured Stone &mdash; Vol. IV</p><p class="eyebrow mono">Move across the page to move the sun</p></div>
+  <h1 class="cond"><span>Béton</span><span>Brut</span></h1>
+  <div>
+    <div class="hero-build" aria-hidden="true">
+      <div class="blk" style="--d:0;width:16%;height:52%;--tone:var(--c3)"></div>
+      <div class="blk" style="--d:2;width:11%;height:88%;--tone:var(--c4)"></div>
+      <div class="blk" style="--d:1;width:24%;height:40%;--tone:var(--c3)"></div>
+      <div class="blk" style="--d:3;width:9%;height:100%;--tone:var(--c5)"></div>
+      <div class="blk" style="--d:1;width:20%;height:62%;--tone:var(--c3)"></div>
+      <div class="blk" style="--d:4;width:14%;height:30%;--tone:var(--c2)"></div>
+    </div>
+    <p class="lede">Three buildings that refuse to apologise. Board-marked, raw and heavy with weather, they still carry the grain of the timber that held them while they set. Light is the only thing that changes them.</p>
+  </div>
+  <div class="curtain" aria-hidden="true"></div>
+</header>
+
+<main>
+  <section class="plate">
+    <div class="fig reveal" aria-hidden="true">
+      <div class="disc"></div>
+      <div class="step">
+        <div class="slab rise" style="--i:0;width:100%"><span class="band"></span></div>
+        <div class="slab rise" style="--i:1;width:84%"><span class="band"></span></div>
+        <div class="slab rise" style="--i:2;width:68%"><span class="band"></span></div>
+        <div class="slab rise" style="--i:3;width:54%"></div>
+        <div class="piloti rise" style="--i:4"><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="txt reveal">
+      <div class="num cond">I</div>
+      <h2 class="cond">The Stepped Hall</h2>
+      <p class="sub">Civic Archive, Haldane Quay</p>
+      <p class="body">Each floor reaches a little further than the one beneath it, so the building shades its own doorway. In August the lower terrace is the coolest room in the city, and the archivists eat lunch there in silence.</p>
+      <dl class="mono"><dt>Poured</dt><dd>1967</dd><dt>Atelier</dt><dd>Vos &amp; Haldane</dd><dt>Storeys</dt><dd>Four, on pilotis</dd><dt>Finish</dt><dd>Board-marked fir</dd></dl>
+    </div>
+  </section>
+
+  <section class="plate">
+    <div class="fig reveal">
+      <div class="disc" aria-hidden="true"></div>
+      <div class="wall rise" id="wall" role="group" aria-label="Facade windows, select to switch lights"></div>
+      <p class="count mono" id="count" aria-live="polite">Lights on: 0 of 48</p>
+    </div>
+    <div class="txt reveal">
+      <div class="num cond">II</div>
+      <h2 class="cond">The Coffered Wall</h2>
+      <p class="sub">Weller House, residential block</p>
+      <p class="body">Forty-eight deep window boxes, each one a small room of shadow. Residents say they can tell the hour by how far the dark has crept across the sills. Select a window to switch its lamp on.</p>
+      <dl class="mono"><dt>Poured</dt><dd>1971</dd><dt>Atelier</dt><dd>Okonjo Partnership</dd><dt>Homes</dt><dd>48</dd><dt>Reveal depth</dt><dd>620 mm</dd></dl>
+    </div>
+  </section>
+
+  <section class="plate">
+    <div class="fig reveal" aria-hidden="true">
+      <div class="disc"></div>
+      <div class="shadow"></div>
+      <div class="tower rise"><span class="cap"></span><span class="slot"></span></div>
+    </div>
+    <div class="txt reveal">
+      <div class="num cond">III</div>
+      <h2 class="cond">The Tower and Its Shadow</h2>
+      <p class="sub">Signal Tower, Ostmark Ridge</p>
+      <p class="body">Fourteen storeys of vertical fins with nothing at the top but a water tank and a view. At either end of the day its shadow is the longest thing in the valley, reaching the river by dusk.</p>
+      <dl class="mono"><dt>Poured</dt><dd>1974</dd><dt>Atelier</dt><dd>Brandt Lindqvist</dd><dt>Height</dt><dd>52 m</dd><dt>Fins</dt><dd>212, precast</dd></dl>
+    </div>
+  </section>
+
+  <section class="close">
+    <blockquote class="reveal">&ldquo;Concrete remembers everything that touched it while it was soft.&rdquo;<cite class="mono eyebrow">Ines Vos, site diary, 1966</cite></blockquote>
+    <div class="colo mono"><span>Atlas of Poured Stone</span><span>Volume IV</span><span>Printed in grey</span></div>
+  </section>
+</main>
+
+<div class="dial mono" aria-hidden="true">
+  <svg viewBox="0 0 72 40"><path d="M4 38 A32 32 0 0 1 68 38"></path><circle id="dot" r="4" cx="4" cy="38"></circle></svg>
+  <div><span>Solar time</span><b id="clock">10:12</b></div>
+</div>
+
+<script>
+(function(){
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  var fine = window.matchMedia('(pointer: fine)').matches;
+  var sun = .35, target = .35, lastPointer = 0;
+
+  /* windows */
+  var wall = document.getElementById('wall'), count = document.getElementById('count'), lit = 0;
+  for(var r = 0; r < 6; r++){
+    for(var c = 0; c < 8; c++){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'win';
+      b.setAttribute('aria-label', 'Floor ' + (6 - r) + ', window ' + (c + 1));
+      b.setAttribute('aria-pressed', 'false');
+      wall.appendChild(b);
+    }
+  }
+  var wins = wall.querySelectorAll('.win');
+  wall.addEventListener('click', function(e){
+    var w = e.target.closest('.win'); if(!w) return;
+    var on = w.classList.toggle('lit'); w.setAttribute('aria-pressed', on ? 'true' : 'false');
+    lit += on ? 1 : -1; count.textContent = 'Lights on: ' + lit + ' of 48';
+  });
+  [3, 11, 20, 29, 34, 42].forEach(function(i){ wins[i].classList.add('lit'); wins[i].setAttribute('aria-pressed','true'); lit++; });
+  count.textContent = 'Lights on: ' + lit + ' of 48';
+
+  /* reveal */
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.25});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* sun */
+  window.addEventListener('pointermove', function(e){
+    if(e.pointerType === 'touch') return;
+    target = Math.min(1, Math.max(0, e.clientX / innerWidth)); lastPointer = performance.now();
+  }, {passive:true});
+  function fromScroll(){
+    var max = document.documentElement.scrollHeight - innerHeight;
+    return max > 0 ? .08 + (scrollY / max) * .84 : .35;
+  }
+  window.addEventListener('scroll', function(){ if(!fine || performance.now() - lastPointer > 4000) target = fromScroll(); }, {passive:true});
+
+  var dot = document.getElementById('dot'), clock = document.getElementById('clock');
+  function apply(){
+    var y = Math.sin(Math.PI * sun);
+    root.style.setProperty('--sun', sun.toFixed(4));
+    root.style.setProperty('--sunY', y.toFixed(4));
+    var a = Math.PI * (1 - sun);
+    dot.setAttribute('cx', (36 + Math.cos(a) * 32).toFixed(2));
+    dot.setAttribute('cy', (38 - Math.sin(a) * 32).toFixed(2));
+    var mins = Math.round(7 * 60 + sun * 12 * 60);
+    clock.textContent = (mins / 60 | 0) + ':' + ('0' + mins % 60).slice(-2);
+  }
+  var prev = performance.now();
+  function loop(now){
+    var dt = Math.min(.05, (now - prev) / 1000); prev = now;
+    var k = RM ? 1 : 1 - Math.exp(-dt * 2.2);
+    if(Math.abs(target - sun) > .0005){ sun += (target - sun) * k; apply(); }
+    requestAnimationFrame(loop);
+  }
+  apply();
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.getElementById('hero').classList.add('loaded'); }); });
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

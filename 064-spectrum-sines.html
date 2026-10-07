@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spectrum: Five Movements in Sine</title>
+<style>
+:root{
+  --paper:#f4f1ea;
+  --ink:#16140f;
+  --muted:#7a7468;
+  --rule:rgba(22,20,15,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:"Didot","Bodoni 72","Bodoni MT","Hoefler Text",Georgia,serif;
+  overflow-x:hidden;
+}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background:repeating-radial-gradient(circle at 30% 40%,rgba(0,0,0,.025) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.readout{
+  position:fixed;z-index:3;left:clamp(16px,3vw,36px);bottom:clamp(16px,3vw,32px);
+  font:500 .7rem/1.5 ui-monospace,"SF Mono",Menlo,"Courier New",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  display:flex;gap:22px;align-items:flex-end
+}
+.readout b{display:block;color:var(--ink);font-size:1.05rem;letter-spacing:.04em;font-weight:500;font-variant-numeric:tabular-nums}
+.meter{width:120px;height:2px;background:var(--rule);position:relative;margin-top:8px}
+.meter i{position:absolute;left:0;top:-1px;height:4px;width:0;background:linear-gradient(90deg,#ff3d6e,#ffb02e,#3ccf91,#2f8cff,#9b5cff)}
+.mark{position:fixed;z-index:3;top:clamp(16px,3vw,32px);left:clamp(16px,3vw,36px);right:clamp(16px,3vw,36px);display:flex;justify-content:space-between;
+  font:500 .7rem/1 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.mark span:first-child{color:var(--ink)}
+main{position:relative;z-index:2}
+section{min-height:100vh;display:grid;place-items:center;padding:12vh clamp(16px,6vw,80px);text-align:center}
+.num{font:500 .74rem/1 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.3em;color:var(--muted);display:block;margin-bottom:18px}
+h1,h2{font-weight:normal;margin:0;line-height:.92;letter-spacing:-.025em}
+h1{font-size:clamp(3.2rem,15vw,11rem);font-style:italic}
+h2{font-size:clamp(2.6rem,11vw,7.5rem)}
+h2 em{font-style:italic}
+.copy{max-width:440px;margin:22px auto 0;font-size:clamp(1rem,2.4vw,1.15rem);line-height:1.6;color:#3d3930;
+  background:rgba(244,241,234,.72);padding:6px 10px;border-radius:2px}
+.inner{opacity:.15;transform:translateY(24px);transition:opacity 1.1s cubic-bezier(.2,.7,.2,1),transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.inner.in{opacity:1;transform:none}
+.spectral{background:linear-gradient(90deg,#ff3d6e,#ffb02e 25%,#3ccf91 50%,#2f8cff 75%,#9b5cff);-webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:200% 100%;animation:slide 8s linear infinite}
+@keyframes slide{to{background-position:-200% 0}}
+.hint{margin-top:28px;font:500 .7rem/1 ui-monospace,Menlo,monospace;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.hint::after{content:"";display:block;width:1px;height:46px;margin:14px auto 0;background:var(--ink);transform-origin:top;animation:tick 2s cubic-bezier(.6,0,.2,1) infinite}
+@keyframes tick{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+button.tone{margin-top:26px;font:500 .72rem/1 ui-monospace,Menlo,monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--ink);padding:14px 20px;border-radius:999px;cursor:pointer;transition:background .3s,color .3s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+button.tone:hover{background:var(--ink);color:var(--paper);transform:translateY(-2px)}
+button.tone:focus-visible{outline:2px solid #2f8cff;outline-offset:3px}
+@media (max-width:600px){ .readout .opt{display:none} }
+@media (prefers-reduced-motion:reduce){
+  .spectral,.hint::after{animation:none}
+  .inner{transition:none;opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="mark" aria-hidden="true"><span>Spectrum</span><span id="mv">I / V</span></div>
+<div class="readout" aria-hidden="true">
+  <div>Amplitude<b id="amp">0.00</b><div class="meter"><i id="meter"></i></div></div>
+  <div class="opt">Phase<b id="ph">000&deg;</b></div>
+  <div class="opt">Voices<b id="vo">00</b></div>
+</div>
+<main>
+  <section><div class="inner">
+    <span class="num">I &middot; Hush</span>
+    <h1>Spectrum</h1>
+    <p class="copy">Thirty voices of light laid one over another, each a quarter-breath out of phase with its neighbour. At rest they nearly agree. Scroll, and they begin to argue.</p>
+    <p class="hint">Scroll to raise amplitude</p>
+  </div></section>
+  <section><div class="inner">
+    <span class="num">II &middot; Swell</span>
+    <h2>The red <em>leans</em><br>toward the violet</h2>
+    <p class="copy">Every hue is the same wave arriving a little later. What looks like colour is only timing, the way an echo is only distance.</p>
+  </div></section>
+  <section><div class="inner">
+    <span class="num">III &middot; Crest</span>
+    <h2 class="spectral"><em>Full</em> voice</h2>
+    <p class="copy">At the crest the lines overlap so tightly they print new colours where they cross. Scroll faster and they shiver with the speed of your hand.</p>
+  </div></section>
+  <section><div class="inner">
+    <span class="num">IV &middot; Interference</span>
+    <h2>Where peaks<br>meet <em>troughs</em></h2>
+    <p class="copy">Some crossings cancel to nothing. Move across the page and a pressure ripples outward from your pointer, bending all thirty voices at once.</p>
+  </div></section>
+  <section><div class="inner">
+    <span class="num">V &middot; Afterglow</span>
+    <h2>And then,<br><em>quiet.</em></h2>
+    <p class="copy">The amplitude falls away, the phases drift back into near agreement, and the page is paper again.</p>
+    <button class="tone" id="top" type="button">Play it again</button>
+  </div></section>
+</main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  var ampEl = document.getElementById('amp'), meter = document.getElementById('meter'), phEl = document.getElementById('ph'), voEl = document.getElementById('vo'), mv = document.getElementById('mv');
+  var W, H, dpr, N, step;
+  var amp = 0, ampT = 0, vel = 0, lastY = window.scrollY, phase = 0;
+  var px = -1, py = 0, pStr = 0, pStrT = 0;
+
+  function size(){
+    dpr = Math.min(2, window.devicePixelRatio||1);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    N = W < 600 ? 20 : 30;
+    step = W < 600 ? 6 : 5;
+    voEl.textContent = String(N).padStart(2,'0');
+  }
+
+  function progress(){
+    var max = document.documentElement.scrollHeight - H;
+    return max>0 ? Math.min(1,Math.max(0,window.scrollY/max)) : 0;
+  }
+  function onScroll(){
+    var y = window.scrollY; vel += (y-lastY); lastY = y;
+    var p = progress();
+    ampT = Math.pow(Math.sin(p*Math.PI),1.3);
+    var idx = Math.min(4,Math.floor(p*5+.0001)); mv.textContent = ['I','II','III','IV','V'][idx]+' / V';
+    if (reduce){ amp = ampT; vel = 0; draw(); }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.lineWidth = W<600 ? 1.3 : 1.6;
+    var mid = H*.5, spread = H*.22;
+    var a = 6 + amp*H*.24 + Math.min(60, Math.abs(vel)*.6);
+    for (var i=0;i<N;i++){
+      var k = i/(N-1);
+      var hue = (k*290 + phase*18) % 360;
+      ctx.strokeStyle = 'hsla('+hue.toFixed(1)+',88%,'+(52+8*Math.sin(k*6.28))+'%,.85)';
+      var off = (k-.5)*spread*(.35+.65*(1-amp));
+      var ph = phase + k*Math.PI*(.5+amp*1.5);
+      ctx.beginPath();
+      for (var x=0;x<=W+step;x+=step){
+        var u = x/W;
+        var env = Math.sin(u*Math.PI); env = .25+.75*env;
+        var y = mid + off
+          + Math.sin(u*Math.PI*2*(1.4+amp*1.6) + ph)*a*env
+          + Math.sin(u*Math.PI*2*(3.1+k*.8) - ph*1.3)*a*.28*env
+          + Math.sin(u*Math.PI*2*.5 + phase*.4 + k)*a*.35;
+        if (px>=0){
+          var dx = (x-px)/(W*.12);
+          y += Math.exp(-dx*dx)*pStr*Math.sin(dx*3 - phase*4)*(py>y? -1:1)*40;
+        }
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    ampEl.textContent = amp.toFixed(2);
+    meter.style.width = (amp*100).toFixed(1)+'%';
+    phEl.innerHTML = String(Math.round((phase*57.2958)%360)).padStart(3,'0')+'&deg;';
+  }
+
+  function frame(){
+    amp += (ampT-amp)*.06;
+    vel *= .9;
+    pStr += (pStrT-pStr)*.08; pStrT *= .96;
+    phase += .012 + amp*.02;
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('pointermove', function(e){ px = e.clientX; py = e.clientY; pStrT = 1; }, {passive:true});
+  window.addEventListener('pointerleave', function(){ pStrT = 0; });
+  window.addEventListener('scroll', onScroll, {passive:true});
+  var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ size(); if(reduce) draw(); },100); });
+
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); }); },{threshold:.3});
+  document.querySelectorAll('.inner').forEach(function(el){ io.observe(el); });
+  document.getElementById('top').addEventListener('click', function(){ window.scrollTo({top:0, behavior: reduce?'auto':'smooth'}); });
+
+  size(); onScroll(); amp = ampT;
+  if (reduce){ phase = .8; draw(); }
+  else requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

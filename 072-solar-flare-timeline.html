@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heliograph: A Chronicle of Solar Flares</title>
+<style>
+:root{
+  --void:#08060b;--text:#f4e6d4;--muted:rgba(244,230,212,.56);--faint:rgba(244,230,212,.14);
+  --flare:#ff8a2a;--hot:#ffd27a;--ember:#e8442e;--heat:0;
+  --display:"Avenir Next Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style",Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{background:var(--void);color:var(--text)}
+body{font-family:var(--serif);overflow-x:hidden;
+  background:radial-gradient(120% 70% at 20% 40%,rgba(232,68,46,calc(.05 + var(--heat)*.16)),transparent 60%),var(--void);background-attachment:fixed}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(18px,6vw,96px);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;left:-10%;right:-10%;bottom:16vh;height:1px;background:linear-gradient(90deg,transparent,var(--flare),var(--hot),var(--flare),transparent);box-shadow:0 0 30px 6px rgba(255,138,42,.35);animation:dawn 6s ease-in-out infinite alternate}
+@keyframes dawn{from{opacity:.45;transform:scaleX(.8)}to{opacity:1;transform:scaleX(1)}}
+.kicker{font:600 11px var(--mono);letter-spacing:.32em;text-transform:uppercase;color:var(--flare)}
+.hero h1{font:200 clamp(64px,15vw,220px)/.84 var(--display);letter-spacing:-.03em;text-transform:uppercase;margin:18px 0 26px;
+  background:linear-gradient(180deg,#fff7e6 10%,var(--hot) 45%,var(--flare) 75%,var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:46ch;font-size:clamp(17px,1.6vw,21px);line-height:1.6;color:var(--muted)}
+.cue{position:absolute;bottom:5vh;left:clamp(18px,6vw,96px);font:600 10px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.cue::after{content:"";display:block;width:1px;height:38px;background:linear-gradient(var(--flare),transparent);margin-top:12px;animation:drip 2.2s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.chron{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);position:relative}
+.sunpanel{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#sun{width:100%;height:72vh;display:block}
+.readout{text-align:center;margin-top:-4vh;min-height:110px}
+.readout .cls{font:200 clamp(54px,7vw,96px)/1 var(--display);letter-spacing:-.02em;color:var(--hot);text-shadow:0 0 calc(10px + var(--heat)*40px) rgba(255,138,42,.6);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.readout .cls.swap{opacity:0;transform:translateY(10px) scale(.96)}
+.readout .sub{font:500 11px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.entries{position:relative;padding-left:clamp(28px,4vw,64px);padding-right:clamp(18px,5vw,80px);border-left:1px solid var(--faint)}
+.rail{position:absolute;left:-1px;top:0;width:1px;height:0;background:linear-gradient(var(--hot),var(--flare),var(--ember));box-shadow:0 0 12px rgba(255,138,42,.7)}
+.ev{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:8vh 0;position:relative;opacity:.28;transition:opacity .6s ease}
+.ev.on{opacity:1}
+.ev::before{content:"";position:absolute;left:calc(-1 * clamp(28px,4vw,64px) - 6px);top:50%;width:11px;height:11px;border-radius:50%;background:var(--void);border:1px solid var(--muted);transition:all .5s cubic-bezier(.3,1.6,.5,1)}
+.ev.on::before{background:var(--hot);border-color:var(--hot);box-shadow:0 0 0 6px rgba(255,138,42,.15),0 0 22px var(--flare);transform:scale(1.25)}
+.date{font:500 11px var(--mono);letter-spacing:.26em;text-transform:uppercase;color:var(--flare)}
+.ev h2{font-weight:400;font-size:clamp(26px,3vw,40px);line-height:1.08;margin:12px 0 18px}
+.ev h2 .yr{display:block;font:200 clamp(70px,9vw,132px)/.86 var(--display);letter-spacing:-.04em;color:var(--text);margin-bottom:6px}
+.ev.on h2 .yr{background:linear-gradient(90deg,var(--text),var(--hot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ev p.body{font-size:17px;line-height:1.7;color:rgba(244,230,212,.82);max-width:48ch}
+.meter{margin-top:26px;max-width:420px}
+.meter .track{height:4px;background:var(--faint);border-radius:4px;position:relative;overflow:hidden}
+.meter .fill{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,#7a2a1a,var(--ember),var(--flare),var(--hot));transition:transform 1.4s cubic-bezier(.16,1,.3,1)}
+.meter .ticks{display:flex;justify-content:space-between;font:500 10px var(--mono);color:var(--muted);margin-top:8px;letter-spacing:.1em}
+.meter .val{font:500 12px var(--mono);color:var(--hot);margin-top:10px;letter-spacing:.08em}
+.facts{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.facts li{font:500 11px var(--mono);letter-spacing:.06em;padding:7px 12px;border:1px solid var(--faint);border-radius:999px;color:var(--muted);transition:border-color .3s,color .3s}
+.ev.on .facts li{border-color:rgba(255,138,42,.35);color:var(--text)}
+.ladder{list-style:none;margin-top:24px;max-width:460px}
+.ladder li{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--faint);font:500 12px var(--mono);color:var(--muted)}
+.ladder b{font:200 34px/1 var(--display);color:var(--text)}
+.ladder i{height:3px;border-radius:3px;background:linear-gradient(90deg,var(--ember),var(--hot));display:block}
+.outro{min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10vh 18px}
+.outro p{font:italic clamp(22px,3vw,34px)/1.35 var(--serif);max-width:28ch}
+.outro small{display:block;margin-top:24px;font:500 11px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.jump{position:fixed;right:clamp(10px,2vw,24px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:5}
+.jump a{display:block;width:8px;height:8px;border-radius:50%;background:var(--faint);transition:all .3s;position:relative}
+.jump a:hover,.jump a:focus-visible{background:var(--flare);outline:none;transform:scale(1.4)}
+.jump a.on{background:var(--hot);box-shadow:0 0 10px var(--flare)}
+.jump a span{position:absolute;right:16px;top:50%;transform:translate(6px,-50%);opacity:0;font:500 10px var(--mono);letter-spacing:.14em;color:var(--hot);white-space:nowrap;transition:all .25s;pointer-events:none}
+.jump a:hover span,.jump a:focus-visible span{opacity:1;transform:translate(0,-50%)}
+@media (max-width:820px){
+  .chron{grid-template-columns:1fr}
+  .sunpanel{height:42vh;z-index:3;background:linear-gradient(var(--void) 78%,rgba(8,6,11,0))}
+  #sun{height:34vh}
+  .readout{margin-top:-3vh;min-height:0}
+  .readout .cls{font-size:40px}
+  .readout .sub{font-size:9px}
+  .entries{border-left:none;padding-left:34px}
+  .rail{left:14px}
+  .ev::before{left:-26px}
+  .ev{min-height:80vh}
+  .jump{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero::after,.cue::after{animation:none}
+  .meter .fill,.ev,.ev::before{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <p class="kicker">Heliograph &middot; field notes on a restless star</p>
+  <h1>Solar<br>Flares</h1>
+  <p>Seven moments when the Sun flashed brighter than its own surface and the Earth noticed. Scroll down through the record; the star beside it brightens to each event's X-ray class.</p>
+  <span class="cue">Descend</span>
+</header>
+
+<section class="chron">
+  <div class="sunpanel" aria-hidden="true">
+    <canvas id="sun"></canvas>
+    <div class="readout"><div class="cls" id="rCls">C1</div><div class="sub" id="rSub">Quiet sun &middot; 1.0 &times; 10&#8315;&#8310; W/m&sup2;</div></div>
+  </div>
+  <div class="entries" id="entries">
+    <div class="rail" id="rail"></div>
+
+    <article class="ev" id="e1859" data-flux="4.5e-3" data-cls="X45" data-note="estimated">
+      <p class="date">1 September 1859</p>
+      <h2><span class="yr">1859</span>The Carrington Event</h2>
+      <p class="body">Richard Carrington was sketching a sunspot group when two beads of white light flared inside it, brightened, and faded within five minutes. Richard Hodgson saw the same thing through his own telescope. The magnetic storm arrived the next day: telegraph lines sparked, some operators sent messages on induced current alone, and aurora reached the tropics.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>White-light flare</li><li>Arrival &asymp; 17.6 h</li><li>Aurora in the Caribbean</li></ul>
+    </article>
+
+    <article class="ev" id="e1972" data-flux="2e-3" data-cls="X20" data-note="estimated">
+      <p class="date">4 August 1972</p>
+      <h2><span class="yr">1972</span>Between two Moon landings</h2>
+      <p class="body">With Apollo 16 home and Apollo 17 still months away, an active region fired a flare whose cloud crossed to Earth in about fourteen and a half hours, one of the fastest transits on record. Off the coast of Vietnam, magnetically triggered sea mines detonated with no ship in sight.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>Transit &asymp; 14.6 h</li><li>Sea mines detonated</li><li>Crewless window</li></ul>
+    </article>
+
+    <article class="ev" id="e1989" data-flux="1.5e-3" data-cls="X15" data-note="6 March">
+      <p class="date">6 &ndash; 13 March 1989</p>
+      <h2><span class="yr">1989</span>The night Quebec went dark</h2>
+      <p class="body">An X15 flare opened a week of eruptions. On 13 March the resulting geomagnetic storm tripped protective relays across the Hydro-Qu&eacute;bec grid, which collapsed in about ninety seconds. Around six million people waited roughly nine hours for the lights to return.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>Grid collapse &asymp; 90 s</li><li>Outage &asymp; 9 h</li><li>Aurora over Texas</li></ul>
+    </article>
+
+    <article class="ev" id="e2000" data-flux="5.7e-4" data-cls="X5.7" data-note="measured">
+      <p class="date">14 July 2000</p>
+      <h2><span class="yr">2000</span>The Bastille Day event</h2>
+      <p class="body">On France's national day an X5.7 flare hurled a storm of energetic protons that speckled spacecraft cameras with false stars and blinded star trackers. It became one of the most studied eruptions of its cycle, a benchmark for every forecast model that followed.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>Proton storm</li><li>Instrument &ldquo;snow&rdquo;</li><li>Halo CME</li></ul>
+    </article>
+
+    <article class="ev" id="e2003" data-flux="2.8e-3" data-cls="X28+" data-note="sensors saturated">
+      <p class="date">4 November 2003</p>
+      <h2><span class="yr">2003</span>The Halloween storms</h2>
+      <p class="body">For two weeks around Halloween the Sun released flare after flare. The last, on 4 November, overwhelmed the X-ray detectors watching it: rated at least X28, with later reconstructions placing it higher still. Airlines rerouted polar flights and several satellites logged faults.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>Detectors saturated</li><li>Polar flights rerouted</li><li>Cycle 23</li></ul>
+    </article>
+
+    <article class="ev" id="e2017" data-flux="9.3e-4" data-cls="X9.3" data-note="measured">
+      <p class="date">6 September 2017</p>
+      <h2><span class="yr">2017</span>A late surprise</h2>
+      <p class="body">Close to solar minimum, a modest sunspot group grew quickly and fired an X9.3 flare, the strongest of solar cycle 24. Shortwave radio faded across the sunlit Caribbean just as hurricane-relief operators needed it most.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>Strongest of cycle 24</li><li>HF radio blackout</li><li>Near minimum</li></ul>
+    </article>
+
+    <article class="ev" id="e2024" data-flux="8.7e-4" data-cls="X8.7" data-note="14 May">
+      <p class="date">10 &ndash; 14 May 2024</p>
+      <h2><span class="yr">2024</span>Aurora for everyone</h2>
+      <p class="body">Region 3664 released a run of X-class flares and a train of eruptions that merged on the way out. On 10 May the first G5 storm in more than twenty years lit skies that rarely see aurora. Four days later, turning off the solar limb, the same region fired one last X8.7.</p>
+      <div class="meter"><div class="track"><div class="fill"></div></div><div class="ticks"><span>A</span><span>B</span><span>C</span><span>M</span><span>X</span><span>X10+</span></div><div class="val"></div></div>
+      <ul class="facts"><li>G5 storm</li><li>Region 3664</li><li>Cycle 25</li></ul>
+    </article>
+
+    <article class="ev" id="escale" data-flux="1e-5" data-cls="M1" data-note="the ladder">
+      <p class="date">How flares are graded</p>
+      <h2><span class="yr">A&ndash;X</span>An alphabet of brightness</h2>
+      <p class="body">Flares are ranked by their peak X-ray flux near Earth. Each letter is ten times brighter than the one before, and the number scales within the letter, so an X10 is a hundred times stronger than an M1.</p>
+      <ul class="ladder">
+        <li><b>A</b><i style="width:12%"></i><span>10&#8315;&#8312;</span></li>
+        <li><b>B</b><i style="width:30%"></i><span>10&#8315;&#8311;</span></li>
+        <li><b>C</b><i style="width:50%"></i><span>10&#8315;&#8310;</span></li>
+        <li><b>M</b><i style="width:72%"></i><span>10&#8315;&#8309;</span></li>
+        <li><b>X</b><i style="width:100%"></i><span>10&#8315;&#8308;</span></li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<footer class="outro">
+  <p>Eight minutes after the flash, the light arrives. The rest of the story follows a day or two later.</p>
+  <small>Heliograph &middot; flux in watts per square metre, 0.1&ndash;0.8 nm</small>
+</footer>
+
+<nav class="jump" id="jump" aria-label="Jump to event"></nav>
+
+<script>
+(function(){
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var cv=document.getElementById("sun"),ctx=cv.getContext("2d");
+  var evs=[].slice.call(document.querySelectorAll(".ev"));
+  var W=0,H=0,dpr=1;
+  var LMIN=-8.3,LMAX=-2.2;
+  function pos(f){return Math.max(0,Math.min(1,(Math.log10(f)-LMIN)/(LMAX-LMIN)))}
+  function heat(f){return Math.max(0,Math.min(1,(Math.log10(f)+6)/(Math.log10(4.5e-3)+6)))}
+  function sci(f){var e=Math.floor(Math.log10(f)),m=f/Math.pow(10,e);var sup={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+    return m.toFixed(1)+" × 10"+String(e).split("").map(function(c){return sup[c]}).join("")+" W/m²"}
+  evs.forEach(function(ev){
+    var f=+ev.dataset.flux,val=ev.querySelector(".val");
+    if(val)val.textContent=ev.dataset.cls+" · "+sci(f)+" · "+ev.dataset.note;
+  });
+  var jump=document.getElementById("jump");
+  evs.forEach(function(ev){var a=document.createElement("a");a.href="#"+ev.id;var s=document.createElement("span");
+    s.textContent=ev.querySelector(".yr").textContent;a.appendChild(s);a.setAttribute("aria-label",ev.querySelector("h2").textContent);jump.appendChild(a)});
+  var dots=[].slice.call(jump.children);
+
+  var gran=document.createElement("canvas");gran.width=gran.height=256;
+  (function(){var g=gran.getContext("2d");g.fillStyle="#808080";g.fillRect(0,0,256,256);
+    for(var i=0;i<1400;i++){var x=Math.random()*256,y=Math.random()*256,r=2+Math.random()*6,l=Math.random();
+      var gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,l>.5?"rgba(255,255,255,.35)":"rgba(0,0,0,.35)");gr.addColorStop(1,"rgba(128,128,128,0)");
+      g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,7);g.fill()}})();
+
+  function size(){dpr=Math.min(window.devicePixelRatio||1,2);var r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);dirty=true}
+  var I=.15,target=.15,flash=0,parts=[],active=-1,t0=performance.now(),dirty=true;
+  var rCls=document.getElementById("rCls"),rSub=document.getElementById("rSub"),rail=document.getElementById("rail"),ent=document.getElementById("entries");
+
+  function burst(n){if(reduce)return;for(var i=0;i<n;i++){var a=-.45+(Math.random()-.5)*1.1,s=.6+Math.random()*2.6;parts.push({a:a,d:0,s:s,l:1,w:1+Math.random()*2.2})}}
+  function setActive(i){
+    if(i===active)return;active=i;
+    evs.forEach(function(e,k){e.classList.toggle("on",k===i)});
+    dots.forEach(function(d,k){d.classList.toggle("on",k===i)});
+    if(i<0){target=.15;return}
+    var ev=evs[i],f=+ev.dataset.flux;target=heat(f);
+    var fill=ev.querySelector(".fill");if(fill)fill.style.transform="scaleX("+pos(f)+")";
+    flash=1;burst(Math.round(30+target*90));dirty=true;
+    rCls.classList.add("swap");
+    setTimeout(function(){rCls.textContent=ev.dataset.cls;rSub.textContent=ev.querySelector(".yr").textContent+" · "+sci(f);rCls.classList.remove("swap")},reduce?0:260);
+  }
+  function onScroll(){
+    var vh=window.innerHeight,mid=vh*.5,best=-1,bd=1e9;
+    evs.forEach(function(e,k){var r=e.getBoundingClientRect();var c=r.top+r.height/2,d=Math.abs(c-mid);if(r.bottom>0&&r.top<vh&&d<bd){bd=d;best=k}});
+    if(best>=0&&bd>vh*.55)best=-1;
+    setActive(best);
+    var er=ent.getBoundingClientRect(),p=Math.max(0,Math.min(1,(mid-er.top)/er.height));
+    rail.style.height=(p*er.height)+"px";
+  }
+  window.addEventListener("scroll",onScroll,{passive:true});
+  window.addEventListener("resize",function(){size();onScroll()});
+
+  function draw(now){
+    var t=(now-t0)/1000;
+    I+=(target-I)*(reduce?1:.04);flash*=reduce?0:.94;
+    document.body.style.setProperty("--heat",I.toFixed(3));
+    var cx=W/2,cy=H/2,R=Math.min(W,H)*.27;
+    ctx.clearRect(0,0,W,H);
+    var cr=R*(1.55+I*1.5+flash*.3);
+    var g=ctx.createRadialGradient(cx,cy,R*.9,cx,cy,cr);
+    g.addColorStop(0,"rgba(255,170,70,"+(.32+I*.3)+")");g.addColorStop(.4,"rgba(232,68,46,"+(.1+I*.12)+")");g.addColorStop(1,"rgba(232,68,46,0)");
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    ctx.save();ctx.translate(cx,cy);ctx.globalCompositeOperation="lighter";
+    for(var k=0;k<28;k++){
+      var a=k/28*Math.PI*2+t*.02,len=R*(.35+.5*I)*(.6+.4*Math.sin(t*.4+k*2.3))+R*.1;
+      ctx.rotate(Math.PI*2/28);
+      var rg=ctx.createLinearGradient(R,0,R+len,0);rg.addColorStop(0,"rgba(255,180,90,"+(.05+I*.08)+")");rg.addColorStop(1,"rgba(255,180,90,0)");
+      ctx.fillStyle=rg;ctx.beginPath();ctx.moveTo(R*.95,-R*.05);ctx.lineTo(R+len,0);ctx.lineTo(R*.95,R*.05);ctx.fill();
+    }
+    ctx.restore();
+    var dg=ctx.createRadialGradient(cx-R*.15,cy-R*.15,R*.05,cx,cy,R);
+    dg.addColorStop(0,"#fff6d6");dg.addColorStop(.45,"#ffc261");dg.addColorStop(.82,"#f2702c");dg.addColorStop(1,"#a8260f");
+    ctx.fillStyle=dg;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();
+    ctx.globalCompositeOperation="overlay";ctx.globalAlpha=.55;
+    ctx.translate(cx,cy);ctx.rotate(t*.01);var gs=R*2.4;
+    ctx.drawImage(gran,-gs/2,-gs/2,gs/2,gs/2);ctx.drawImage(gran,0,-gs/2,gs/2,gs/2);ctx.drawImage(gran,-gs/2,0,gs/2,gs/2);ctx.drawImage(gran,0,0,gs/2,gs/2);
+    ctx.restore();
+    var ang=-.45,ax=cx+Math.cos(ang)*R*.8,ay=cy+Math.sin(ang)*R*.8;
+    ctx.fillStyle="rgba(70,18,6,.55)";
+    ctx.beginPath();ctx.ellipse(ax-R*.05,ay+R*.02,R*.05,R*.035,ang,0,7);ctx.fill();
+    ctx.beginPath();ctx.ellipse(ax+R*.03,ay-R*.04,R*.03,R*.022,ang,0,7);ctx.fill();
+    ctx.save();ctx.globalCompositeOperation="lighter";
+    for(var j=0;j<4;j++){
+      var sp=.07+j*.035,a1=ang-sp,a2=ang+sp*.8,h=R*(1.1+j*.06+I*.35+flash*.12+Math.sin(t*1.3+j)*.025);
+      var x1=cx+Math.cos(a1)*R*.98,y1=cy+Math.sin(a1)*R*.98,x2=cx+Math.cos(a2)*R*.98,y2=cy+Math.sin(a2)*R*.98;
+      var qx=cx+Math.cos(ang)*h*1.12,qy=cy+Math.sin(ang)*h*1.12;
+      ctx.strokeStyle="rgba(255,120,40,"+(.12+I*.15)+")";ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(qx,qy,x2,y2);ctx.stroke();
+      ctx.strokeStyle="rgba(255,214,140,"+(.35+I*.4)+")";ctx.lineWidth=2;ctx.stroke();
+    }
+    if(flash>.01){var fr=R*(.15+flash*.5+I*.2);var fg=ctx.createRadialGradient(ax,ay,0,ax,ay,fr);
+      fg.addColorStop(0,"rgba(255,255,240,"+(flash*.95)+")");fg.addColorStop(.3,"rgba(255,220,150,"+(flash*.5)+")");fg.addColorStop(1,"rgba(255,140,40,0)");
+      ctx.fillStyle=fg;ctx.beginPath();ctx.arc(ax,ay,fr,0,7);ctx.fill()}
+    for(var p=parts.length-1;p>=0;p--){var q=parts[p];q.d+=q.s;q.l-=.012;
+      if(q.l<=0){parts.splice(p,1);continue}
+      var px=ax+Math.cos(ang+q.a)*q.d*R*.012,py=ay+Math.sin(ang+q.a)*q.d*R*.012;
+      ctx.fillStyle="rgba(255,"+Math.round(170+q.l*80)+",120,"+(q.l*.8)+")";ctx.beginPath();ctx.arc(px,py,q.w*q.l+.4,0,7);ctx.fill()}
+    ctx.restore();
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  size();onScroll();
+  if(reduce){draw(performance.now());window.addEventListener("scroll",function(){requestAnimationFrame(draw)},{passive:true});window.addEventListener("resize",function(){requestAnimationFrame(draw)})}
+  else requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

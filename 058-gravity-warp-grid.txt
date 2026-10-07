@@ -1,0 +1,18 @@
+Prompt:
+058 gravity-warp-grid: canvas grid bent by gravity wells; click to drop a mass.
+Build a standalone HTML page called "Gravitas Observatory", an invented physics bench where a luminous lattice of spacetime fills a full-screen canvas. Palette: deep void #04050c with a faint violet radial bloom in the centre; grid lines coloured in six buckets by how far each segment has been displaced, running from dusty slate blue through ice cyan #9fe8ff and violet #b48cff to hot rose #ff7ab8, so the deepest parts of each well glow. Typography: ui-monospace / "SF Mono" / Menlo for interface labels and readouts, "Iowan Old Style" / Palatino / Georgia for the headline, with the word "fabric" in italic ice blue. Layout: the canvas fills the viewport (sized to devicePixelRatio, capped at 2, rebuilt on resize, grid spacing 28px or 22px on phones); a frosted-glass control panel floats top-left with an eyebrow label, headline "Spacetime is a fabric, and you are holding the weights.", a short explanatory paragraph, a gradient-track mass slider (2 to 30 solar masses) with a live output, Drift and Clear buttons, and a stats strip for well count (max 9) and peak warp in pixels; a collapse toggle reduces the panel to just its eyebrow. A centered bottom hint invites the first click and fades away once used. Motion: each grid node is displaced toward every mass by a softened inverse-square pull capped to avoid crossing; the pointer acts as a faint probe mass that eases in and out; dropping a mass spring-animates its weight in with overshoot and launches a radial ripple ring that pushes the lattice outward as a decaying sine band. With Drift on, masses attract each other, slide together with damping and merge into a heavier well, emitting a new ripple. Masses render as black event-horizon discs with a thin bright rim and a rose/violet glow. Segments are batched into one Path2D per colour bucket for a cheap single-pass stroke. Reduced motion: no ripples, no drift by default, masses appear at full weight instantly.
+
+Title: Gravitas Observatory
+
+Description: An interactive gravity sandbox in which a glowing grid of light behaves like stretched fabric. Two seeded wells give the first frame depth; each click drops a new mass that sinks in with a spring, sends a shock ripple across the lattice and recolours the bent region from cool cyan to hot rose. Over time heavy bodies drift toward one another and merge into deeper wells, while a frosted observatory panel frames the experiment with calm editorial copy and precise monospace readouts.
+
+Visual techniques:
+- Full-screen canvas sized to devicePixelRatio with resize handling and a single requestAnimationFrame loop
+- Per-node softened inverse-square displacement from multiple masses plus a pointer probe
+- Segment colouring by displacement magnitude, batched into six Path2D strokes
+- Radial ripple waves modelled as Gaussian-windowed sine displacement
+- Spring-damped mass growth, pairwise attraction, damping and momentum-conserving merges
+- Event-horizon rendering with radial-gradient glow and rim stroke
+- Frosted glass panel with backdrop-filter, gradient range track and glowing thumb
+
+Interaction model: Click or tap anywhere on the canvas to drop a mass of the weight chosen on the slider; moving the pointer gently dents the grid like a fingertip. Toggle Drift to let wells attract and merge or hold them in place, use Clear wells to reset the fabric, and collapse the panel to see more of the lattice on small screens. The panel reports the number of wells and the current peak warp.

@@ -1,0 +1,30 @@
+PROMPT
+
+Build a single standalone HTML page for concept 092, "eclipse-corona": an animated total solar eclipse with a corona glow and flares. Present it as Plate IX from a fictional "Umbra Observatory". The whole background is a full-viewport, devicePixelRatio-aware canvas; a thin HTML overlay carries the type and controls.
+
+Palette: near-black night #03040a, bone white #efe6d4 for text with a 55% dim variant and 18% hairlines, a gold accent #e9c27a for the word "sun" and the Totality label, and hydrogen-alpha red for prominences. The sky itself is computed: a radial gradient that goes from daylight blue during partial phases to near-black at totality, with an orange horizon afterglow fading in at the bottom when the sun is fully covered.
+
+Typography: "Iowan Old Style" / Palatino / Georgia for the large headline ("The hour the sun wears a crown", with "sun" in gold italic) and the italic phase name; small spaced uppercase "Helvetica Neue" labels; ui-monospace for fictional observing coordinates and a UT clock.
+
+Layout: top-left masthead with the plate label, headline, and an italic instruction; top-right monospace coordinates (hidden on phones). Bottom panel separated by a hairline: phase name on the left, a hairline range slider labelled "Moon transit" with the UT time in the middle, and a large obscuration percentage plus a pill "Auto transit" toggle on the right. On phones the slider drops to its own row.
+
+Rendering: the sun is a disc with limb-darkening gradient. The moon is 6% larger and travels a slightly diagonal path across it. Compute true obscuration with the circle-circle overlap formula and derive everything from it: sky brightness (visible fraction ^0.45), star visibility, corona alpha (smoothstep 0.93 to 1, squared), prominence alpha, a diamond-ring bead (smoothstep 0.95 to 0.992, fading out at totality) placed on the sun's limb opposite the moon center with six star spikes, and a big additive glare centered on the visible crescent. The corona is pre-rendered once per resize into an offscreen canvas: a soft base glow plus 220 additive streamers built from curved quadratic wedges filled with radial gradients, longer near the equator, plus 90 fine filaments. Each frame it is drawn twice with "lighter" compositing, slowly counter-rotating and gently breathing for a shimmering, living look. Prominences are several looping bezier arcs in red with shadow blur that wobble over time and peek past the moon's limb. Stars twinkle in at totality. A faint red chromosphere ring outlines the moon during totality.
+
+Motion: auto transit uses pos = sin(t*0.18)^3 so the moon lingers near center and totality lasts a few seconds each pass. Readouts update live: obscuration %, phase name (Clear sun, Partial, Deep partial, Diamond ring, Totality), and a fictional UT time mapped from the moon position.
+
+Interaction: drag anywhere on the sky (pointer events with capture, touch-action none) to steer the moon horizontally; the range slider does the same for keyboard users. Either pauses auto transit; the pill button resumes it from the current position. Reduced motion: auto transit off, the moon parked at totality, prominence wobble and corona breathing disabled.
+
+Title: Umbra Observatory Totality
+
+Description: A cinematic observatory plate in which the viewer steers the moon across the sun. As obscuration climbs, the blue sky drains to black, glare collapses into a single blazing diamond ring, and then the pearly corona blooms outward in hundreds of soft additive streamers, ringed by small red prominences and a field of emerging stars. Refined serif typography, hairline controls, and live scientific readouts frame the canvas like a page from an astronomical atlas.
+
+Visual techniques:
+- Full-screen canvas sized to devicePixelRatio with resize handling and a single requestAnimationFrame loop
+- Circle-circle overlap area formula to compute physically plausible obscuration
+- Offscreen pre-rendered corona of additive gradient-filled streamer wedges, drawn twice with counter-rotation
+- "lighter" composite glare, diamond-ring bead with star spikes, and shadow-blurred bezier prominences
+- Computed sky gradient and horizon afterglow driven by visible sunlight
+- Twinkling starfield revealed with smoothstep thresholds
+- Hairline custom range slider, pill toggle with aria-pressed, tabular-figure readouts
+
+Interaction model: The eclipse runs on its own by default, lingering at totality on each pass. Dragging across the sky or using the Moon transit slider takes manual control of the moon's position; the phase name, obscuration percentage, and UT clock respond instantly. The Auto transit button hands control back. With reduced motion, the scene rests at totality with minimal movement.

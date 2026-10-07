@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descent — An Altitude Infographic</title>
+<style>
+:root{
+  --fg:#eef3ff;
+  --dim:rgba(238,243,255,.62);
+  --line:rgba(238,243,255,.22);
+  --accent:#ffb46b;
+  --sans:"Avenir Next","Futura","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--fg);background:#03040b;overflow-x:hidden}
+.sky{position:fixed;inset:0;z-index:0;background:#03040b}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 33% 72%,#fff 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 58% 26%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 81% 61%,#fff 50%,transparent 51%),
+    radial-gradient(1px 1px at 70% 10%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 22% 48%,#cfe0ff 50%,transparent 51%),
+    radial-gradient(1px 1px at 90% 34%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 46% 88%,#fff 50%,transparent 51%);
+  background-size:280px 280px,340px 340px,420px 420px,300px 300px,380px 380px,460px 460px,260px 260px,320px 320px}
+.planet{position:fixed;left:50%;z-index:1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 50% 0%,#5aa6d6 0%,#2b6f9e 6%,#1d4d73 18%,#10304d 40%);
+  box-shadow:0 0 60px 18px rgba(120,190,255,.45),0 0 0 3px rgba(170,220,255,.35);
+  will-change:transform,width,height}
+.rail{position:fixed;left:0;top:0;bottom:0;width:132px;z-index:5;padding:28px 0 28px 18px;display:flex;flex-direction:column}
+.readout{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--dim);line-height:1.7}
+.readout strong{display:block;font-size:26px;letter-spacing:-.01em;color:var(--fg);font-weight:600;line-height:1.1}
+.readout strong small{font-size:12px;color:var(--accent);margin-left:3px}
+.scale{position:relative;flex:1;margin:24px 0 0 6px;border-left:1px solid var(--line)}
+.scale button{position:absolute;left:-4px;transform:translateY(-50%);background:none;border:none;color:var(--dim);font:500 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 4px 4px 0;transition:color .3s}
+.scale button::before{content:"";width:7px;height:7px;border-radius:50%;background:#03040b;border:1px solid var(--dim);transition:background .3s,border-color .3s,transform .4s cubic-bezier(.3,1.6,.5,1)}
+.scale button:hover,.scale button:focus-visible,.scale button.on{color:var(--fg);outline:none}
+.scale button.on::before{background:var(--accent);border-color:var(--accent);transform:scale(1.4)}
+.marker{position:absolute;left:-1px;width:22px;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);transform:translateY(-1px)}
+main{position:relative;z-index:3;margin-left:132px}
+.intro,.stage{min-height:100vh;display:flex;align-items:center;padding:12vh clamp(18px,5vw,80px)}
+.intro h1{font-size:clamp(44px,9vw,128px);font-weight:600;letter-spacing:-.03em;line-height:.9}
+.intro h1 span{display:block;color:var(--accent);font-size:.22em;letter-spacing:.4em;text-transform:uppercase;font-weight:500;margin-bottom:18px}
+.intro p{max-width:46ch;margin-top:26px;color:var(--dim);font-size:17px;line-height:1.6}
+.intro .cue{margin-top:40px;font:500 10px/1 var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--accent)}
+.card{max-width:560px;opacity:.15;transform:translateY(40px);transition:opacity 1s ease,transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.stage.in .card{opacity:1;transform:none}
+.alt{font-family:var(--mono);font-size:clamp(52px,11vw,132px);font-weight:600;letter-spacing:-.05em;line-height:.9}
+.alt small{font-size:.28em;letter-spacing:0;color:var(--accent);margin-left:6px}
+.card h2{font-size:clamp(22px,3.4vw,34px);font-weight:600;margin:14px 0 12px;letter-spacing:-.01em}
+.card p{color:var(--dim);font-size:16px;line-height:1.65}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:22px;background:var(--line);border:1px solid var(--line)}
+.facts div{background:rgba(3,4,11,.32);padding:12px;font:500 10px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.facts b{display:block;font:600 16px/1.2 var(--mono);letter-spacing:0;color:var(--fg);text-transform:none;margin-top:4px}
+@media(max-width:640px){
+  .rail{width:74px;padding-left:10px}
+  .readout strong{font-size:15px}.readout .x{display:none}
+  .scale button{font-size:0;gap:0}
+  main{margin-left:74px}
+  .facts{grid-template-columns:1fr 1fr 1fr}.facts div{padding:8px;font-size:8px}.facts b{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.card{transition:opacity .3s;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="sky" id="sky"></div>
+<div class="stars" id="stars"></div>
+<div class="planet" id="planet"></div>
+
+<nav class="rail" aria-label="Altitude">
+  <div class="readout" aria-live="off">
+    <strong id="rAlt">100.0<small>km</small></strong>
+    <span id="rTemp">-78 &deg;C</span><br>
+    <span class="x" id="rPres">0.0003 hPa</span>
+  </div>
+  <div class="scale" id="scale"><span class="marker" id="marker"></span></div>
+</nav>
+
+<main id="main">
+  <section class="intro">
+    <div>
+      <h1><span>Field guide to falling</span>Descent</h1>
+      <p>From the edge of space to the surf line, the sky is not one place but a stack of them. Scroll to drop through each layer and watch the planet rise to meet you.</p>
+      <p class="cue">Scroll to begin the fall &darr;</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var S = [
+    {km:100, name:"The Kármán Line", short:"Kármán", body:"The agreed border of space. Air here is so thin that a wing would need orbital speed to find any lift. Above, the sky is simply black; below, the first faint blue begins.", t:-78, p:0.0003, f:["Sky","Black"], c:[3,4,11]},
+    {km:85, name:"Mesopause", short:"Mesopause", body:"The coldest place on Earth sits overhead, not at the poles. Noctilucent clouds of ice glow electric blue here at twilight, and meteors burn bright and brief.", t:-90, p:0.004, f:["Meteors","Burning"], c:[8,10,32]},
+    {km:50, name:"Stratopause", short:"Stratopause", body:"Warmed from beneath by ozone soaking up sunlight, the air turns almost mild. Weather balloons swell to the size of houses before they finally burst.", t:-2, p:0.8, f:["Balloons","Bursting"], c:[16,26,72]},
+    {km:25, name:"The Ozone Layer", short:"Ozone", body:"A diffuse shield of ozone filters ultraviolet light. Sky overhead deepens to a rich indigo, and the curve of the horizon is plain to the naked eye.", t:-51, p:25, f:["UV","Filtered"], c:[24,48,118]},
+    {km:11, name:"Tropopause", short:"Tropopause", body:"The lid on the weather. Airliners cruise just beneath it in the jet stream, while thunderheads flatten into anvils against its invisible ceiling.", t:-56, p:227, f:["Jets","Cruising"], c:[46,96,170]},
+    {km:8.849, name:"Summit Altitude", short:"Summit", body:"The height of the tallest mountain. One breath holds a third of the oxygen it would at sea level; climbers call everything above here the death zone.", t:-40, p:315, f:["Oxygen","33%"], c:[78,138,204]},
+    {km:2, name:"The Cloud Deck", short:"Clouds", body:"Cumulus towns drift past. The air thickens, warms, and smells of rain. Below the cloud base, the ground resolves into fields, roads and rivers.", t:2, p:795, f:["Clouds","Cumulus"], c:[128,180,222]},
+    {km:0, name:"Sea Level", short:"Sea level", body:"Every breath is full again. A full atmosphere of air presses down at roughly a kilogram per square centimetre, and the surf keeps time below your feet.", t:15, p:1013, f:["Air","Full"], c:[196,222,238]}
+  ];
+  var main = document.getElementById('main'), scale = document.getElementById('scale');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fmtKm(k){ return k >= 10 ? k.toFixed(1) : k.toFixed(k < 1 ? 3 : 2); }
+  var LMAX = Math.log(101);
+  function norm(k){ return Math.log(1 + k) / LMAX; }
+
+  S.forEach(function(s, i){
+    var sec = document.createElement('section');
+    sec.className = 'stage'; sec.id = 'st' + i;
+    sec.innerHTML = '<div class="card"><div class="alt">' + (s.km === 8.849 ? '8.85' : s.km) + '<small>km</small></div><h2>' + s.name + '</h2><p>' + s.body + '</p>' +
+      '<div class="facts"><div>Temp<b>' + s.t + '&deg;C</b></div><div>Pressure<b>' + s.p + '</b></div><div>' + s.f[0] + '<b>' + s.f[1] + '</b></div></div></div>';
+    main.appendChild(sec);
+    var b = document.createElement('button');
+    b.type = 'button'; b.textContent = s.short; b.style.top = ((1 - norm(s.km)) * 100) + '%';
+    b.setAttribute('aria-label', 'Jump to ' + s.name);
+    b.addEventListener('click', function(){ sec.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'}); });
+    scale.appendChild(b); s.btn = b; s.sec = sec;
+  });
+
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('in'); }); }, {threshold:.35});
+  S.forEach(function(s){ io.observe(s.sec); });
+
+  var sky = document.getElementById('sky'), stars = document.getElementById('stars'), planet = document.getElementById('planet');
+  var marker = document.getElementById('marker'), rAlt = document.getElementById('rAlt'), rTemp = document.getElementById('rTemp'), rPres = document.getElementById('rPres');
+  var target = 0, cur = 0, raf = null;
+
+  function stageAt(){
+    var mid = scrollY + innerHeight / 2, centers = S.map(function(s){ return s.sec.offsetTop + s.sec.offsetHeight / 2; });
+    if (mid <= centers[0]) return 0;
+    for (var i = 0; i < centers.length - 1; i++) if (mid < centers[i + 1]) return i + (mid - centers[i]) / (centers[i + 1] - centers[i]);
+    return S.length - 1;
+  }
+  function render(f){
+    var i = Math.min(Math.floor(f), S.length - 2), u = f - i, a = S[i], b = S[i + 1];
+    var e = u * u * (3 - 2 * u);
+    var km = a.km + (b.km - a.km) * e, t = a.t + (b.t - a.t) * e;
+    var lp = Math.log(a.p) + (Math.log(b.p) - Math.log(a.p)) * e, p = Math.exp(lp);
+    var col = a.c.map(function(v, k){ return Math.round(v + (b.c[k] - v) * e); });
+    var top = a.c.map(function(v, k){ return Math.round((v + (b.c[k] - v) * e) * 0.55); });
+    sky.style.background = 'linear-gradient(180deg,rgb(' + top + ') 0%,rgb(' + col + ') 100%)';
+    var n = norm(km);
+    stars.style.opacity = Math.max(0, (n - 0.55) / 0.45).toFixed(3);
+    var vw = innerWidth, vh = innerHeight, low = 1 - n;
+    var D = vw * (1.6 + Math.pow(low, 3) * 24), vis = vh * (0.1 + low * 0.18);
+    planet.style.width = planet.style.height = D + 'px';
+    planet.style.transform = 'translate(-50%,0)';
+    planet.style.top = (vh - vis) + 'px';
+    planet.style.opacity = 1;
+    marker.style.top = ((1 - n) * 100) + '%';
+    rAlt.innerHTML = fmtKm(km) + '<small>km</small>';
+    rTemp.textContent = Math.round(t) + ' °C';
+    rPres.textContent = (p < 1 ? p.toPrecision(2) : Math.round(p)) + ' hPa';
+    var near = Math.round(f);
+    S.forEach(function(s, k){ s.btn.classList.toggle('on', k === near); });
+  }
+  function tick(){
+    cur += (target - cur) * (reduce ? 1 : 0.12);
+    render(cur);
+    raf = Math.abs(target - cur) > 0.001 ? requestAnimationFrame(tick) : null;
+  }
+  function update(){ target = stageAt(); if (!raf) raf = requestAnimationFrame(tick); }
+  addEventListener('scroll', update, {passive:true});
+  addEventListener('resize', update);
+  render(0); update();
+})();
+</script>
+</body>
+</html>

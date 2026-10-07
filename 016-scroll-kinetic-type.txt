@@ -1,0 +1,36 @@
+PROMPT
+
+Concept 016 scroll-kinetic-type: scroll-driven type whose weight and skew morph through a short poem.
+
+Build a single standalone HTML page called "Tidewords: A Poem in Six Weights". A tall scroll track (about 720vh) holds a sticky full-viewport stage. In the center of the stage sits one giant uppercase word (font-size min(21vw, 30vh)), split into per-letter spans, with a thin progress rule beneath it and a single italic line of verse beneath the rule. The poem has six stanzas, each a keyword plus a line:
+1. STILL: "Before the first word, the page holds its breath."
+2. LEAN: "Letters tilt toward a wind they cannot see."
+3. HEAVY: "Meaning gathers weight the way rain gathers on roofs."
+4. THIN: "Then it thins, a hairline of ink across the dusk."
+5. RUSH: "Faster now; the sentence outruns its speaker."
+6. REST: "And settles, upright, into the quiet it came from."
+
+Each stanza defines a typographic state: font-weight (100 to 900), skewX (0 to -24deg), letter-spacing (-0.04em to 0.28em), horizontal scale (0.86 to 1.1), outline amount (THIN becomes a hollow -webkit-text-stroke outline), letter wave amplitude, and background/foreground RGB. Scroll progress maps to a float stanza index; params blend between neighbouring stanzas with a smoothstep(0.22, 0.78) so each stanza has a calm plateau, then are eased toward the target each frame (lerp factor 0.12). The displayed word swaps at the midpoint, letters dropping in with a staggered blur-and-rise keyframe (55ms per letter). Scroll velocity adds extra skew that grows letter by letter, so fast scrolling makes the word lean like it is being dragged. In RUSH the whole stage floods vermilion (#ff4a1c) with ink-black type, and a sine wave ripples weight and baseline across the letters.
+
+Palette: ink #0f0e0c, bone #efe8da, vermilion accent #ff4a1c, with slight warm and cool shifts per stanza. A faint dotted grain overlay (two radial-gradient dot grids in overlay blend) and a soft vignette sit on the stage.
+Type: display in "Helvetica Neue" / "Segoe UI Variable Display" / system-ui (variable weights render smoothly where the system font is variable); verse and colophon in "Iowan Old Style" / Palatino / Georgia italic; counter in ui-monospace with tabular numerals.
+Layout: top bar with the wordmark "TIDEWORDS" and italic subtitle at left, a "01 / 06" counter at right; a vertical dot rail on the right edge whose labels slide in on hover/focus and whose active dot fills vermilion (horizontal row at the bottom on phones); a "Scroll to read" hint with a pouring line that fades once reading starts; after the track, a colophon section ("Six weights, one breath.") with a pill button "Read it again".
+Motion: rAF loop, eased param following, letter wave, velocity skew. Reduced motion: no easing lag, no wave, no velocity skew, no drop-in animation; the poem still changes with scroll.
+
+Title: Tidewords, Six Weights
+
+Description: A kinetic typographic poem in which a single giant word occupies a sticky stage and is physically reshaped by scrolling. As the reader descends, the word moves from a hushed hairline STILL to a leaning, italicised LEAN, a swollen black HEAVY, a hollow outlined THIN, a skewed, rippling RUSH on a flood of vermilion, and finally an upright, settled REST. Each word is accompanied by a line of serif italic verse, and the whole stage shifts its background and ink colour between stanzas so the poem reads as a sequence of moods rather than a list of words.
+
+Visual techniques:
+- Sticky full-viewport stage inside a tall scroll track
+- Per-letter spans with JavaScript-driven font-weight, skewX, translateY and colour
+- Smoothstep-plateau interpolation between stanza parameter sets, plus per-frame easing
+- Scroll velocity mapped to cumulative per-letter skew
+- Hollow outline type with -webkit-text-stroke and transparent fill for THIN
+- Background and foreground RGB interpolation via CSS custom properties
+- Staggered blur-and-rise keyframe for each word swap
+- Dotted grain overlay and radial vignette built from gradients
+- Progress rule scaled with transform, dot rail navigation with slide-in labels
+- prefers-reduced-motion handling that removes lag, wave and velocity skew
+
+Interaction model: The reader simply scrolls; scroll position chooses the stanza and blends typography between states, and scroll speed bends the letters. The dot rail (right edge on desktop, bottom row on phones) jumps smoothly to any stanza by click or keyboard, showing the stanza word on hover and focus. At the end, a colophon offers a "Read it again" button that scrolls back to the opening stanza.

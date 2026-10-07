@@ -1,0 +1,23 @@
+Prompt:
+Build a standalone page showing a three-colour risograph event poster for an invented "Fernhollow Small Press Night Market" next to a print-shop job ticket. Every colour must come from CSS: halftone dots made with radial-gradient backgrounds, overprinting with mix-blend-mode: multiply, and visible misregistration between the ink layers. Inks are true riso swatches: Yellow #ffe800, Fluorescent Pink #ff48b0, Medium Blue #0078bf, on warm paper #f5efe2. The page sits on a slightly darker table colour #e4dccb with a faint 9px dot texture. Ink black is #1d1b2e. Type: "Arial Black" / Impact for huge poster words and buttons, "Helvetica Neue" / Arial for body, "Courier New" / ui-monospace for small print, labels and status.
+Poster: a 3:4 sheet, width min(88vw, 500px), with font-size set to one twentieth of the width so every element is sized in em and scales exactly. It has three absolutely stacked layers, each with multiply blend. Yellow: a halftone sun circle (inner solid disc, mask fading the dots), a solid yellow block, and a halftone strip along the bottom. Pink: "SMALL PRESS" in giant Arial Black, an outlined ring, a halftone block screened at 15 degrees and a five-point star. Blue: "NIGHT MARKET", a rotated halftone band screened at 75 degrees, a spaced kicker line "ZINES · RISO · LETTERPRESS · COMICS", a Courier venue and time block, "SATURDAY NOVEMBER", and a huge "14". The halftone screens are oversized rotated ::before pseudo-elements inside clipped boxes. Corner registration marks and an inline SVG feTurbulence paper grain are multiplied on top.
+Misregistration: each layer reads --dx, --dy and --rot custom properties. Script assigns per-ink random seeds scaled by a "Misregistration" slider (0 to 5 mm) and adds a pointer parallax in a different direction per layer, so moving over the poster slides the inks apart.
+Job ticket: a paper card with a 2px ink border and a hard 6px offset shadow. It holds the heading "Overprint proof" (pink word multiplied), a short paragraph, three ink-drum toggle buttons (round swatch, name, PASS number; switching one off overlays paper-coloured dots on the swatch and prefixes "OFF ·"), a diamond-thumb slider, "Run the job" (pink) and "Jog the paper" buttons with press-down offset-shadow micro-interactions, and an aria-live status line. A header strip reads "Fernhollow Riso Works · Job ticket #2231" and "3-colour · A3 · 120gsm Munken". Two columns on desktop, stacked and centered under 820px.
+Motion: toggled layers fade and lift by 14px. "Run the job" clears all layers, re-jogs the registration, then lays the inks down one pass at a time with a top-to-bottom clip-path roller wipe (0.9s, cubic-bezier(.7,0,.25,1)), and the status reads "Pass n of 3 · Ink". Reduced motion removes the wipe and the parallax and shortens the passes.
+
+Title: Riso Night Market Poster
+
+Description: A tactile risograph print simulation. A bold three-ink poster for a fictional small-press night market is built entirely from CSS halftone screens, solid shapes and type, overprinted with multiply blending so pink over yellow makes coral and blue over pink makes violet. A print-shop job ticket lets you pull individual inks, loosen the registration and rerun the job pass by pass, so you can see how the image comes apart into its separations.
+
+Visual techniques:
+- Halftone dot screens from tiled radial-gradient backgrounds, rotated per ink to real screen angles
+- mix-blend-mode: multiply overprint of three stacked ink layers
+- Per-layer CSS custom-property transforms for randomized misregistration
+- Pointer parallax that pulls the separations apart in different directions
+- clip-path inset roller-wipe keyframes to simulate each print pass
+- Mask-image gradient to fade the halftone sun
+- Inline SVG feTurbulence paper grain multiplied over the sheet
+- Em-based poster sizing tied to the viewport for exact responsive scaling
+- Neo-brutalist job ticket with hard offset shadows and press micro-interactions
+
+Interaction model: Hovering the poster shifts the three ink layers slightly against one another. Ink-drum buttons switch each colour on and off to show its separation. The Misregistration slider sets how far the layers drift, and "Jog the paper" re-randomizes their offsets. "Run the job" reprints the poster from blank, one ink pass at a time, while a status line reports progress.

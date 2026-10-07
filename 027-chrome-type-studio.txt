@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page for "027 chrome-type-studio: animated chrome gradient text with moving reflections on a dark backdrop." Frame it as Mirrorwerk, a fictional type foundry filming a "take" in a dark studio. Backdrop is near-black (#07080b) with a soft blue-grey radial spotlight in the middle and faint vertical studio-panel lines every 80px. A tiny top bar reads "Mirrorwerk type studio" with a blinking red recording dot on the left and "Take 027 / polished in real time" on the right, in small tracked uppercase Helvetica Neue. Center stage: a huge condensed word set in Impact / Haettenschweiler / Arial Black, uppercase, clamp(3.2rem, 15vw, 11rem), filled with a ten-stop vertical metallic gradient via background-clip:text (bright top, dark horizon band at about 46 to 50 percent, bright lower highlights), background-size 100% 260% so the horizon can slide. Add drop-shadow filters for a top bevel and deep cast shadow. Under the word, a mirrored floor reflection: the same word flipped with scaleY(-1), blurred, faded with a mask gradient. A diagonal white glint band sweeps across the letters every 4.5s using an overlay-blended gradient layer. JavaScript eases the pointer position (lerp 0.08) and maps vertical position to the gradient's background-position (the horizon reflection rides with the cursor), horizontal position to the glint angle, and both to a subtle 3D rotateX/rotateY tilt of the stage under perspective 900px; a slow sine drift keeps the horizon moving when idle. Below sits a glassy control panel: a text input to engrave your own word (max 16 characters, mirrored to the reflection live) and three finish buttons with swatch dots, Chrome, Gold leaf and Prism (iridescent pastels), which swap the gradient by changing the body class and update aria-pressed. Reduced motion: no glint sweep, no idle drift, no tilt, no blinking dot.
+
+Title: Mirrorwerk Chrome Type
+
+Description: A cinematic dark-studio type specimen where a single giant word is cast in liquid chrome. The metallic look comes entirely from a multi-stop gradient clipped to the letterforms, with a dark horizon band that slides as the pointer moves, so the reflection seems to follow your eye. A sweeping glint, a blurred floor reflection, and gentle 3D tilt complete the illusion of polished metal under studio lights, while the control panel lets you engrave your own word and switch between chrome, gold leaf and prismatic finishes.
+
+Visual techniques:
+- background-clip:text with a ten-stop metallic gradient and animated background-position
+- Pointer-driven reflection horizon and glint angle through CSS custom properties
+- Overlay-blended sweeping glint band with keyframe animation
+- Mirrored floor reflection using scaleY(-1), blur and mask-image gradient
+- Stacked drop-shadow filters for bevel and cast shadow
+- Perspective 3D tilt with eased lerp in requestAnimationFrame
+- Finish themes swapped through a body class that redefines a gradient variable
+- Glassy control panel with backdrop-filter and focus rings
+
+Interaction model: Moving the pointer across the page slides the reflected horizon up and down the letters, angles the glint, and tilts the stage in 3D. Typing in the input engraves a new word in real time, including its floor reflection. The three finish buttons switch between chrome, gold leaf and prism gradients, with pressed state shown on the active button. Keyboard users can tab through the input and finish buttons with visible focus.

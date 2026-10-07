@@ -1,0 +1,19 @@
+Prompt:
+Build a standalone HTML page for "sumi-ink-bloom": ink drops that bloom in water, drawn on a full-screen canvas, where each click lets another drop fall. Mood: a quiet calligraphy studio. Palette: warm rice-paper cream (#f3eee3) with a fibrous texture from two crossed repeating-linear-gradients and soft radial highlights; sumi black ink (#1d1b1f) as the default, with alternate inks in indigo (#26345c) and vermilion seal red (#b8382a); muted taupe (#8b8378) for secondary text. Typography: Iowan Old Style / Hiragino Mincho / Yu Mincho / Georgia for the poetic text, with tiny tracked uppercase Helvetica Neue for labels. Layout: the canvas fills the viewport with mix-blend-mode multiply so ink soaks into the paper; a vertical-rl title "墨 Ink in still water" sits at the top right beside a small rotated red square seal; a three-line italic verse rests at the bottom left and fades away after the first drop; a frosted pill toolbar at bottom center holds three round ink swatches (with an animated ring on the active one) and a "Change the water" button. Motion: each drop spawns about 150 particles flung outward with a squared-random speed distribution, damped at 0.965 per frame and nudged by a slowly evolving sine-based flow field so tendrils curl organically, with a very slight downward drift; each particle stamps a growing low-alpha disc onto a persistent canvas so ink accumulates into feathered blooms, while a radial-gradient core expands softly over the first 70 frames. Clicks spawn a main drop plus two smaller satellite drips shortly after. Opening sequence: three drops of differing size fall at staggered times. "Change the water" fades a paper-colored wash over the canvas, clears it, then replays the opening. Canvas is sized to devicePixelRatio (capped at 2) and preserves its drawing across resizes. Reduced motion: each bloom is computed instantly in a synchronous loop with no animation and no satellite drips.
+
+Title: Sumi Ink in Still Water
+
+Description: A meditative ink study on textured rice paper. Each tap releases a drop of sumi, indigo or vermilion that spreads out in feathered, curling tendrils, building layered blooms that multiply into one another like real ink in a shallow dish. A vertical title, a red seal and a brief verse frame the composition, and a single button washes the water clean to begin again.
+
+Visual techniques:
+- Persistent canvas accumulation of thousands of low-alpha particle stamps
+- Particle diffusion with damping and a time-varying trigonometric flow field for organic curls
+- Expanding radial-gradient cores that fade as each bloom matures
+- mix-blend-mode multiply so ink layers darken naturally over CSS paper texture
+- Paper fibre texture from crossed repeating-linear-gradients and radial highlights
+- Vertical writing-mode typography and a rotated seal mark
+- Frosted pill toolbar with spring-eased swatch rings
+- Fade-to-paper wash transition for clearing
+- devicePixelRatio sizing, resize preservation and a reduced-motion instant render path
+
+Interaction model: Click or tap anywhere on the paper to let a drop fall; a main bloom and two small satellite drips spread from that point. Choose sumi, indigo or vermilion ink from the toolbar to change the color of following drops. "Change the water" washes the page clean and lets three fresh drops fall on their own.

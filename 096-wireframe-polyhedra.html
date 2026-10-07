@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platonic Catalogue — Wireframe Polyhedra</title>
+<style>
+:root{
+  --ink:#0d0c0b;
+  --paper:#f1ebe0;
+  --red:#e2412b;
+  --dim:#8a8378;
+  --line:rgba(241,235,224,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.frame{
+  position:relative;min-height:100vh;min-height:100svh;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto 1fr auto;
+  padding:clamp(16px,3vw,36px);
+  gap:12px;
+}
+header{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  border-bottom:1px solid var(--line);padding-bottom:14px;
+  position:relative;z-index:2;
+}
+.mark{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim)}
+.mark b{color:var(--red);font-weight:700}
+h1{
+  font-family:Georgia,"Times New Roman",serif;font-weight:400;font-style:italic;
+  font-size:clamp(28px,5.4vw,64px);line-height:.95;letter-spacing:-.02em;margin-top:8px;
+}
+.plate{
+  font-family:ui-monospace,"SF Mono",Menlo,"Courier New",monospace;
+  font-size:11px;color:var(--dim);text-align:right;line-height:1.7;white-space:nowrap;
+}
+.plate span{color:var(--paper)}
+.stage{position:relative;min-height:52vh}
+canvas{
+  position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer;
+  touch-action:none;outline:none;
+}
+canvas:focus-visible{box-shadow:inset 0 0 0 1px var(--red)}
+.hint{
+  position:absolute;left:50%;bottom:8px;transform:translateX(-50%);
+  font-family:ui-monospace,Menlo,"Courier New",monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--dim);pointer-events:none;white-space:nowrap;
+  animation:breathe 3.2s ease-in-out infinite;
+}
+@keyframes breathe{50%{opacity:.35}}
+.big{
+  position:absolute;right:0;top:0;pointer-events:none;
+  font-family:Georgia,serif;font-size:clamp(90px,22vw,280px);line-height:.8;
+  color:transparent;-webkit-text-stroke:1px rgba(226,65,43,.5);
+  transition:opacity .5s ease;
+}
+footer{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);position:relative;z-index:2;
+}
+footer button{
+  appearance:none;border:0;background:var(--ink);color:var(--dim);cursor:pointer;
+  padding:12px 8px;text-align:left;font:inherit;min-width:0;
+  transition:color .3s ease,background .3s ease;
+}
+footer button small{display:block;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.14em}
+footer button strong{display:block;font-family:Georgia,serif;font-weight:400;font-style:italic;font-size:clamp(13px,1.8vw,18px);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer button:hover,footer button:focus-visible{color:var(--paper);background:#181614;outline:none}
+footer button[aria-pressed="true"]{color:var(--paper);box-shadow:inset 0 2px 0 var(--red)}
+.note{
+  position:absolute;left:0;top:0;max-width:240px;z-index:2;pointer-events:none;
+  font-family:Georgia,serif;font-size:14px;line-height:1.5;color:#c8c0b2;
+}
+.note em{color:var(--red);font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.2em;display:block;margin-bottom:6px}
+@media (max-width:600px){
+  .plate{display:none}
+  .note{font-size:12px;max-width:180px}
+  footer button{padding:10px 4px}
+  footer button small{font-size:9px;letter-spacing:.06em}
+}
+@media (prefers-reduced-motion:reduce){
+  .hint{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <div>
+      <div class="mark"><b>●</b> Atelier Vertex · Plate Series IV</div>
+      <h1 id="name">The Icosahedron</h1>
+    </div>
+    <div class="plate">
+      vertices <span id="v">12</span><br>
+      edges <span id="e">30</span><br>
+      faces <span id="f">20</span><br>
+      element <span id="el">water</span>
+    </div>
+  </header>
+  <div class="stage">
+    <div class="big" id="big">V</div>
+    <p class="note"><em id="idx">05 / 05</em><span id="desc">Twenty triangles gathered around twelve points: the most liquid of the five solids, it rolls like a drop of rain.</span></p>
+    <canvas id="c" tabindex="0" aria-label="Rotating wireframe polyhedron. Click or press Enter to switch shapes, drag to spin."></canvas>
+    <div class="hint">click to transmute · drag to spin</div>
+  </div>
+  <footer id="nav"></footer>
+</div>
+<script>
+(function(){
+  var P=(1+Math.sqrt(5))/2, I=1/P;
+  function edgesFrom(verts){
+    var min=Infinity,i,j,d,out=[];
+    for(i=0;i<verts.length;i++)for(j=i+1;j<verts.length;j++){d=dist(verts[i],verts[j]);if(d<min)min=d;}
+    for(i=0;i<verts.length;i++)for(j=i+1;j<verts.length;j++){if(Math.abs(dist(verts[i],verts[j])-min)<1e-3)out.push([i,j]);}
+    return out;
+  }
+  function dist(a,b){var x=a[0]-b[0],y=a[1]-b[1],z=a[2]-b[2];return Math.sqrt(x*x+y*y+z*z)}
+  function norm(vs){var m=0;vs.forEach(function(v){m=Math.max(m,Math.hypot(v[0],v[1],v[2]))});return vs.map(function(v){return [v[0]/m,v[1]/m,v[2]/m]})}
+  var cube=[];[-1,1].forEach(function(x){[-1,1].forEach(function(y){[-1,1].forEach(function(z){cube.push([x,y,z])})})});
+  var dode=cube.slice();
+  [-1,1].forEach(function(a){[-1,1].forEach(function(b){dode.push([0,a*I,b*P]);dode.push([a*I,b*P,0]);dode.push([a*P,0,b*I]);})});
+  var ico=[];
+  [-1,1].forEach(function(a){[-1,1].forEach(function(b){ico.push([0,a,b*P]);ico.push([a,b*P,0]);ico.push([a*P,0,b]);})});
+  var shapes=[
+    {n:"The Tetrahedron",r:"I",el:"fire",v:4,e:6,f:4,d:"Four faces, the fewest a solid may own. Sharp as a struck match, it was assigned to fire for the way it cuts the air.",verts:[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]]},
+    {n:"The Hexahedron",r:"II",el:"earth",v:8,e:12,f:6,d:"Six squares in perfect stillness. The cube sits where it is set, so the old catalogues gave it to the ground beneath us.",verts:cube},
+    {n:"The Octahedron",r:"III",el:"air",v:6,e:12,f:8,d:"Two pyramids kissing at their bases. Turned on a fingertip it seems to weigh nothing at all, a crystal of breath.",verts:[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]},
+    {n:"The Dodecahedron",r:"IV",el:"aether",v:20,e:30,f:12,d:"Twelve pentagons enclosing the heavens. Reserved for the quintessence, the stuff the stars were thought to be made of.",verts:dode},
+    {n:"The Icosahedron",r:"V",el:"water",v:12,e:30,f:20,d:"Twenty triangles gathered around twelve points: the most liquid of the five solids, it rolls like a drop of rain.",verts:ico}
+  ];
+  shapes.forEach(function(s){s.verts=norm(s.verts);s.edges=edgesFrom(s.verts)});
+
+  var c=document.getElementById('c'),ctx=c.getContext('2d'),W=0,H=0,dpr=1;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    var r=c.getBoundingClientRect();W=r.width;H=r.height;
+    c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize',resize);resize();
+
+  var cur=4,next=-1,t=1,ax=-.4,ay=.6,vx=.0035,vy=.006,drag=null,hover=false;
+  var nav=document.getElementById('nav');
+  shapes.forEach(function(s,i){
+    var b=document.createElement('button');b.type='button';
+    b.innerHTML='<small>'+('0'+(i+1))+' · '+s.el+'</small><strong>'+s.n.replace('The ','')+'</strong>';
+    b.addEventListener('click',function(){go(i)});nav.appendChild(b);
+  });
+  function ui(){
+    var s=shapes[cur];
+    document.getElementById('name').textContent=s.n;
+    document.getElementById('v').textContent=s.v;
+    document.getElementById('e').textContent=s.e;
+    document.getElementById('f').textContent=s.f;
+    document.getElementById('el').textContent=s.el;
+    document.getElementById('desc').textContent=s.d;
+    document.getElementById('idx').textContent='0'+(cur+1)+' / 05';
+    document.getElementById('big').textContent=s.r;
+    Array.prototype.forEach.call(nav.children,function(b,i){b.setAttribute('aria-pressed',i===cur?'true':'false')});
+  }
+  function go(i){if(i===cur&&next<0)return;next=i;t=0;}
+  ui();
+
+  c.addEventListener('pointerdown',function(e){drag={x:e.clientX,y:e.clientY,moved:0};c.setPointerCapture(e.pointerId)});
+  c.addEventListener('pointermove',function(e){
+    hover=true;
+    if(!drag)return;
+    var dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved+=Math.abs(dx)+Math.abs(dy);
+    ay+=dx*.008;ax+=dy*.008;vy=dx*.0012;vx=dy*.0012;drag.x=e.clientX;drag.y=e.clientY;
+  });
+  c.addEventListener('pointerup',function(){if(drag&&drag.moved<6)go((cur+1)%5);drag=null});
+  c.addEventListener('pointerleave',function(){hover=false});
+  c.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();go((cur+1)%5)}
+    if(e.key==='ArrowRight')go((cur+1)%5);
+    if(e.key==='ArrowLeft')go((cur+4)%5);
+  });
+
+  function ease(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
+  function project(v,rx,ry,s,cx,cy){
+    var x=v[0],y=v[1],z=v[2];
+    var cy1=Math.cos(ry),sy1=Math.sin(ry);var x1=x*cy1+z*sy1,z1=-x*sy1+z*cy1;
+    var cx1=Math.cos(rx),sx1=Math.sin(rx);var y1=y*cx1-z1*sx1,z2=y*sx1+z1*cx1;
+    var p=3.2/(3.2+z2);
+    return [cx+x1*s*p,cy+y1*s*p,z2];
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var cx=W/2,cy=H/2,base=Math.min(W,H)*.34;
+    // orbit rings
+    ctx.strokeStyle='rgba(241,235,224,.07)';ctx.lineWidth=1;
+    for(var k=1;k<=3;k++){ctx.beginPath();ctx.arc(cx,cy,base*(.55+k*.35),0,Math.PI*2);ctx.stroke()}
+    ctx.beginPath();ctx.moveTo(cx-base*1.6,cy);ctx.lineTo(cx+base*1.6,cy);ctx.moveTo(cx,cy-base*1.6);ctx.lineTo(cx,cy+base*1.6);ctx.stroke();
+
+    var scale=1,s=shapes[cur],spin=0;
+    if(next>=0){
+      t=Math.min(1,t+(reduce.matches?.06:.028));
+      var e=ease(t);
+      if(e<.5){scale=1-e*2;spin=e*3}else{if(cur!==next){cur=next;s=shapes[cur];ui()}scale=(e-.5)*2;spin=(1-e)*3}
+      if(t>=1)next=-1;
+    }
+    var sz=base*Math.max(.001,scale);
+    var pts=s.verts.map(function(v){return project(v,ax,ay+spin,sz,cx,cy)});
+    // edges, depth-shaded
+    s.edges.forEach(function(ed){
+      var a=pts[ed[0]],b=pts[ed[1]],z=(a[2]+b[2])/2,al=.25+.75*(1-(z+1)/2);
+      ctx.strokeStyle='rgba(241,235,224,'+al.toFixed(3)+')';
+      ctx.lineWidth=z<0?1.4:.8;
+      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+    });
+    pts.forEach(function(p){
+      var front=p[2]<0;
+      ctx.fillStyle=front?'#e2412b':'rgba(226,65,43,.4)';
+      ctx.beginPath();ctx.arc(p[0],p[1],front?3:2,0,Math.PI*2);ctx.fill();
+    });
+    // shadow ellipse
+    ctx.fillStyle='rgba(226,65,43,.08)';
+    ctx.beginPath();ctx.ellipse(cx,cy+base*1.25,sz*.8,sz*.12,0,0,Math.PI*2);ctx.fill();
+  }
+  function loop(){
+    if(!drag){
+      var k=reduce.matches?.15:(hover?.5:1);
+      ay+=vy*k;ax+=vx*k;
+      vy+=(.006-vy)*.02;vx+=(.0035-vx)*.02;
+    }
+    draw();requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+Prompt:
+Create a standalone HTML page called "Lumen Atlas: Seven Rooms of Light", a horizontal scroll-snap carousel of frosted-glass cards floating over large blurred gradient backdrops. The fictional Lumen Atlas is a field guide to seven moments of light: Dawn at Lake Orra (05:42), Noon on the Salt Flats (12:10), Greenhouse in Rain (15:30), Golden Hour at Vell Harbor (18:55), Blue Hour in the Library (20:20), Midnight Neon Market (23:58) and Aurora on the Northern Ferry (02:14). Each room has its own four-color palette (for example dawn: peach #ffb38a, rose #ff7aa2, lilac #a58bff, sky #8fd3ff; neon market: magenta #ff2fd1, cyan #00e5ff, violet #7b2cff, tangerine #ff6a3d).
+
+Backdrop: a near-black indigo base (#0b0b14) with four huge circular blobs (60vmax) blurred 70px, slowly drifting on 18 to 30 second alternate keyframe loops, with a soft dark vignette. When the active card changes, each blob's background-color crossfades over 1.4s to that room's palette, so the whole world re-lights.
+
+Typography: Didot / "Bodoni 72" / Georgia for the brand, numerals, card titles and an italic quote caption; "Avenir Next" / "Segoe UI" / system-ui for body copy and tracked uppercase micro-labels. Header: "Lumen Atlas" with "Atlas" in italic, a tracked subtitle, and a large "01 / 07" counter on the right.
+
+Cards: width min(80vw, 400px), roughly 62vh tall, 28px radius, a 155-degree white gradient glass fill with backdrop-filter blur(26px) saturate(170%), a hairline white border, inset top highlight and deep soft shadow. Each card holds a big Didot index number, a pill with the clock time, a spinning conic-gradient "light orb" built from the room's colors with a glossy radial highlight, the title, a two-sentence evocative description, and a meta row with color temperature, wind, and a "Keep" pill toggle. A diagonal sheen streak slides across each card as it moves through the viewport.
+
+Layout and motion: the track uses scroll-snap-type x mandatory with center alignment and padding of 50% minus half a card so the first and last cards can center. On scroll (throttled with requestAnimationFrame) every card is given a rotateY tilt, scale and opacity based on its distance from center, creating a coverflow-like depth. Below the carousel, an italic quote for the active room fades out and back in, and a footer holds round glass arrow buttons and pill-shaped progress dots where the current dot stretches wide. Reduced motion stops the blob drift and orb spin, removes the tilt and uses instant scrolling.
+
+Title: Lumen Atlas Carousel
+
+Description: A glass carousel that treats each card as a room of light. Swiping between them re-colors the blurred world behind the glass, so the backdrop, orb and caption all shift together into the mood of each hour, from shell-pink dawn to the green hush of an aurora at sea. The cards tilt and dim as they leave the center, giving a quiet sense of depth without leaving the native scroll-snap behavior.
+
+Visual techniques:
+- Native CSS scroll-snap carousel with centered snapping and hidden scrollbars
+- Glassmorphism via backdrop-filter blur and saturate, gradient fills, hairline borders and inset highlights
+- Large blurred drifting blobs whose background colors transition per active slide
+- Scroll-linked rotateY, scale, opacity and sheen position computed per card in a requestAnimationFrame-throttled handler
+- Conic-gradient spinning orbs with glossy radial overlay and colored glow, driven by per-slide CSS custom properties
+- Pill progress dots with width transitions and aria-current state
+- Caption crossfade and tabular lining numerals for the counter
+- prefers-reduced-motion fallbacks for every animated element
+
+Interaction model:
+Swipe or trackpad-scroll horizontally on touch devices, drag with the mouse on desktop (snapping resumes on release), use the vertical mouse wheel to step one room at a time, click the arrow buttons or the dots, or focus the carousel and use the Left, Right, Home and End keys. Each card's "Keep" pill toggles a saved state. The active room updates the counter, the backdrop colors and the quote caption.

@@ -1,0 +1,31 @@
+PROMPT
+
+Build "086 rose-window": a stained-glass rose window drawn in inline SVG with animated light, as a standalone offline HTML page for the fictional Abbey of Saint Ondine.
+
+Palette: candle-dark nave (radial #28201a to #060504), pot-metal glass colours ruby #b3122e, cobalt #1e3fae, emerald #13775a, amber #e09a1c, violet #5b2a86, rose #c2416b, azure #2f86c9, gold #f2c14e; lead lines near-black #0c0a08; stone tracery #3d342b; ink #efe6d4 and muted #a3957d; gilt accent #d8b25a. A CSS variable --tint (RGB triple) colours the sunlight and changes with the chosen hour.
+
+Type: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia serif throughout. Small-caps, widely tracked kicker labels; a large light-weight title "The Rose of the Hours" with "Rose" in gilt italic; a big italic gilt numeral floated in the caption panel.
+
+Layout: header row with kicker and title above a gilt hairline. On desktop a two-column grid: the window (max 620px, square) on the left, a "ledger" caption panel with gilt corner brackets on the right. On mobile the panel stacks below. Under the window, a perspective "floor" where blurred coloured light pools are projected (a rotated, blurred div with five radial gradients, masked to fade out).
+
+Window geometry (viewBox -210..210), built by script: dark backing fields; an amber oculus (r 40) with a ruby centre; 12 zodiac roundels at radius 66 alternating rose/azure; 12 pointed lancets between r 96 and 172 alternating ruby/cobalt, each with a small gold/emerald roundel and a rose/azure medallion; 12 virtue roundels at radius 160 between the lancets alternating violet/emerald; 24 gold beads at radius 185; stone tracery rings at r 41, 91, 179 and a thick 13px rim at 195, plus 12 short stone spokes around the oculus. 37 selectable lights in total (oculus, 12 signs, 12 labours of the months, 12 virtues), each with real copy.
+
+Light and motion: a userSpaceOnUse radial gradient "sun" overlay in screen blend sits over the glass. Every pane's opacity is computed per frame from a Gaussian of its distance to the sun (0.36 base up to 1), plus a slow per-pane shimmer. The sun eases toward its target (factor 0.05). When idle for 2.6s it drifts in a slow Lissajous loop around the chosen hour's position. The floor pool slides with the sun. A static grain texture (generated once on a canvas, used as a data URL) is multiplied over the glass so the glass looks mottled without per-frame filter cost.
+
+Interaction: the pointer carries the sun across the glass. Clicking or pressing Enter/Space on a light selects it: it gets a pale-gold lead outline and full brightness, the sun moves onto it, and the ledger cross-fades to its ring name, title, numeral and description. A segmented pill control picks the hour of light (Lauds: rosy, east-low; Sext: white-gold, high; Vespers: deep amber, west-low), which retints the gradient, the halo and the page glow. Reduced motion: no drift or shimmer. The light jumps straight to the pointer, the selection or the hour.
+
+Title: The Rose of the Hours
+
+Description: A candlelit, museum-quality presentation of a medieval rose window. The SVG window is built from concentric rings of jewel-toned glass held in lead and stone tracery. A warm pool of sunlight moves slowly across it, waking each pane as it passes, and throws blurred coloured light onto a perspective floor below. A gilt-bracketed ledger reads the window aloud, one light at a time: the signs of heaven, the labours of the months, and the virtues between them. Three liturgical hours each give the light a different colour.
+
+Visual techniques:
+- Script-generated inline SVG geometry (rotated lancet paths, polar-placed roundels, stone tracery strokes)
+- Per-pane opacity driven by a Gaussian falloff from a moving light point
+- userSpaceOnUse radialGradient overlay with mix-blend-mode: screen for sunlight
+- Canvas-generated grain texture used as a multiplied data-URL overlay
+- Perspective-rotated, blurred multi-radial-gradient "floor" projection, masked to fade
+- CSS custom property tinting with transitions for the hour modes
+- Cross-fading caption panel with gilt corner brackets drawn by pseudo-elements
+- requestAnimationFrame easing, with the work skipped when an opacity change is tiny
+
+Interaction model: Move the pointer over the window to carry the sunlight; it drifts back to a slow loop when left alone. Click, tap, or tab to any of the 37 lights and press Enter to select it. It is outlined in pale gold, lit fully, and described in the ledger. The Lauds, Sext and Vespers buttons change the colour and resting position of the light. Reduced-motion users get a still light that only moves when they act.

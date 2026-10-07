@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Meridian Walk · A Folded Pocket Guide</title>
+<style>
+:root{
+  --paper:#f4ecda;
+  --paper-deep:#e6d8ba;
+  --ink:#1c2944;
+  --ink-soft:#56607a;
+  --verm:#c4472a;
+  --desk:#22211e;
+  --desk-hi:#3a3731;
+  --cream:#efe4cc;
+  --panel-h:clamp(66px,10.6vh,112px);
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;overflow-x:hidden;color:var(--cream);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  background:
+    repeating-linear-gradient(115deg,rgba(255,255,255,.012) 0 2px,transparent 2px 5px),
+    radial-gradient(120% 80% at 50% -10%,var(--desk-hi),var(--desk) 62%,#171614);
+  background-attachment:fixed;
+}
+.masthead{
+  position:fixed;inset:0 0 auto 0;z-index:5;display:flex;justify-content:space-between;align-items:center;
+  padding:14px clamp(16px,4vw,44px);font:600 11px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;
+  letter-spacing:.22em;text-transform:uppercase;color:rgba(239,228,204,.62);
+}
+.masthead b{color:var(--cream);font-weight:600}
+.masthead .hint{display:flex;align-items:center;gap:10px}
+.masthead .hint i{display:block;width:1px;height:18px;background:currentColor;animation:drip 2.4s var(--ease) infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+
+.track{position:relative;height:420vh}
+.stage{
+  position:sticky;top:0;height:100vh;display:grid;
+  grid-template-columns:minmax(220px,320px) minmax(0,560px);justify-content:center;align-content:center;
+  gap:clamp(24px,6vw,96px);padding:64px clamp(16px,4vw,44px) 24px;
+}
+.meta{align-self:center}
+.meta small{display:block;font:600 11px/1.4 "Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--verm);margin-bottom:14px}
+.meta h1{font-weight:400;font-size:clamp(34px,4.6vw,58px);line-height:.98;letter-spacing:-.01em}
+.meta h1 em{font-style:italic;color:#e9b49a}
+.meta p{margin-top:16px;color:rgba(239,228,204,.7);font-size:16px;line-height:1.55;max-width:30ch}
+.meter{display:flex;gap:6px;margin-top:26px}
+.meter span{flex:1;height:3px;background:rgba(239,228,204,.16);border-radius:2px;overflow:hidden;position:relative}
+.meter span::after{content:"";position:absolute;inset:0;background:var(--verm);transform:scaleX(var(--f,0));transform-origin:left;transition:transform .2s linear}
+.readout{margin-top:12px;font:13px/1 ui-monospace,"SF Mono",Menlo,"Courier New",monospace;color:rgba(239,228,204,.6);letter-spacing:.06em}
+.readout b{color:var(--cream);font-weight:500}
+.btns{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.btns button{
+  font:600 12px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cream);background:transparent;border:1px solid rgba(239,228,204,.35);padding:12px 16px;border-radius:999px;cursor:pointer;
+  transition:background .35s var(--ease),color .35s var(--ease),border-color .35s var(--ease),transform .35s var(--ease)
+}
+.btns button:hover{background:var(--cream);color:var(--desk);border-color:var(--cream)}
+.btns button:active{transform:scale(.96)}
+.btns button:focus-visible,.face:focus-visible{outline:2px solid var(--verm);outline-offset:3px}
+
+.scene{position:relative;align-self:start;margin-top:4vh;perspective:1300px;perspective-origin:50% -20%;width:100%}
+.shadow{
+  position:absolute;left:6%;right:6%;top:6px;height:calc(var(--panel-h) * 7);border-radius:10px;
+  background:radial-gradient(60% 50% at 50% 50%,rgba(0,0,0,.55),transparent 72%);
+  transform-origin:top;transform:translateY(18px) scaleY(var(--sp,.3));filter:blur(14px);pointer-events:none
+}
+.fold{position:relative;height:var(--panel-h);transform-origin:50% 0;transform:rotateX(var(--r,0deg));transform-style:preserve-3d}
+.fold>.fold{position:absolute;left:0;right:0;top:100%}
+.face{
+  position:absolute;inset:0;overflow:hidden;color:var(--ink);cursor:pointer;
+  display:grid;grid-template-columns:2.6em minmax(0,1fr) 28%;align-items:center;gap:12px;padding:0 0 0 clamp(12px,3vw,22px);
+  background:
+    repeating-linear-gradient(90deg,rgba(110,80,30,.035) 0 1px,transparent 1px 4px),
+    repeating-linear-gradient(0deg,rgba(110,80,30,.025) 0 1px,transparent 1px 7px),
+    linear-gradient(180deg,#f8f1e2,var(--paper) 40%,var(--paper-deep));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(120,90,40,.25);
+}
+.face::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(30,22,10,calc(var(--shade,0) * .7)),rgba(30,22,10,var(--shade,0))),
+             linear-gradient(180deg,rgba(255,250,235,var(--lite,0)),transparent 70%);
+}
+.num{font-size:clamp(20px,3.2vw,28px);color:var(--verm);font-style:italic;text-align:center;line-height:1}
+.txt h2{font-weight:600;font-size:clamp(15px,2vw,19px);line-height:1.1;letter-spacing:.005em;display:flex;gap:10px;align-items:baseline}
+.txt h2 span{font:500 10px/1 ui-monospace,"SF Mono",Menlo,"Courier New",monospace;color:var(--ink-soft);letter-spacing:.08em;white-space:nowrap}
+.txt p{margin-top:5px;font-size:clamp(12px,1.45vw,14px);line-height:1.35;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.txt h2{background-image:linear-gradient(var(--verm),var(--verm));background-size:0 1px;background-repeat:no-repeat;background-position:0 100%;transition:background-size .5s var(--ease)}
+.face:hover .txt h2,.face:focus-visible .txt h2{background-size:100% 1px}
+.route{height:100%;width:100%;border-left:1px dashed rgba(28,41,68,.18);background:repeating-linear-gradient(0deg,rgba(28,41,68,.05) 0 1px,transparent 1px 14px),repeating-linear-gradient(90deg,rgba(28,41,68,.05) 0 1px,transparent 1px 14px)}
+.route svg{display:block;width:100%;height:100%;overflow:visible}
+.route path{fill:none;stroke:var(--verm);stroke-width:1.6;stroke-dasharray:3 4;vector-effect:non-scaling-stroke}
+.route circle{fill:var(--ink);transition:r .4s var(--ease)}
+.face:hover .route circle{fill:var(--verm)}
+.cover .face{grid-template-columns:minmax(0,1fr) auto;background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px),
+    linear-gradient(160deg,#25365a,var(--ink) 60%,#141d33);color:var(--cream);padding-right:clamp(12px,3vw,22px)}
+.cover h3{font-weight:400;font-size:clamp(19px,2.6vw,26px);line-height:1}
+.cover h3 em{color:#e9b49a}
+.cover .sub{font:600 9.5px/1.4 "Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:rgba(239,228,204,.62);margin-top:6px}
+.seal{width:clamp(38px,6vw,54px);height:clamp(38px,6vw,54px);border-radius:50%;border:1px solid rgba(233,180,154,.6);display:grid;place-items:center;color:#e9b49a;font-style:italic;font-size:clamp(15px,2vw,20px);transition:transform .9s var(--ease)}
+.cover .face:hover .seal{transform:rotate(-24deg)}
+
+.colophon{position:relative;padding:18vh clamp(16px,4vw,44px) 16vh;display:grid;place-items:center;text-align:center}
+.colophon .rule{width:1px;height:70px;background:linear-gradient(transparent,var(--verm));margin-bottom:28px}
+.colophon h2{font-weight:400;font-style:italic;font-size:clamp(26px,4vw,40px);max-width:20ch;line-height:1.15}
+.colophon p{margin-top:18px;max-width:46ch;color:rgba(239,228,204,.66);line-height:1.65;font-size:15px}
+.colophon small{display:block;margin-top:30px;font:600 10.5px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(239,228,204,.4)}
+
+@media (max-width:760px){
+  .stage{grid-template-columns:minmax(0,1fr);align-content:start;gap:14px;padding-top:52px}
+  .meta h1{font-size:30px}
+  .meta p{display:none}
+  .meter{margin-top:14px}
+  .btns{margin-top:12px}
+  .btns button{padding:10px 13px;font-size:11px}
+  .scene{margin-top:6px}
+  .face{grid-template-columns:2em minmax(0,1fr) 22%;gap:8px}
+  .masthead .hint span{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .masthead .hint i{animation:none}
+  .track{height:auto}
+  .stage{position:relative;height:auto;min-height:100vh}
+  *{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div><b>Kestrel &amp; Fold</b> · Pocket Guides</div>
+  <div class="hint"><span>Scroll to unfold</span><i></i></div>
+</header>
+
+<main class="track" id="track">
+  <div class="stage">
+    <section class="meta" aria-label="About this guide">
+      <small>Pocket Guide No. 14</small>
+      <h1>The Meridian <em>Walk</em></h1>
+      <p>Six panels, one long afternoon, the slow way round the harbour. Pull it open as you go; it was made to be read on foot.</p>
+      <div class="meter" id="meter" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="readout" id="readout" aria-live="polite">Panels open <b>0</b> / 6 · 0.0 mi</div>
+      <div class="btns">
+        <button type="button" id="openAll">Unfold all</button>
+        <button type="button" id="closeAll">Fold up</button>
+      </div>
+    </section>
+
+    <div class="scene" id="scene">
+      <div class="shadow" id="shadow"></div>
+      <div class="fold cover" data-i="0">
+        <div class="face" tabindex="0" role="button" aria-label="Cover: fold the guide closed">
+          <div><h3>The Meridian <em>Walk</em></h3><div class="sub">3.8 miles · seven stops · est. 1931</div></div>
+          <div class="seal">K&amp;F</div>
+        </div>
+        <div class="fold" data-i="1">
+          <div class="face" tabindex="0" role="button" aria-label="Open to panel one, The Ropewalk">
+            <div class="num">i</div>
+            <div class="txt"><h2>The Ropewalk <span>0.0 mi</span></h2><p>A quarter-mile shed where hemp was twisted into anchor line. It was built straight to the inch; walk all of it.</p></div>
+            <div class="route"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M70 0 C70 40 82 60 82 100"/><circle cx="74" cy="50" r="3"/></svg></div>
+          </div>
+          <div class="fold" data-i="2">
+            <div class="face" tabindex="0" role="button" aria-label="Open to panel two, Salt Steps">
+              <div class="num">ii</div>
+              <div class="txt"><h2>Salt Steps <span>0.6 mi</span></h2><p>Ninety-one granite treads, worn into shallow bowls by four centuries of fishwives and their baskets.</p></div>
+              <div class="route"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M82 0 C82 45 60 55 60 100"/><circle cx="70" cy="50" r="3"/></svg></div>
+            </div>
+            <div class="fold" data-i="3">
+              <div class="face" tabindex="0" role="button" aria-label="Open to panel three, Chandler's Row">
+                <div class="num">iii</div>
+                <div class="txt"><h2>Chandler’s Row <span>1.3 mi</span></h2><p>Brass, tar and tallow. The shop with the green door still sells its candles by weight, wrapped in yesterday’s tide tables.</p></div>
+                <div class="route"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M60 0 C60 50 80 50 80 100"/><circle cx="70" cy="50" r="3"/></svg></div>
+              </div>
+              <div class="fold" data-i="4">
+                <div class="face" tabindex="0" role="button" aria-label="Open to panel four, The Tide Clock">
+                  <div class="num">iv</div>
+                  <div class="txt"><h2>The Tide Clock <span>2.0 mi</span></h2><p>A single iron hand that tells you not the hour, but the height of the sea against the harbour wall.</p></div>
+                  <div class="route"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M80 0 C80 40 56 60 56 100"/><circle cx="68" cy="50" r="3"/></svg></div>
+                </div>
+                <div class="fold" data-i="5">
+                  <div class="face" tabindex="0" role="button" aria-label="Open to panel five, Lantern Quay">
+                    <div class="num">v</div>
+                    <div class="txt"><h2>Lantern Quay <span>2.9 mi</span></h2><p>Wait for dusk. The keeper lights the eleven lamps from east to west, and never the other way round.</p></div>
+                    <div class="route"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M56 0 C56 50 76 50 76 100"/><circle cx="66" cy="50" r="3"/></svg></div>
+                  </div>
+                  <div class="fold" data-i="6">
+                    <div class="face" tabindex="0" role="button" aria-label="Open to panel six, Home by the Ferry">
+                      <div class="num">vi</div>
+                      <div class="txt"><h2>Home by the Ferry <span>3.8 mi</span></h2><p>The last crossing leaves at 9:40. Sit on the left to watch the town fold itself away behind you.</p></div>
+                      <div class="route"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M76 0 C76 40 66 60 66 78"/><circle cx="66" cy="80" r="5"/></svg></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<section class="colophon">
+  <div class="rule"></div>
+  <h2>Fold it back along the creases it already knows.</h2>
+  <p>Printed on ninety-gram cartridge paper and folded by hand, six times, at a long table above Harbour Lane. Every guide is a little stiff at first; by the third walk it opens like a habit.</p>
+  <small>Kestrel &amp; Fold · Printers of Walking Matter</small>
+</section>
+
+<script>
+(function(){
+  var track=document.getElementById('track');
+  var folds=[].slice.call(document.querySelectorAll('.fold'));
+  var faces=folds.map(function(f){return f.querySelector(':scope > .face')});
+  var meterBars=[].slice.call(document.querySelectorAll('#meter span'));
+  var readout=document.getElementById('readout');
+  var shadow=document.getElementById('shadow');
+  var miles=[0,0,0.6,1.3,2.0,2.9,3.8];
+  var n=folds.length, MAX=80, STEP=0.62, SPAN=1+(n-2)*STEP;
+  var mq=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var reduced=mq.matches, ticking=false, lastOpen=-1;
+
+  function clamp(v,a,b){return v<a?a:v>b?b:v}
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function stepAt(i){return clamp(ease(clamp(cur*SPAN-(i-1)*STEP,0,1)),0,1)}
+  var cur=0;
+
+  function progress(){
+    if(reduced) return 1;
+    var total=track.offsetHeight-window.innerHeight;
+    if(total<=0) return 1;
+    return clamp(-track.getBoundingClientRect().top/total,0,1);
+  }
+
+  function render(){
+    ticking=false;
+    cur=progress();
+    var prevAbs=0, open=0;
+    for(var i=0;i<n;i++){
+      var abs, s=1;
+      if(i===0){abs=-6*(1-cur);}
+      else{
+        s=stepAt(i);
+        var phi=MAX*(1-s);
+        abs=(i%2?1:-1)*phi;
+        if(s>.98) open=i;
+      }
+      var rel=abs-prevAbs;
+      prevAbs=abs;
+      folds[i].style.setProperty('--r',rel.toFixed(2)+'deg');
+      var rad=abs*Math.PI/180;
+      faces[i].style.setProperty('--shade',(Math.max(0,-Math.sin(rad))*.5).toFixed(3));
+      faces[i].style.setProperty('--lite',(Math.max(0,Math.sin(rad))*.22).toFixed(3));
+      if(i>0) meterBars[i-1].style.setProperty('--f',s.toFixed(3));
+    }
+    shadow.style.setProperty('--sp',(0.25+cur*.75).toFixed(3));
+    if(open!==lastOpen){
+      lastOpen=open;
+      readout.innerHTML='Panels open <b>'+open+'</b> / 6 · '+miles[open].toFixed(1)+' mi';
+    }
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(render);}}
+
+  function scrollToP(p){
+    if(reduced) return;
+    var total=track.offsetHeight-window.innerHeight;
+    var top=track.getBoundingClientRect().top+window.pageYOffset;
+    window.scrollTo({top:top+total*p,behavior:'smooth'});
+  }
+  function pFor(i){return i===0?0:clamp(((i-1)*STEP+1)/SPAN,0,1)}
+
+  document.getElementById('openAll').addEventListener('click',function(){scrollToP(1)});
+  document.getElementById('closeAll').addEventListener('click',function(){scrollToP(0)});
+  faces.forEach(function(face,i){
+    function go(){scrollToP(pFor(i))}
+    face.addEventListener('click',go);
+    face.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+  });
+
+  function onMq(){reduced=mq.matches;req();}
+  if(mq.addEventListener) mq.addEventListener('change',onMq); else if(mq.addListener) mq.addListener(onMq);
+  window.addEventListener('scroll',req,{passive:true});
+  window.addEventListener('resize',req);
+  render();
+})();
+</script>
+</body>
+</html>

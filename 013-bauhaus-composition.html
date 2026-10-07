@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formlehre · A Composition in Primary Forms</title>
+<style>
+:root{
+  --paper:#ece5d4;
+  --sheet:#f3eddf;
+  --red:#d7322a;
+  --yellow:#f1bf22;
+  --blue:#1d4c9c;
+  --black:#151413;
+  --spring:cubic-bezier(.68,-0.3,.26,1.32);
+  --geo:"Futura","Futura PT","Century Gothic","Avenir Next","Trebuchet MS",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;background:var(--paper);color:var(--black);font-family:var(--geo);overflow-x:hidden;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.018) 0 1px,transparent 1px 4px);
+}
+.wrap{min-height:100vh;display:grid;grid-template-columns:minmax(260px,360px) minmax(0,auto);justify-content:center;align-items:center;gap:clamp(28px,5vw,80px);padding:clamp(20px,4vw,48px) 16px}
+aside{position:relative}
+.kicker{display:flex;gap:10px;align-items:center;font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:700}
+.kicker i{width:14px;height:14px;background:var(--red);display:inline-block}
+.kicker i:nth-child(2){background:var(--yellow);border-radius:50%}
+.kicker i:nth-child(3){background:var(--blue);clip-path:polygon(50% 0,100% 100%,0 100%)}
+h1{margin-top:22px;font-size:clamp(46px,6vw,78px);line-height:.86;font-weight:700;letter-spacing:-.035em;text-transform:lowercase}
+h1 span{display:block;color:var(--red)}
+.lede{margin-top:20px;font-size:15px;line-height:1.6;max-width:34ch;color:#3c3934}
+.ctrls{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:340px}
+.ctrls button{
+  font:700 12px/1 var(--geo);letter-spacing:.16em;text-transform:uppercase;text-align:left;
+  border:2px solid var(--black);background:var(--sheet);color:var(--black);padding:14px 12px;cursor:pointer;position:relative;
+  display:flex;justify-content:space-between;align-items:center;transition:background .25s,color .25s,transform .25s var(--spring)
+}
+.ctrls button kbd{font:700 11px/1 var(--geo);opacity:.55}
+.ctrls button:hover{background:var(--black);color:var(--sheet)}
+.ctrls button:active{transform:translate(2px,2px)}
+.ctrls button.primary{grid-column:1/-1;background:var(--red);color:#fff;border-color:var(--red);font-size:13px;padding:18px 14px}
+.ctrls button.primary:hover{background:var(--black);border-color:var(--black)}
+.ctrls button:focus-visible,.s:focus-visible{outline:3px dashed var(--black);outline-offset:4px}
+.ctrls button[aria-pressed="true"]{background:var(--black);color:var(--sheet)}
+.legend{margin-top:30px;display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--black)}
+.legend div{padding:12px 0 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;line-height:1.5}
+.legend b{display:block;width:26px;height:26px;margin-bottom:10px}
+.legend .l1 b{background:var(--yellow);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.legend .l2 b{background:var(--red)}
+.legend .l3 b{background:var(--blue);border-radius:50%}
+.note{margin-top:14px;font-size:12px;line-height:1.55;color:#6a655b;max-width:36ch}
+
+.poster{
+  position:relative;width:min(560px,calc((100vh - 64px) * .8),100%);aspect-ratio:4/5;background:var(--sheet);cursor:crosshair;overflow:hidden;
+  box-shadow:0 1px 0 rgba(0,0,0,.08),0 30px 60px -30px rgba(40,30,10,.45),0 0 0 1px rgba(0,0,0,.06);
+  background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1.2px);background-size:7px 7px;
+}
+.poster::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+  background-image:linear-gradient(90deg,rgba(29,76,156,.35) 1px,transparent 1px),linear-gradient(0deg,rgba(29,76,156,.35) 1px,transparent 1px);
+  background-size:calc(100% / 12) calc(100% / 15);
+}
+.poster.grid::after{opacity:1}
+.s{
+  position:absolute;cursor:pointer;mix-blend-mode:multiply;background-color:var(--c);border:0;padding:0;-webkit-appearance:none;appearance:none;border-radius:0;
+  left:calc(var(--x) * 100% / 12);top:calc(var(--y) * 100% / 15);
+  width:calc(var(--w) * 100% / 12);height:calc(var(--h) * 100% / 15);
+  transform:rotate(calc(var(--r) * 1deg)) scale(var(--k,1));
+  transition:left .95s var(--spring),top .95s var(--spring),transform .8s var(--spring),background-color .6s ease,filter .2s;
+}
+.s:hover{filter:brightness(1.12) saturate(1.1)}
+.circle{border-radius:50%}
+.semi{border-radius:999px 999px 0 0}
+.quarter{border-radius:100% 0 0 0}
+.tri{clip-path:polygon(50% 0,100% 100%,0 100%)}
+.ring{border-radius:50%;-webkit-mask:radial-gradient(circle,transparent 0 47%,#000 48% 69%,transparent 70%);mask:radial-gradient(circle,transparent 0 47%,#000 48% 69%,transparent 70%)}
+.stripes{-webkit-mask:repeating-linear-gradient(90deg,#000 0 14%,transparent 14% 28.5%);mask:repeating-linear-gradient(90deg,#000 0 14%,transparent 14% 28.5%)}
+.dots{-webkit-mask:radial-gradient(circle,#000 0 34%,transparent 36%) 0 0/33.333% 33.333%;mask:radial-gradient(circle,#000 0 34%,transparent 36%) 0 0/33.333% 33.333%}
+.caption{position:absolute;left:4.5%;right:4.5%;bottom:3.4%;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;mix-blend-mode:multiply}
+.caption .t{font-size:clamp(20px,4.4vw,34px);font-weight:700;letter-spacing:-.03em;line-height:.9;text-transform:lowercase}
+.caption .t small{display:block;font-size:clamp(8px,1.4vw,10px);letter-spacing:.28em;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.caption .n{font-size:clamp(42px,10vw,84px);font-weight:700;line-height:.8;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.vert{position:absolute;right:3%;top:4%;writing-mode:vertical-rl;font-size:clamp(8px,1.4vw,10px);letter-spacing:.36em;font-weight:700;text-transform:uppercase;pointer-events:none}
+.status{position:absolute;left:0;right:0;bottom:-30px;text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#6a655b}
+.stage{position:relative;padding-bottom:30px}
+
+@media (max-width:820px){
+  .wrap{grid-template-columns:minmax(0,1fr);align-items:start}
+  .poster{width:100%}
+  aside{order:2}
+  .stage{order:1}
+}
+@media (prefers-reduced-motion:reduce){
+  .s{transition:background-color .2s ease,filter .2s}
+  .ctrls button{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside>
+    <div class="kicker"><i></i><i></i><i></i> Formlehre Studio · Workshop Three</div>
+    <h1>form, colour <span>&amp; rhythm</span></h1>
+    <p class="lede">Eleven primary forms on a twelve-column sheet. Every composition is new, snapped to the grid and printed in overlapping primaries. Touch a form to turn it a quarter, or touch the paper to begin again.</p>
+    <div class="ctrls">
+      <button type="button" class="primary" id="btnNew">Recompose <kbd>R</kbd></button>
+      <button type="button" id="btnTurn">Turn all <kbd>T</kbd></button>
+      <button type="button" id="btnColour">Recolour <kbd>C</kbd></button>
+      <button type="button" id="btnGrid" aria-pressed="false">Grid <kbd>G</kbd></button>
+      <button type="button" id="btnPrint">Hold still <kbd>H</kbd></button>
+    </div>
+    <div class="legend">
+      <div class="l1"><b></b>Yellow<br>sharp, outward</div>
+      <div class="l2"><b></b>Red<br>weight, ground</div>
+      <div class="l3"><b></b>Blue<br>depth, calm</div>
+    </div>
+    <p class="note">The studio's first exercise pairs each primary with the form it seems to want: the triangle that points, the square that sits, the circle that recedes.</p>
+  </aside>
+
+  <div class="stage">
+    <div class="poster" id="poster" role="group" aria-label="Composition. Click empty paper to recompose.">
+      <div class="vert">Form follows joy</div>
+      <div class="caption"><div class="t"><small>Formlehre Studio</small>komposition</div><div class="n" id="num">01</div></div>
+    </div>
+    <div class="status" id="status" aria-live="polite">Composition 01 · eleven forms</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var poster=document.getElementById('poster');
+  var numEl=document.getElementById('num'),status=document.getElementById('status');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var PAL=['var(--red)','var(--yellow)','var(--blue)','var(--black)'];
+  var NAMES=['red','yellow','blue','black'];
+  var perms=[[0,1,2],[1,2,0],[2,0,1],[0,2,1],[2,1,0],[1,0,2]];
+  var perm=0,count=1,auto=null;
+  var DEF=[
+    {t:'circle',w:7,h:7,c:0,label:'large circle'},
+    {t:'semi',w:6,h:3,c:2,label:'half circle'},
+    {t:'square',w:4,h:4,c:1,label:'square'},
+    {t:'tri',w:5,h:5,c:2,label:'triangle'},
+    {t:'quarter',w:4,h:4,c:1,label:'quarter circle'},
+    {t:'bar',w:11,h:1,c:3,label:'horizontal bar'},
+    {t:'bar',w:1,h:8,c:0,label:'vertical bar'},
+    {t:'ring',w:4,h:4,c:3,label:'ring'},
+    {t:'circle',w:2,h:2,c:3,label:'small circle'},
+    {t:'dots',w:3,h:3,c:3,label:'dot grid'},
+    {t:'stripes',w:3,h:5,c:2,label:'striped block'}
+  ];
+  function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+  function pick(a){return a[Math.floor(Math.random()*a.length)]}
+  var shapes=DEF.map(function(d,i){
+    var el=document.createElement('button');
+    el.type='button';el.className='s '+d.t;
+    el.setAttribute('aria-label','Rotate the '+d.label);
+    el.style.transitionDelay=(i*45)+'ms';
+    poster.insertBefore(el,poster.firstChild);
+    var o={d:d,el:el,x:Math.floor(6-d.w/2),y:Math.floor(7-d.h/2),r:0};
+    el.style.setProperty('--w',d.w);el.style.setProperty('--h',d.h);
+    el.addEventListener('click',function(e){e.stopPropagation();o.r+=90;apply(o)});
+    return o;
+  });
+  function colourOf(o){var c=o.d.c;return c===3?PAL[3]:PAL[perms[perm][c]]}
+  function apply(o,stagger){
+    var s=o.el.style;
+    s.transitionDelay=stagger?(shapes.indexOf(o)*45)+'ms':'0ms';
+    s.setProperty('--x',o.x);s.setProperty('--y',o.y);s.setProperty('--r',o.r);s.setProperty('--c',colourOf(o));
+  }
+  function compose(){
+    shapes.forEach(function(o){
+      var d=o.d,t=d.t;
+      if(o===shapes[0]){o.x=pick([0,1,4,5]);o.y=pick([0,1,4,6]);}
+      else if(t==='bar'&&d.h===1){o.x=pick([0,1]);o.y=rnd(3,11);}
+      else if(t==='bar'){o.x=rnd(1,10);o.y=rnd(0,5);}
+      else{o.x=rnd(0,12-d.w);o.y=rnd(0,12-d.h);}
+      var turn=(t==='circle'||t==='ring'||t==='dots')?0:rnd(0,3)*90;
+      if(t==='square'&&Math.random()<.25)turn+=45;
+      if(t==='bar')turn=0;
+      o.r+=turn;
+      apply(o,true);
+    });
+    numEl.textContent=(count<10?'0':'')+count;
+    status.textContent='Composition '+(count<10?'0':'')+count+' · '+NAMES[perms[perm][0]]+', '+NAMES[perms[perm][1]]+' and '+NAMES[perms[perm][2]];
+  }
+  function recompose(){count++;if(Math.random()<.5)perm=(perm+1)%perms.length;compose()}
+  function userRecompose(){recompose();if(auto)setAuto(true)}
+  function turnAll(){shapes.forEach(function(o){if(!/^(circle|ring|dots)$/.test(o.d.t))o.r+=90;apply(o,true)})}
+  function recolour(){perm=(perm+1)%perms.length;shapes.forEach(function(o){apply(o,true)});status.textContent='Recoloured · '+NAMES[perms[perm][0]]+' leads'}
+  function toggleGrid(){var on=poster.classList.toggle('grid');var b=document.getElementById('btnGrid');b.setAttribute('aria-pressed',on?'true':'false')}
+
+  var btnPrint=document.getElementById('btnPrint');
+  function setAuto(on){
+    if(auto){clearInterval(auto);auto=null}
+    if(on&&!reduce){auto=setInterval(recompose,4200)}
+    btnPrint.textContent='';
+    btnPrint.appendChild(document.createTextNode(auto?'Hold still ':'Play '));
+    var k=document.createElement('kbd');k.textContent='H';btnPrint.appendChild(k);
+  }
+
+  poster.addEventListener('click',function(e){if(e.target===poster||!e.target.classList.contains('s'))userRecompose()});
+  document.getElementById('btnNew').addEventListener('click',userRecompose);
+  document.getElementById('btnTurn').addEventListener('click',turnAll);
+  document.getElementById('btnColour').addEventListener('click',recolour);
+  document.getElementById('btnGrid').addEventListener('click',toggleGrid);
+  btnPrint.addEventListener('click',function(){setAuto(!auto)});
+  window.addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    var k=e.key.toLowerCase();
+    if(k==='r')userRecompose();else if(k==='t')turnAll();else if(k==='c')recolour();else if(k==='g')toggleGrid();else if(k==='h')setAuto(!auto);
+  });
+
+  shapes.forEach(function(o){o.el.style.setProperty('--k',reduce?1:0);apply(o)});
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    shapes.forEach(function(o){o.el.style.setProperty('--k',1)});
+    compose();
+    setAuto(true);
+  })});
+})();
+</script>
+</body>
+</html>

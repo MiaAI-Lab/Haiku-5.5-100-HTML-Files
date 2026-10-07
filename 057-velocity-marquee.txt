@@ -1,0 +1,19 @@
+Prompt:
+057 velocity-marquee: giant multi-row marquee, alternating directions, speed responds to scroll.
+Build a standalone HTML page promoting "Kinetica Week", an invented week-long motion-type festival on the ferry docks of the fictional city Port Lumen. Palette: warm cream #f3eee3, near-black ink #121110, tomato #ff4a1c, cobalt #2337ff and butter yellow #ffd84a. Typography: Impact / Haettenschweiler / "Arial Narrow Bold" for giant condensed uppercase display words, "Helvetica Neue"/Arial for body copy and labels, one band set in italic Georgia for contrast, ui-monospace for the velocity readout. Layout: a fixed top bar in mix-blend-mode difference with the festival name and dates; an intro section with an enormous headline "Speed is a typeface." (the last word in tomato), a short paragraph and an animated scroll cue; then six full-bleed marquee bands (17vw type) separated by a three-column stats section and a dark closing section with a pill CTA. Each band has its own colour treatment: ink with cream text, cream with outlined (text-stroke) words, tomato, cobalt with butter text, cream italic serif, ink again. Words are separated by spinning eight-point star SVG glyphs. Motion: each band is a JavaScript-driven track of cloned units translated with translate3d and wrapped seamlessly by measured unit width; bands alternate direction and have different base speeds. Scroll velocity is measured each frame and eased into a multiplier (up to ~16x), scroll direction flips every band's direction, and velocity also applies a skewX lean to the type. Hovering or focusing a band eases it almost to a stop and floods it butter yellow. A fixed pill gauge bottom-left shows a conic-gradient dial filling with velocity and a live "x" multiplier readout, plus a Freeze toggle. Reduced motion: very slow base speed, damped scroll response, no skew, no spinning stars.
+
+Title: Kinetica Week
+
+Description: A loud, poster-like festival page built from stacked, full-bleed bands of giant condensed type that run in alternating directions. The bands idle gently, then surge, lean and reverse as the visitor scrolls, so the act of reading the page becomes the throttle. Bold flat colour bands, an outlined-type row and an italic serif row keep the rhythm varied, and short editorial copy about the invented festival gives the motion a reason to exist.
+
+Visual techniques:
+- JavaScript marquee tracks with cloned units, measured widths and seamless modulo wrapping
+- Scroll velocity sampling per animation frame with eased smoothing driving speed, direction and skew
+- -webkit-text-stroke outlined display type alongside filled and italic serif rows
+- Spinning inline SVG star separators
+- Conic-gradient velocity dial and live multiplier readout
+- mix-blend-mode difference fixed header readable over every band
+- Springy cubic-bezier CTA hover with rotation
+- Resize-aware re-layout of marquee clones
+
+Interaction model: Scroll the page: the faster you scroll, the faster every band runs and the harder the type leans, and scrolling up reverses all directions. Hover or keyboard-focus a band to slow it nearly to a halt and highlight it. The Freeze button in the velocity gauge stops all bands until released, and the closing CTA confirms a reserved pass when pressed.

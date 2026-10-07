@@ -1,0 +1,19 @@
+Prompt:
+060 memphis-confetti: Memphis-design squiggles and confetti shapes that bounce playfully.
+Build a standalone HTML page for "Squiggle Salon, Room 81", an invented one-night retrospective of 1980s Memphis-style design. Palette: bone white #fff8ec background covered in a 22px black polka-dot grid, with bubblegum #ff6fb5, teal #19c3b2, sunshine #ffd23f, cobalt #3b5bff, coral #ff6a3d and lilac #b79cff, all outlined in near-black #151515. Typography: "Arial Black" / "Helvetica Neue" / Futura for chunky uppercase headlines and buttons, "Trebuchet MS" / "Gill Sans" bold for body copy, "Courier New" for labels and counters. Layout: a full-viewport stage of physics-driven shapes behind a centered, slightly rotated yellow poster card with a thick black border, a 12px hard offset shadow and a pink circle sticker peeking from behind its top-right corner. The card holds a black tilted label, the headline "Serious design, unserious shapes." (first word in cobalt, "unserious" on a rotated teal block), a short paragraph and two hard-shadow buttons, "Throw confetti" and "Shake the room". A tip sits bottom-left and a live shape counter bottom-right in a bordered box. Shapes are inline SVGs in absolutely positioned divs with a hard drop-shadow filter: a wavy squiggle, a zigzag, a triangle, a polka-dot-filled circle, a half-moon, a thick ring, a striped pill, a plus sign and a dotted tilted square (dots and stripes via shared SVG patterns defined once). Motion: on load the big shapes rain in from above; each body has gravity, wall and floor bounces with restitution, spin that couples to horizontal speed, and a squash-and-stretch spring that compresses on impact (scale anchored at the bottom). Resting shapes occasionally hop on their own so the room never settles. The card pops in with an overshooting cubic-bezier. Buttons lift and tilt on hover and press flat on click. Confetti bursts are capped at 70 bodies, recycling the oldest confetti first. Reduced motion: no physics loop; shapes are placed as a static scattered composition, clicks add only a few pieces, Shake rearranges them instantly.
+
+Title: Squiggle Salon
+
+Description: A loud, joyful Memphis-design poster page where the decoration is alive. Chunky outlined shapes in candy colours tumble in, squash against the floor, spin off walls and hop about behind a tilted yellow exhibition card. Clicking anywhere throws a burst of mini confetti shapes, any shape can be grabbed and flung, and a Shake button sends the whole room airborne. Polka dots, stripes, zigzags and hard offset shadows keep every element faithful to the 1980s Milan design vocabulary.
+
+Visual techniques:
+- Inline SVG shape library with shared pattern fills for dots and stripes
+- Lightweight custom physics: gravity, restitution, friction, wall bounces and spin coupling
+- Squash-and-stretch spring scaling anchored at each shape's base
+- Hard offset shadows via CSS drop-shadow filters and box-shadows
+- Radial-gradient polka-dot page background
+- Pointer capture-style drag with velocity-based flinging
+- Overshooting entrance animation and tactile button press states
+- Body cap with oldest-confetti recycling to keep the DOM light
+
+Interaction model: Click or tap anywhere on the background to burst a spray of small confetti shapes from that point. Press and drag any shape to pick it up and release to fling it with your pointer's velocity. "Throw confetti" fires a large burst from the top of the card and "Shake the room" kicks every shape into the air; the counter shows how many shapes are in play.

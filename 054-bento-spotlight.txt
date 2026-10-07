@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page titled "Halcyon Night Camera": a bento grid of feature cards for a fictional night-photography app, with a cursor-tracking spotlight glow. Palette: near-black graphite (#0c0c10), cards in a subtle #1a1a22 to #15151b gradient with 8% white hairline borders, text #ededf2 and muted #8d8d9c, accents electric violet (#a78bfa), aqua (#5eead4) and lime (#d9f99d); the spotlight hue is an HSL variable that drifts from violet toward blue-cyan as the cursor moves left to right. Typography: Helvetica Neue/Arial in tight negative tracking for headlines and big numbers, ui-monospace for small uppercase labels and footer. Layout: a header with a pill tag ("Halcyon 3 · now shooting" with a glowing lime dot), a large headline "The camera that waits for the dark." with the second half in a violet-to-aqua gradient, and a short side paragraph. Then a six-column bento grid: a 4x2 hero tile with an inline SVG of star trails (46 generated concentric arcs around a pole star, slowly rotating over 120 s) above a dark ridge silhouette, headline and a white pill "Try a stack" button; then 2-column tiles for Exposure (big number plus a conic-gradient tick dial ring that rotates on hover, cycling values 1/4 to 30 seconds on each hover), Live histogram (28 bars reshaped every 1.6 s with a Gaussian peak), Dynamic range (a 0 to 14.2 stops counter that counts up with an ease-out-quart when scrolled into view), On-device privacy (lock icon tile), a customer quote, and Battery-aware (a lime-to-aqua meter that fills to 82% on view). The grid collapses to 4 columns on tablets and a single column on phones. Spotlight: one global pointermove listener, throttled through requestAnimationFrame, writes --mx/--my to every card relative to its own rect, so the glow spans gaps and lights the borders of neighbouring cards. Each card's ::before is a 1px border ring (mask-composite exclude trick) filled with a radial gradient at the cursor; ::after is a softer interior wash that fades in while the grid is hovered. Cards lift 3px on hover, stagger in on load, and keyboard focus moves the spotlight onto the focused card with a focus ring. The hero button runs a short fake "Stacking 100 frames…" loading state and then refreshes the histogram. Reduced motion: no rotation, no histogram cycling, no staggered entry, counters jump to their final values.
+
+Title: Halcyon Bento Spotlight
+
+Description: A sleek product-feature page in the style of a modern bento grid, presented for an invented night camera. A single coloured light follows the cursor across the whole grid, tracing the hairline borders of every tile it passes and softly washing their interiors, while each tile carries its own small live visual: rotating star trails, a dial, a breathing histogram, a counting stat and a filling battery meter. The effect feels like moving a torch across a dark instrument panel.
+
+Visual techniques:
+- Global pointer tracking that writes per-card CSS custom properties for a cross-card spotlight
+- Border-only glow via a padded pseudo-element with mask-composite exclude/xor
+- Hue-shifting HSL spotlight driven by cursor x position
+- Generated SVG star-trail arcs with slow CSS rotation
+- repeating-conic-gradient tick dial masked to a ring
+- Gaussian histogram bars animated with scaleY and expo easing
+- IntersectionObserver-triggered counter and meter fill, staggered entrance
+
+Interaction model:
+Move the cursor (or drag a finger) over the grid to sweep the spotlight across tiles; the hue changes as you move sideways. Hovering the exposure tile turns its dial and steps to a new shutter value. Tabbing through tiles places the light on the focused card. The "Try a stack" button runs a short simulated capture and refreshes the histogram.

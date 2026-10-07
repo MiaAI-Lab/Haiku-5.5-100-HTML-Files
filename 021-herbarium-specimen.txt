@@ -1,0 +1,22 @@
+Prompt:
+Build a standalone HTML page that reads as a scanned museum herbarium sheet for an invented evening-blooming bellflower, "Campanula vesperalis", collected in 1893. Set the whole page on a dark walnut-brown radial backdrop with a single cream-to-tan paper sheet centered on it (max width ~980px), drop shadow, inner vignette of foxing stains, a faint dotted fiber texture made of tiled radial gradients, and a thin inset hairline border. Palette: paper #efe3c8 to #e6d5b2, ink brown #3b2a1a, soft ink #6b5238, sepia #8a6a42, faded olive leaf #6f6a3a, dusk-violet petal #8b5a6b, and an archival red #a2452e for annotation markers. Typography: "Iowan Old Style"/Palatino/Georgia serif for headings and prose, italic for the Latin binomial, small caps for the institution line, and "Courier New"/ui-monospace for the specimen label, numerals and index buttons.
+Layout: a two-column grid (plate left, notes right) collapsing to one column under 760px. Header across the top: small spaced caps "Herbarium Vesperale · Sheet 0417" above the big italic species name, with "Collected at dusk · pressed & mounted" on the right. The plate is an inline SVG (viewBox 600x760) drawing the whole plant: taproot with laterals, a wiry stem with one branch, lance leaves filled olive with an overlaid diagonal hatching pattern, midrib veins, a main bell-shaped corolla and a second nodding flower with an exserted stigma, two buds, a seed capsule, a soft sepia stain ellipse behind, and three semi-transparent gummed tape strips.
+Motion: on load, roots and stems draw in with stroke-dashoffset (3.2s, ease cubic-bezier(.65,.05,.25,1)), then leaves, flowers, buds and capsule fade in with staggered delays. The plant group sways by under a degree around its root over 9s. Reduced motion disables drawing, fades, sway and the pulse halo.
+Interaction: ten numbered red pins are generated in script, each tied by a dashed leader line to a feature (corolla, stigma, bud, capsule, leaf, rosette, node, tape, taproot, stem). Hovering, focusing or tapping a pin (or its matching index button in a 5x2 Courier grid) fills the pin red with a springy radius change, shows the leader, starts a pulsing halo, and cross-fades the field-note card on the right to that annotation's title and paragraph. The empty state invites the viewer to hover a marker. Below sits a typed specimen label (locality, altitude, date, collector, determiner) slightly rotated, with a red circular "HERB. VESPER. № 0417" stamp, and a footer quoting the collector's margin note.
+
+Title: Evening Bellflower Herbarium
+
+Description: A sepia museum herbarium sheet for a fictional dusk-flowering bellflower. A hand-drawn inline SVG plant draws itself root to bloom on a foxed paper sheet, with gummed tape, a typed accession label and an ink stamp. Red numbered pins mark ten features, and each opens a collector's field note in a card beside the plate, so the page feels like reading a 19th-century specimen with a curator next to you.
+
+Visual techniques:
+- Inline SVG botanical illustration with pattern-fill hatching for engraved shading
+- stroke-dasharray / stroke-dashoffset line drawing on load
+- Staggered opacity keyframes for leaves, flowers and buds
+- Layered radial and linear gradients for paper fibers, foxing and vignette
+- Script-generated SVG pins with dashed leader lines and a pulsing halo keyframe
+- Springy CSS transition on the SVG circle radius
+- Cross-fading annotation card with an aria-live region
+- Rotated monospace specimen label and a circular stamp
+- prefers-reduced-motion fallback that shows the finished drawing statically
+
+Interaction model: The viewer hovers, taps or tabs through ten numbered markers on the plant, or uses the matching numbered index buttons. The active marker turns solid red, its leader line appears and a halo pulses, while the field-notes card cross-fades to that feature's name and the collector's observation. Everything works by keyboard (Enter or Space on a focused pin) and by touch.

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Nebula Explorer</title>
+<style>
+:root{--void:#04030a;--star:#f4efe6;--rose:#ff7a9c;--teal:#5fe6d2;--gold:#ffc76a;--violet:#a68bff;--mute:rgba(244,239,230,.55);--glass:rgba(14,10,30,.55);--edge:rgba(244,239,230,.14);--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--void);color:var(--star);overflow:hidden}
+body{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+#stage{position:fixed;inset:0;overflow:hidden;cursor:grab;touch-action:none;background:radial-gradient(ellipse at 50% 40%,#0c0820 0%,#04030a 70%)}
+#stage.drag{cursor:grabbing}
+.stars{position:absolute;inset:0;pointer-events:none;background-repeat:repeat}
+.s1{background-image:radial-gradient(circle 1px at 22px 34px,#fff,transparent),radial-gradient(circle 1px at 140px 90px,#dfe8ff,transparent),radial-gradient(circle 1.4px at 210px 220px,#fff6e0,transparent),radial-gradient(circle 1px at 60px 180px,#fff,transparent),radial-gradient(circle .8px at 250px 20px,#cfe,transparent),radial-gradient(circle 1px at 180px 150px,#fff,transparent);opacity:.55}
+.s2{background-image:radial-gradient(circle 1.6px at 70px 60px,#fff,transparent),radial-gradient(circle 1.2px at 300px 260px,#ffe3c8,transparent),radial-gradient(circle 1.8px at 380px 120px,#d8e4ff,transparent),radial-gradient(circle 1.2px at 150px 340px,#fff,transparent);animation:tw 5s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.95}to{opacity:.45}}
+.layer{position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:none;will-change:transform;mix-blend-mode:screen}
+.far{width:3200px;height:2200px;background:radial-gradient(ellipse 900px 520px at 1300px 1000px,rgba(90,40,160,.42),transparent 70%),radial-gradient(ellipse 760px 600px at 2100px 1300px,rgba(20,70,130,.45),transparent 70%),radial-gradient(ellipse 700px 400px at 1000px 1500px,rgba(120,30,90,.3),transparent 70%),radial-gradient(ellipse 600px 500px at 2300px 700px,rgba(60,40,150,.3),transparent 70%)}
+.mid{width:2400px;height:1600px;background:radial-gradient(ellipse 700px 380px at 900px 700px,rgba(170,70,210,.36),transparent 70%),radial-gradient(ellipse 600px 480px at 1600px 950px,rgba(30,170,170,.32),transparent 70%),radial-gradient(ellipse 520px 260px at 1350px 420px,rgba(240,100,150,.28),transparent 70%),radial-gradient(ellipse 800px 300px at 680px 1180px,rgba(60,100,230,.3),transparent 70%),radial-gradient(ellipse 380px 220px at 1800px 480px,rgba(255,170,90,.2),transparent 70%)}
+.main{width:2400px;height:1600px;background:radial-gradient(circle at 780px 620px,rgba(255,232,210,.95) 0,rgba(255,140,140,.6) 26px,rgba(225,70,130,.26) 110px,transparent 250px),radial-gradient(ellipse 260px 140px at 820px 640px,rgba(255,120,160,.22),transparent 70%),radial-gradient(circle at 1820px 440px,rgba(255,246,210,.95) 0,rgba(255,196,90,.5) 22px,rgba(210,120,40,.2) 100px,transparent 210px),radial-gradient(circle at 560px 1180px,rgba(190,230,255,.7) 0,transparent 26px),radial-gradient(circle at 560px 1180px,transparent 0 66px,rgba(130,190,255,.55) 86px,rgba(80,120,255,.22) 116px,transparent 160px),radial-gradient(ellipse 200px 330px at 1580px 1000px,rgba(70,240,215,.42),transparent 70%)}
+.pillar{position:absolute;bottom:auto;border-radius:48% 52% 18% 22%/62% 66% 10% 10%;background:linear-gradient(0deg,rgba(6,4,14,.98),rgba(22,16,40,.88) 72%,rgba(40,30,70,0));box-shadow:inset 0 10px 14px -8px rgba(150,255,235,.75)}
+.sil{width:2400px;height:1600px;mix-blend-mode:normal}
+.dust{width:2400px;height:1600px;mix-blend-mode:normal;background:radial-gradient(ellipse 520px 60px at 600px 820px,rgba(2,1,6,.55),transparent 70%),radial-gradient(ellipse 380px 46px at 1700px 760px,rgba(2,1,6,.5),transparent 70%),radial-gradient(ellipse 300px 80px at 1200px 1300px,rgba(160,120,255,.1),transparent 70%)}
+.flare{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px 4px rgba(200,220,255,.8)}
+.flare::before,.flare::after{content:"";position:absolute;left:50%;top:50%;background:linear-gradient(90deg,transparent,rgba(220,235,255,.85),transparent);width:90px;height:1px;transform:translate(-50%,-50%)}
+.flare::after{transform:translate(-50%,-50%) rotate(90deg)}
+.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(2,1,6,.75) 100%)}
+#pois{position:fixed;inset:0;pointer-events:none}
+.poi{position:absolute;left:0;top:0;pointer-events:auto;display:flex;align-items:center;gap:10px;background:none;border:0;color:var(--star);cursor:pointer;font:500 13px/1 "Iowan Old Style",Georgia,serif;letter-spacing:.02em;padding:6px;transform:translate(-50%,-50%);transition:opacity .4s var(--ease)}
+.poi .ring{width:18px;height:18px;border-radius:50%;border:1px solid rgba(244,239,230,.8);position:relative;flex:none;transition:transform .35s var(--ease),border-color .3s}
+.poi .ring::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(244,239,230,.4);animation:ping 2.6s var(--ease) infinite}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.7);opacity:0}}
+.poi .lbl{opacity:.72;white-space:nowrap;transform:translateX(-4px);transition:opacity .3s,transform .4s var(--ease);text-shadow:0 1px 8px #000}
+.poi:hover .lbl,.poi:focus-visible .lbl,.poi.on .lbl{opacity:1;transform:none}
+.poi:hover .ring,.poi:focus-visible .ring{transform:scale(1.25)}
+.poi.on .ring{border-color:var(--gold);transform:scale(1.35)}
+.poi:focus-visible{outline:1px dashed var(--gold);outline-offset:2px;border-radius:20px}
+.hud{position:fixed;pointer-events:none;z-index:3}
+.hud > *{pointer-events:auto}
+.tl{top:clamp(16px,3vw,32px);left:clamp(16px,3vw,36px);max-width:min(420px,calc(100vw - 32px))}
+.eyebrow{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--mute)}
+h1{font-weight:400;font-size:clamp(30px,5vw,56px);line-height:1;letter-spacing:-.01em;margin:.25em 0 .2em}
+h1 i{color:var(--gold)}
+.sub{font-style:italic;color:var(--mute);font-size:15px}
+.tr{top:clamp(16px,3vw,32px);right:clamp(16px,3vw,36px);text-align:right;font-size:11px;line-height:1.9;letter-spacing:.12em;color:var(--mute)}
+.tr b{color:var(--star);font-weight:500}
+.bl{left:clamp(16px,3vw,36px);bottom:clamp(16px,3vw,32px);width:min(360px,calc(100vw - 32px))}
+.card{background:var(--glass);border:1px solid var(--edge);border-radius:18px;padding:18px 20px;backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.card h2{font-weight:400;font-size:24px;margin:6px 0 8px}
+.card p{font-size:15px;line-height:1.5;color:rgba(244,239,230,.82)}
+.card .meta{display:flex;gap:16px;margin-top:12px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.card .meta b{display:block;color:var(--star);font-weight:500;font-size:12px;margin-top:3px}
+.card.swap{animation:swap .6s var(--ease)}
+@keyframes swap{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.row{display:flex;gap:8px;margin-top:14px}
+.btn{font:500 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--star);background:rgba(244,239,230,.06);border:1px solid var(--edge);border-radius:999px;padding:9px 14px;cursor:pointer;transition:background .25s,border-color .25s,transform .25s var(--ease)}
+.btn:hover,.btn:focus-visible{background:rgba(255,199,106,.16);border-color:rgba(255,199,106,.6);outline:none}
+.btn:active{transform:scale(.96)}
+.br{right:clamp(16px,3vw,36px);bottom:clamp(16px,3vw,32px);display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#mini{position:relative;width:168px;height:112px;border-radius:12px;border:1px solid var(--edge);overflow:hidden;cursor:pointer;background:radial-gradient(circle at 32.5% 38.75%,rgba(255,140,150,.9),transparent 9%),radial-gradient(circle at 75.8% 27.5%,rgba(255,200,100,.9),transparent 7%),radial-gradient(circle at 23.3% 73.75%,rgba(130,190,255,.8),transparent 8%),radial-gradient(ellipse at 65.8% 62.5%,rgba(70,240,215,.6),transparent 12%),radial-gradient(ellipse at 40% 45%,rgba(150,70,210,.5),transparent 45%),rgba(10,7,24,.8)}
+#view{position:absolute;border:1px solid var(--gold);border-radius:3px;box-shadow:0 0 0 999px rgba(4,3,10,.35)}
+.zoom{display:flex;gap:6px}
+.zoom .btn{width:38px;height:38px;padding:0;font-size:16px;display:grid;place-items:center}
+.zoom .btn.wide{width:auto;padding:0 14px;font-size:11px}
+#boot{position:fixed;inset:0;display:grid;place-items:center;background:var(--void);z-index:9;transition:opacity 1.1s var(--ease),visibility 1.1s}
+#boot.gone{opacity:0;visibility:hidden}
+#boot p{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--mute)}
+#boot span{display:block;width:140px;height:1px;margin:14px auto 0;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:scan 1.2s ease-in-out infinite}
+@keyframes scan{0%,100%{transform:scaleX(.2)}50%{transform:scaleX(1)}}
+@media (max-width:640px){
+  .tr{display:none}
+  .bl{bottom:16px;left:16px;right:16px;width:auto}
+  .br{bottom:auto;top:132px;right:16px}
+  #mini{width:108px;height:72px}
+  .card{padding:14px 16px}.card h2{font-size:20px}.card p{font-size:14px}
+  .poi .lbl{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){.s2,.poi .ring::after,#boot span{animation:none}.card.swap{animation:none}}
+</style>
+</head>
+<body>
+<div id="stage" aria-label="Nebula field. Drag to pan, scroll or pinch to zoom, arrow keys and plus or minus also work." tabindex="0" role="application">
+  <div class="stars s1" data-p="0.15" data-tile="260"></div>
+  <div class="stars s2" data-p="0.3" data-tile="420"></div>
+  <div class="layer far" data-p="0.45"></div>
+  <div class="layer mid" data-p="0.75"></div>
+  <div class="layer main" data-p="1">
+    <div class="flare" style="left:1180px;top:300px"></div>
+    <div class="flare" style="left:420px;top:520px;transform:scale(.7)"></div>
+    <div class="flare" style="left:2010px;top:1240px;transform:scale(.8)"></div>
+  </div>
+  <div class="layer sil" data-p="1">
+    <div class="pillar" style="left:1512px;top:960px;width:46px;height:210px"></div>
+    <div class="pillar" style="left:1572px;top:1010px;width:36px;height:160px"></div>
+    <div class="pillar" style="left:1622px;top:1050px;width:28px;height:120px"></div>
+  </div>
+  <div class="layer dust" data-p="1.35"></div>
+</div>
+<div class="vignette"></div>
+<div id="pois"></div>
+
+<header class="hud tl">
+  <p class="eyebrow mono">Observatory Halcyon &middot; Plate 7</p>
+  <h1>The Meridian <i>Complex</i></h1>
+  <p class="sub">A star nursery four thousand light-years wide, mapped in light.</p>
+</header>
+<div class="hud tr mono" aria-live="off">
+  <div>RA <b id="ra">05h 35m 17s</b></div>
+  <div>DEC <b id="dec">-05&deg; 23&prime;</b></div>
+  <div>MAG <b id="mag">&times;1.00</b></div>
+  <div>FIELD <b id="fov">212 ly</b></div>
+</div>
+<aside class="hud bl">
+  <div class="card" id="card">
+    <p class="eyebrow mono" id="cEye">Navigator</p>
+    <h2 id="cTitle">Drift freely</h2>
+    <p id="cText">Drag to pan through the cloud, scroll or pinch to magnify. Each beacon marks a feature worth the journey.</p>
+    <div class="meta mono" id="cMeta"><span>Beacons<b>4 charted</b></span><span>Light age<b>1,350 yr</b></span></div>
+    <div class="row"><button class="btn" id="next" type="button">Next beacon &rarr;</button><button class="btn" id="home" type="button">Overview</button></div>
+  </div>
+</aside>
+<div class="hud br">
+  <div id="mini" role="button" tabindex="0" aria-label="Mini map, click to jump"><div id="view"></div></div>
+  <div class="zoom"><button class="btn" id="zin" type="button" aria-label="Zoom in">+</button><button class="btn" id="zout" type="button" aria-label="Zoom out">&minus;</button></div>
+</div>
+<div id="boot"><div><p class="mono">Calibrating optics</p><span></span></div></div>
+
+<script>
+(function(){
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage = document.getElementById('stage');
+  var layers = Array.prototype.map.call(document.querySelectorAll('.layer'), function(el){ return {el:el, p:+el.dataset.p, w:el.offsetWidth, h:el.offsetHeight}; });
+  var stars = Array.prototype.map.call(document.querySelectorAll('.stars'), function(el){ return {el:el, p:+el.dataset.p, t:+el.dataset.tile}; });
+  var BX = 1150, BY = 760, ZMIN = .6, ZMAX = 4.5;
+  var W = 0, H = 0;
+  var cam = {x:0, y:0, z:RM ? 1 : .62}, tgt = {x:0, y:0, z:1}, vel = {x:0, y:0};
+  var POI = [
+    {n:'The Lantern Veil', x:-420, y:-180, z:2.4, k:'Emission nebula', t:'Hydrogen lit from within by a cluster of young suns, glowing rose where the gas is thinnest and gold where it gathers.', d:'1,290 ly', a:'3 Myr'},
+    {n:'Saffron Knot', x:620, y:-360, z:2.8, k:'Protostar', t:'A star still swaddled in its own dust, flaring saffron as it feeds. It will ignite properly in roughly a hundred thousand years.', d:'1,410 ly', a:'0.1 Myr'},
+    {n:'Corvid Pillars', x:380, y:220, z:2.2, k:'Dark columns', t:'Three towers of cold dust, each taller than our solar system is wide, rimmed in teal where starlight eats at their crowns.', d:'1,350 ly', a:'5 Myr'},
+    {n:'The Hollow Bell', x:-640, y:380, z:2.6, k:'Planetary nebula', t:'The last exhale of a sun-like star: a cool blue shell expanding around a white dwarf no larger than Earth.', d:'1,180 ly', a:'12 kyr'}
+  ];
+  var poiLayer = document.getElementById('pois'), current = -1;
+  POI.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'poi';
+    b.setAttribute('aria-label', 'Travel to ' + p.n);
+    b.innerHTML = '<span class="ring"></span><span class="lbl">' + p.n + '</span>';
+    b.addEventListener('click', function(e){ e.stopPropagation(); fly(i); });
+    b.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    poiLayer.appendChild(b); p.el = b;
+  });
+
+  function clamp(v, a, b){ return v < a ? a : v > b ? b : v; }
+  function bound(){ tgt.z = clamp(tgt.z, ZMIN, ZMAX); tgt.x = clamp(tgt.x, -BX, BX); tgt.y = clamp(tgt.y, -BY, BY); }
+  function resize(){ W = innerWidth; H = innerHeight; }
+  function zoomAt(f, sx, sy){
+    var nz = clamp(tgt.z * f, ZMIN, ZMAX);
+    var wx = tgt.x + (sx - W/2) / tgt.z, wy = tgt.y + (sy - H/2) / tgt.z;
+    tgt.x = wx - (sx - W/2) / nz; tgt.y = wy - (sy - H/2) / nz; tgt.z = nz; bound();
+  }
+
+  var card = document.getElementById('card'), cEye = document.getElementById('cEye'), cTitle = document.getElementById('cTitle'), cText = document.getElementById('cText'), cMeta = document.getElementById('cMeta');
+  function swapCard(eye, title, text, meta){
+    cEye.textContent = eye; cTitle.textContent = title; cText.textContent = text; cMeta.innerHTML = meta;
+    card.classList.remove('swap'); void card.offsetWidth; card.classList.add('swap');
+  }
+  function fly(i){
+    current = i; var p = POI[i];
+    tgt.x = p.x; tgt.y = p.y; tgt.z = p.z; vel.x = vel.y = 0;
+    POI.forEach(function(q, j){ q.el.classList.toggle('on', j === i); });
+    swapCard('Beacon ' + (i+1) + ' of ' + POI.length + ' · ' + p.k, p.n, p.t, '<span>Distance<b>' + p.d + '</b></span><span>Age<b>' + p.a + '</b></span>');
+  }
+  function overview(){
+    current = -1; tgt.x = 0; tgt.y = 0; tgt.z = 1;
+    POI.forEach(function(q){ q.el.classList.remove('on'); });
+    swapCard('Navigator', 'Drift freely', 'Drag to pan through the cloud, scroll or pinch to magnify. Each beacon marks a feature worth the journey.', '<span>Beacons<b>4 charted</b></span><span>Light age<b>1,350 yr</b></span>');
+  }
+  document.getElementById('next').addEventListener('click', function(){ fly((current + 1) % POI.length); });
+  document.getElementById('home').addEventListener('click', overview);
+  document.getElementById('zin').addEventListener('click', function(){ zoomAt(1.4, W/2, H/2); });
+  document.getElementById('zout').addEventListener('click', function(){ zoomAt(1/1.4, W/2, H/2); });
+
+  /* pointer: drag + pinch */
+  var pts = new Map(), pinch = null, lastMove = 0;
+  stage.addEventListener('pointerdown', function(e){
+    stage.setPointerCapture(e.pointerId); pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    stage.classList.add('drag'); vel.x = vel.y = 0;
+    if(pts.size === 2){ var a = Array.from(pts.values()); pinch = Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y); }
+  });
+  stage.addEventListener('pointermove', function(e){
+    var prev = pts.get(e.pointerId); if(!prev) return;
+    var cur = {x:e.clientX, y:e.clientY}; pts.set(e.pointerId, cur);
+    if(pts.size === 2 && pinch){
+      var a = Array.from(pts.values()), d = Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y);
+      zoomAt(d / pinch, (a[0].x+a[1].x)/2, (a[0].y+a[1].y)/2); pinch = d; return;
+    }
+    var dx = (cur.x - prev.x) / tgt.z, dy = (cur.y - prev.y) / tgt.z;
+    tgt.x -= dx; tgt.y -= dy; bound();
+    vel.x = -dx; vel.y = -dy; lastMove = performance.now();
+  });
+  function up(e){
+    pts.delete(e.pointerId); if(pts.size < 2) pinch = null;
+    if(!pts.size){ stage.classList.remove('drag'); if(RM || performance.now() - lastMove > 80){ vel.x = vel.y = 0; } }
+  }
+  stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+  stage.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    zoomAt(Math.exp(-dy * .0016), e.clientX, e.clientY);
+  }, {passive:false});
+  stage.addEventListener('keydown', function(e){
+    var s = 80 / tgt.z, used = true;
+    if(e.key === 'ArrowLeft') tgt.x -= s; else if(e.key === 'ArrowRight') tgt.x += s;
+    else if(e.key === 'ArrowUp') tgt.y -= s; else if(e.key === 'ArrowDown') tgt.y += s;
+    else if(e.key === '+' || e.key === '=') zoomAt(1.25, W/2, H/2);
+    else if(e.key === '-' || e.key === '_') zoomAt(.8, W/2, H/2);
+    else used = false;
+    if(used){ e.preventDefault(); bound(); }
+  });
+
+  var mini = document.getElementById('mini'), view = document.getElementById('view');
+  function miniJump(e){
+    var r = mini.getBoundingClientRect();
+    tgt.x = ((e.clientX - r.left) / r.width - .5) * 2400; tgt.y = ((e.clientY - r.top) / r.height - .5) * 1600; bound();
+  }
+  mini.addEventListener('click', miniJump);
+  mini.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); overview(); } });
+
+  var ra = document.getElementById('ra'), dec = document.getElementById('dec'), mag = document.getElementById('mag'), fov = document.getElementById('fov');
+  function pad(n){ n = Math.floor(n); return (n < 10 ? '0' : '') + n; }
+  function render(){
+    var i, L, s;
+    for(i = 0; i < layers.length; i++){
+      L = layers[i]; s = Math.pow(cam.z, L.p);
+      L.el.style.transform = 'translate3d(' + (W/2).toFixed(1) + 'px,' + (H/2).toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ') translate3d(' + (-cam.x*L.p - L.w/2).toFixed(1) + 'px,' + (-cam.y*L.p - L.h/2).toFixed(1) + 'px,0)';
+    }
+    for(i = 0; i < stars.length; i++){
+      L = stars[i]; s = Math.pow(cam.z, L.p); var t = L.t * s;
+      L.el.style.backgroundSize = t.toFixed(1) + 'px ' + t.toFixed(1) + 'px';
+      L.el.style.backgroundPosition = (W/2 - cam.x*L.p*s).toFixed(1) + 'px ' + (H/2 - cam.y*L.p*s).toFixed(1) + 'px';
+    }
+    for(i = 0; i < POI.length; i++){
+      var p = POI[i], sx = W/2 + (p.x - cam.x) * cam.z, sy = H/2 + (p.y - cam.y) * cam.z;
+      p.el.style.transform = 'translate3d(' + (sx - 15).toFixed(1) + 'px,' + (sy - 15).toFixed(1) + 'px,0)';
+      p.el.style.opacity = (sx < -200 || sx > W + 50 || sy < -50 || sy > H + 50) ? 0 : 1;
+    }
+    var vw = W / cam.z / 2400 * 100, vh = H / cam.z / 1600 * 100;
+    view.style.width = Math.min(100, vw) + '%'; view.style.height = Math.min(100, vh) + '%';
+    view.style.left = (50 + cam.x / 2400 * 100 - vw/2) + '%'; view.style.top = (50 + cam.y / 1600 * 100 - vh/2) + '%';
+    var secs = 5*3600 + 35*60 + 17 + cam.x * .9, arc = -5*60 - 23 + cam.y * .12;
+    ra.textContent = pad(secs/3600) + 'h ' + pad(secs/60 % 60) + 'm ' + pad(secs % 60) + 's';
+    var neg = arc < 0, aa = Math.abs(arc);
+    dec.textContent = (neg ? '-' : '+') + pad(aa/60) + '° ' + pad(aa % 60) + '′';
+    mag.textContent = '×' + cam.z.toFixed(2);
+    fov.textContent = Math.round(212 / cam.z) + ' ly';
+  }
+
+  var prevT = performance.now();
+  function loop(now){
+    var dt = Math.min(.05, (now - prevT) / 1000); prevT = now;
+    if(!pts.size && (Math.abs(vel.x) + Math.abs(vel.y) > .01)){
+      tgt.x += vel.x; tgt.y += vel.y; bound();
+      var f = Math.pow(.02, dt); vel.x *= f; vel.y *= f;
+    }
+    var k = RM ? 1 : 1 - Math.exp(-dt * 7);
+    cam.x += (tgt.x - cam.x) * k; cam.y += (tgt.y - cam.y) * k;
+    cam.z = Math.exp(Math.log(cam.z) + (Math.log(tgt.z) - Math.log(cam.z)) * (RM ? 1 : 1 - Math.exp(-dt * 4.5)));
+    render();
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize', resize);
+  resize(); render();
+  setTimeout(function(){ document.getElementById('boot').classList.add('gone'); }, RM ? 0 : 750);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

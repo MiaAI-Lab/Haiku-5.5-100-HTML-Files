@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hollowell Honeycomb</title>
+<style>
+:root{--base:#1f1309;--honey:#efa630;--cream:#fff3d1;--wax:#c58a3c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--base);color:var(--cream);font-family:"Gill Sans","Gill Sans MT",Optima,Candara,"Segoe UI",sans-serif;overflow-x:hidden;transition:background .8s ease}
+#comb{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
+.shell{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:space-between;padding:22px 16px 26px;pointer-events:none}
+@media(min-width:760px){.shell{padding:36px 48px 44px}}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.mark{font-size:.78rem;letter-spacing:.34em;text-transform:uppercase;color:var(--wax)}
+.mark b{display:block;font-family:Didot,"Bodoni 72","Bodoni MT","Libre Bodoni",Georgia,serif;font-weight:400;font-size:1.35rem;letter-spacing:.06em;text-transform:none;color:var(--cream);margin-top:4px}
+.badge{flex:none;width:78px;height:88px;display:grid;place-items:center;text-align:center;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,var(--honey),#7a3d0c);color:#1a0f05;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;line-height:1.3;transition:background .8s ease}
+.badge strong{display:block;font-family:Didot,"Bodoni 72","Bodoni MT",Georgia,serif;font-size:1.6rem;letter-spacing:0;font-weight:400}
+.copy{max-width:560px;padding:22px 20px 20px;margin:0 -4px;border-radius:4px;background:linear-gradient(180deg,rgba(15,9,4,.0),rgba(15,9,4,.72) 22%,rgba(15,9,4,.82));}
+@media(min-width:760px){.copy{padding:28px 30px 26px;background:radial-gradient(120% 100% at 0% 100%,rgba(15,9,4,.88),rgba(15,9,4,.55) 70%,rgba(15,9,4,0))}}
+h1{font-family:Didot,"Bodoni 72","Bodoni MT","Libre Bodoni",Georgia,serif;font-weight:400;font-size:clamp(2.3rem,8.4vw,5rem);line-height:.95;letter-spacing:-.015em}
+h1 i{color:var(--honey);transition:color .8s ease}
+.lede{margin-top:16px;font-size:clamp(1rem,2.6vw,1.12rem);line-height:1.6;color:rgba(255,243,209,.82);max-width:46ch}
+.vars{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;pointer-events:auto}
+.vars button{font:inherit;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);background:rgba(255,243,209,.06);border:1px solid rgba(255,243,209,.25);padding:10px 16px 10px 30px;border-radius:999px;cursor:pointer;position:relative;transition:background .25s ease,border-color .25s ease,color .25s ease,transform .2s cubic-bezier(.3,1.6,.5,1)}
+.vars button::before{content:"";position:absolute;left:12px;top:50%;width:10px;height:11px;margin-top:-5.5px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--sw)}
+.vars button:hover{transform:translateY(-2px);border-color:rgba(255,243,209,.6)}
+.vars button:focus-visible{outline:2px solid var(--honey);outline-offset:3px}
+.vars button[aria-pressed="true"]{background:var(--cream);color:#1a0f05;border-color:var(--cream)}
+.stat{margin-top:18px;display:flex;gap:22px;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--wax)}
+.stat span b{display:block;font-family:Didot,"Bodoni 72",Georgia,serif;font-weight:400;font-size:1.6rem;letter-spacing:0;color:var(--cream);font-variant-numeric:tabular-nums}
+.tip{font-size:.8rem;letter-spacing:.12em;color:rgba(255,243,209,.55);margin-top:14px}
+</style>
+</head>
+<body>
+<canvas id="comb" aria-hidden="true"></canvas>
+<div class="shell">
+  <div class="top">
+    <p class="mark">Hollowell Apiary<b>On the chalk downs</b></p>
+    <div class="badge" id="badge"><div><strong id="bno">03</strong><span id="bname">Wildflower</span></div></div>
+  </div>
+  <section class="copy">
+    <h1>Every cell <i>remembers</i> the summer.</h1>
+    <p class="lede">Forty thousand bees, one shared map of warmth. Move across the comb and the light runs outward from you the way a dance runs through the hive; tap to drip honey into the cells and watch the wax cap it slowly over.</p>
+    <div class="vars" role="group" aria-label="Honey variety">
+      <button type="button" data-v="0" aria-pressed="true" style="--sw:#efa630">Wildflower</button>
+      <button type="button" data-v="1" aria-pressed="false" style="--sw:#c8641e">Heather</button>
+      <button type="button" data-v="2" aria-pressed="false" style="--sw:#d9c94a">Lime blossom</button>
+    </div>
+    <div class="stat"><span><b id="capped">0</b>Cells capped</span><span><b id="waves">0</b>Waves sent</span></div>
+    <p class="tip" id="tip">Move to send a wave &middot; tap or click to pour</p>
+  </section>
+</div>
+<script>
+(function(){
+var cv=document.getElementById("comb"),ctx=cv.getContext("2d");
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var V=[{n:"Wildflower",no:"03",c:["#1f1309","#9a4f12","#efa630","#fff0c2"],w:"#c58a3c"},
+       {n:"Heather",no:"07",c:["#1c0d0b","#7a2614","#c8641e","#ffd69a"],w:"#b0623e"},
+       {n:"Lime blossom",no:"11",c:["#141509","#6a6516","#d9c94a","#fbf7cf"],w:"#a9a04a"}];
+var B=40,pal=[],capPal=[];
+function hex2(h){return[parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]}
+function setVar(i){var v=V[i],c=v.c.map(hex2);pal=[];capPal=[];
+  for(var k=0;k<B;k++){var t=k/(B-1)*3,s=Math.min(2,Math.floor(t)),f=t-s,a=c[s],b=c[s+1];
+    pal.push("rgb("+Math.round(a[0]+(b[0]-a[0])*f)+","+Math.round(a[1]+(b[1]-a[1])*f)+","+Math.round(a[2]+(b[2]-a[2])*f)+")")}
+  var r=document.documentElement.style;r.setProperty("--base",v.c[0]);r.setProperty("--honey",v.c[2]);r.setProperty("--wax",v.w);
+  document.getElementById("bname").textContent=v.n;document.getElementById("bno").textContent=v.no;
+  document.querySelectorAll(".vars button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v==i?"true":"false")});
+  dirty=true}
+var W=0,H=0,dpr=1,S=20,cells=[],hexX=[],hexY=[],dirty=true;
+function build(){
+  dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  S=Math.max(15,Math.min(26,W/42));var hw=Math.sqrt(3)*S,vs=1.5*S,old=cells;cells=[];
+  for(var r=-1;r*vs<H+S;r++)for(var q=-1;q*hw<W+hw;q++){var x=q*hw+(r&1?hw/2:0),y=r*vs;cells.push({x:x,y:y,v:0,c:0,capped:false})}
+  hexX=[];hexY=[];var g=S-1.6;for(var k=0;k<6;k++){var a=Math.PI/180*(60*k-30);hexX.push(Math.cos(a)*g);hexY.push(Math.sin(a)*g)}
+  dirty=true;
+}
+var waves=[],sent=0,px=-999,py=-999,lx=-999,ly=-999,pin=false,cappedN=0;
+var elC=document.getElementById("capped"),elW=document.getElementById("waves");
+function wave(x,y,s){waves.push({x:x,y:y,t:performance.now(),s:s});if(waves.length>14)waves.shift();sent++;elW.textContent=sent}
+function pour(x,y){var R=S*4.2;for(var i=0;i<cells.length;i++){var c=cells[i],dx=c.x-x,dy=c.y-y,d=Math.sqrt(dx*dx+dy*dy);if(d<R){c.c=Math.max(c.c,1-d/R*.55)}}}
+cv.addEventListener("pointermove",function(e){px=e.clientX;py=e.clientY;pin=true;
+  if(!reduce&&Math.hypot(px-lx,py-ly)>70){wave(px,py,.55);lx=px;ly=py}dirty=true});
+cv.addEventListener("pointerleave",function(){pin=false;dirty=true});
+cv.addEventListener("pointerdown",function(e){px=e.clientX;py=e.clientY;pin=e.pointerType==="mouse";if(!reduce)wave(px,py,1.25);else{sent++;elW.textContent=sent}pour(px,py);lx=px;ly=py;dirty=true;
+  document.getElementById("tip").textContent="Drip poured · the wax will cap it over"});
+document.querySelectorAll(".vars button").forEach(function(b){b.addEventListener("click",function(){setVar(+b.dataset.v);if(!reduce)wave(W*.5,H*.45,1.1)})});
+addEventListener("keydown",function(e){if(e.key===" "&&e.target===document.body){e.preventDefault();var x=W*(.2+Math.random()*.6),y=H*(.2+Math.random()*.5);if(!reduce)wave(x,y,1.1);pour(x,y);dirty=true}});
+var nextIdle=performance.now()+1200,lastMove=0;
+function frame(t){
+  var active=false;
+  if(!reduce&&t>nextIdle){wave(Math.random()*W,Math.random()*H*.8,.45);sent--;elW.textContent=sent;nextIdle=t+2600+Math.random()*2200}
+  for(var w=waves.length-1;w>=0;w--){var age=(t-waves[w].t)/1000;waves[w].a=waves[w].s*Math.exp(-age*1.05);waves[w].r=age*560;if(waves[w].a<.025)waves.splice(w,1)}
+  var buckets=[];for(var k=0;k<B;k++)buckets.push([]);var caps=[],count=0,wl=waves.length,sig=2*36*36,hs=2*S*3.2*S*3.2;
+  for(var i=0;i<cells.length;i++){var c=cells[i],e=0;
+    for(w=0;w<wl;w++){var wv=waves[w],dx=c.x-wv.x,dy=c.y-wv.y,x=Math.sqrt(dx*dx+dy*dy)-wv.r;if(x>-110&&x<110)e+=wv.a*Math.exp(-x*x/sig)}
+    if(pin){dx=c.x-px;dy=c.y-py;e+=.75*Math.exp(-(dx*dx+dy*dy)/hs)}
+    c.v+=(e-c.v)*(reduce?1:.28);if(c.v>.01)active=true;
+    if(c.c>.02){c.c*=.9984;active=true;if(c.c>.35){if(!c.capped){c.capped=true}count++;caps.push(c)}}else{c.c=0;c.capped=false}
+    var L=Math.min(1,c.v*.95+c.c*.85),b=Math.round((.09+.91*Math.pow(L,.8))*(B-1));buckets[b].push(c)}
+  if(count!==cappedN){cappedN=count;elC.textContent=count}
+  if(active||dirty||wl){
+    ctx.fillStyle=pal[0];ctx.globalAlpha=1;ctx.clearRect(0,0,W,H);
+    for(k=0;k<B;k++){var arr=buckets[k];if(!arr.length)continue;ctx.fillStyle=pal[k];ctx.beginPath();
+      for(i=0;i<arr.length;i++){var cx=arr[i].x,cy=arr[i].y;ctx.moveTo(cx+hexX[0],cy+hexY[0]);for(var j=1;j<6;j++)ctx.lineTo(cx+hexX[j],cy+hexY[j]);ctx.closePath()}ctx.fill()}
+    if(caps.length){ctx.strokeStyle="rgba(255,248,225,.55)";ctx.lineWidth=1.2;ctx.beginPath();var s2=.55;
+      for(i=0;i<caps.length;i++){cx=caps[i].x;cy=caps[i].y;ctx.moveTo(cx+hexX[4]*s2,cy+hexY[4]*s2);ctx.lineTo(cx+hexX[5]*s2,cy+hexY[5]*s2);ctx.lineTo(cx+hexX[0]*s2,cy+hexY[0]*s2)}ctx.stroke()}
+    dirty=false}
+  requestAnimationFrame(frame);
+}
+addEventListener("resize",function(){build()});
+build();setVar(0);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

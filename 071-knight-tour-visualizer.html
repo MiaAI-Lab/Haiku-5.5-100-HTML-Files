@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sixty-Four Leaps: A Knight's Tour</title>
+<style>
+:root{
+  --paper:#f3eee4;--ink:#1c1b19;--muted:#8a8376;--light:#efe8da;--dark:#d8cfbc;
+  --accent:#c4402b;--accent-soft:rgba(196,64,43,.13);--rule:rgba(28,27,25,.14);
+  --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--serif);min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.7),transparent 60%),radial-gradient(ellipse at 100% 100%,rgba(196,64,43,.05),transparent 55%)}
+.wrap{max-width:1200px;margin:0 auto;padding:clamp(20px,4vw,56px) clamp(16px,4vw,48px);
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,80px);align-items:center;min-height:100vh}
+@media (max-width:840px){.wrap{grid-template-columns:1fr;align-items:start}}
+.board-wrap{width:100%;max-width:660px;justify-self:center;position:relative}
+svg.board{width:100%;height:auto;display:block;overflow:visible}
+.sq{transition:fill .6s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+.sq.l{fill:var(--light)} .sq.d{fill:var(--dark)}
+.sq.v.l{fill:#f2dfd6} .sq.v.d{fill:#e3c4b6}
+.sq:hover{fill:#fff8ec}
+.frame{fill:none;stroke:var(--ink);stroke-width:2}
+.coord{font:600 15px var(--mono);fill:var(--muted);letter-spacing:.05em}
+.num{font:500 17px var(--mono);fill:rgba(28,27,25,.55);opacity:0;transition:opacity .5s ease .25s;pointer-events:none}
+.num.on{opacity:1}
+.seg{stroke:var(--accent);stroke-width:4.5;stroke-linecap:round;fill:none;stroke-dasharray:224;stroke-dashoffset:224;
+  animation:draw var(--d,.4s) cubic-bezier(.65,0,.35,1) forwards;pointer-events:none}
+.seg.close{stroke-dasharray:6 10;stroke-dashoffset:0;animation:fadein 1s ease forwards;opacity:0;stroke-width:3}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{to{opacity:.8}}
+.node{fill:var(--paper);stroke:var(--accent);stroke-width:3;pointer-events:none;transform-box:fill-box;transform-origin:center;animation:pop .35s cubic-bezier(.3,1.6,.5,1) both}
+.node.start{fill:var(--accent)}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.cand{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 4;opacity:.55;pointer-events:none}
+.cand-t{font:600 16px var(--mono);fill:var(--ink);opacity:.6;pointer-events:none}
+.cand.best{stroke:var(--accent);opacity:1;stroke-dasharray:none;stroke-width:2.5}
+.cand-t.best{fill:var(--accent);opacity:1}
+#knight{transition:transform var(--kd,.4s) cubic-bezier(.65,0,.35,1),opacity .4s;pointer-events:none}
+#knight .disc{fill:var(--ink)}
+#knight text{font:56px var(--serif);fill:var(--paper)}
+#ghost{opacity:0;transition:opacity .25s;pointer-events:none}
+#ghost text{font:56px var(--serif);fill:var(--ink)}
+.hint{position:absolute;left:50%;bottom:-6px;transform:translate(-50%,100%);font:italic 15px var(--serif);color:var(--muted);white-space:nowrap;transition:opacity .4s}
+.hint::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle;animation:breathe 1.8s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.8);opacity:.4}}
+.side{display:flex;flex-direction:column;gap:26px;min-width:0}
+.eyebrow{font:600 11px var(--mono);letter-spacing:.28em;text-transform:uppercase;color:var(--accent)}
+h1{font-weight:400;font-size:clamp(38px,5.4vw,68px);line-height:.98;letter-spacing:-.02em}
+h1 em{color:var(--accent)}
+.lede{font-size:17px;line-height:1.6;color:#45413a;max-width:44ch}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+.stat{padding:14px 0 12px}
+.stat+.stat{padding-left:16px;border-left:1px solid var(--rule)}
+.stat b{display:block;font:400 clamp(28px,3.4vw,40px)/1 var(--serif);font-variant-numeric:tabular-nums}
+.stat span{font:600 10px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--ink);
+  padding:12px 18px;border-radius:999px;cursor:pointer;transition:background .25s,color .25s,transform .2s cubic-bezier(.3,1.6,.5,1)}
+button:hover{background:var(--ink);color:var(--paper)}
+button:active{transform:scale(.95)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{background:var(--ink);border-color:var(--ink)}
+button:disabled{opacity:.35;pointer-events:none}
+.speed{display:flex;align-items:center;gap:10px;font:600 10px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);flex:1;min-width:160px}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:2px;background:var(--rule);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--ink);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink);cursor:pointer}
+.log{font:13px/1.9 var(--mono);color:var(--muted);min-height:5.7em;max-height:7.6em;overflow:hidden;word-spacing:.3em}
+.log i{font-style:normal}
+.log i.cur{color:var(--paper);background:var(--accent);padding:1px 5px;border-radius:3px}
+.verdict{font:italic 18px var(--serif);min-height:1.4em;color:var(--accent);opacity:0;transform:translateY(6px);transition:all .6s cubic-bezier(.2,.7,.2,1)}
+.verdict.on{opacity:1;transform:none}
+.foot{font:12px var(--mono);color:var(--muted);letter-spacing:.06em;border-top:1px solid var(--rule);padding-top:14px}
+@media (prefers-reduced-motion:reduce){
+  .seg{animation:none;stroke-dashoffset:0}.node{animation:none}#knight{transition:none}.hint::before{animation:none}
+  .sq,.num,.verdict{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="board-wrap">
+    <svg class="board" id="board" viewBox="-34 -10 854 854" role="img" aria-label="Eight by eight chessboard showing a knight's tour">
+      <g id="squares"></g>
+      <rect class="frame" x="0" y="0" width="800" height="800"></rect>
+      <g id="coords"></g>
+      <g id="nums"></g>
+      <g id="cands"></g>
+      <g id="path"></g>
+      <g id="nodes"></g>
+      <g id="ghost"><text x="0" y="0" text-anchor="middle" dominant-baseline="central">&#9822;&#xFE0E;</text></g>
+      <g id="knight" style="opacity:0"><circle class="disc" r="38"></circle><text x="0" y="3" text-anchor="middle" dominant-baseline="central">&#9822;&#xFE0E;</text></g>
+    </svg>
+    <p class="hint" id="hint">Choose any square to set the knight down</p>
+  </div>
+  <section class="side">
+    <p class="eyebrow">Study 071 &middot; Warnsdorff, 1823</p>
+    <h1>Sixty-four leaps, <em>never twice.</em></h1>
+    <p class="lede">A knight must visit every square of the board exactly once. The trick is humility: always leap to the square with the fewest onward escapes. Dashed rings show each candidate and how many exits it keeps open.</p>
+    <div class="stats">
+      <div class="stat"><b id="sMove">00</b><span>Move / 64</span></div>
+      <div class="stat"><b id="sSq">&mdash;</b><span>Square</span></div>
+      <div class="stat"><b id="sOpt">&mdash;</b><span>Choices</span></div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="play" disabled>Play</button>
+      <button id="step" disabled>Step</button>
+      <button id="reset">Random start</button>
+      <label class="speed">Tempo <input type="range" id="speed" min="0" max="100" value="45" aria-label="Animation tempo"></label>
+    </div>
+    <p class="log" id="log" aria-live="polite">The move record will be written here, square by square.</p>
+    <p class="verdict" id="verdict"></p>
+    <p class="foot">Click a new square at any time to begin again from there.</p>
+  </section>
+</main>
+<script>
+(function(){
+  var N=8,S=100,NS="http://www.w3.org/2000/svg";
+  var MV=[[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]];
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $=function(id){return document.getElementById(id)};
+  var gSq=$("squares"),gNum=$("nums"),gPath=$("path"),gNodes=$("nodes"),gC=$("cands"),knight=$("knight"),ghost=$("ghost");
+  var files="abcdefgh";
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e}
+  function alg(p){return files[p[0]]+(N-p[1])}
+  function inside(x,y){return x>=0&&y>=0&&x<N&&y<N}
+  var rects=[],nums=[];
+  for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+    var r=el("rect",{x:x*S,y:y*S,width:S,height:S,"class":"sq "+((x+y)%2?"d":"l"),"data-x":x,"data-y":y,tabindex:"-1"});
+    gSq.appendChild(r);rects.push(r);
+    var t=el("text",{x:x*S+S-12,y:y*S+24,"class":"num","text-anchor":"end"});gNum.appendChild(t);nums.push(t);
+  }
+  for(var i=0;i<N;i++){
+    var a=el("text",{x:i*S+S/2,y:830,"class":"coord","text-anchor":"middle"});a.textContent=files[i];$("coords").appendChild(a);
+    var b=el("text",{x:-18,y:i*S+S/2+5,"class":"coord","text-anchor":"middle"});b.textContent=N-i;$("coords").appendChild(b);
+  }
+  function degree(x,y,vis){var c=0;for(var k=0;k<8;k++){var nx=x+MV[k][0],ny=y+MV[k][1];if(inside(nx,ny)&&!vis[ny*N+nx])c++}return c}
+  function solve(sx,sy){
+    for(var at=0;at<300;at++){
+      var vis=new Array(N*N).fill(0),x=sx,y=sy,path=[[x,y]];vis[y*N+x]=1;
+      for(var s=1;s<N*N;s++){
+        var best=null,bd=99,bt=-1;
+        for(var k=0;k<8;k++){
+          var nx=x+MV[k][0],ny=y+MV[k][1];if(!inside(nx,ny)||vis[ny*N+nx])continue;
+          var d=degree(nx,ny,vis),tie=at===0?Math.hypot(nx-3.5,ny-3.5):Math.random();
+          if(d<bd||(d===bd&&tie>bt)){bd=d;bt=tie;best=[nx,ny]}
+        }
+        if(!best)break;x=best[0];y=best[1];vis[y*N+x]=1;path.push(best);
+      }
+      if(path.length===N*N)return path;
+    }
+    return null;
+  }
+  var tour=null,idx=-1,playing=false,timer=null,visited=null;
+  function delay(){var v=+$("speed").value;return Math.round(900-v*8.4)}
+  function clearBoard(){
+    gPath.innerHTML="";gNodes.innerHTML="";gC.innerHTML="";
+    rects.forEach(function(r){r.classList.remove("v")});
+    nums.forEach(function(n){n.classList.remove("on");n.textContent=""});
+    $("verdict").classList.remove("on");
+  }
+  function c(p){return [p[0]*S+S/2,p[1]*S+S/2]}
+  function placeKnight(p,dur){
+    var q=c(p);knight.style.setProperty("--kd",(reduce?0:dur)+"ms");
+    knight.style.transform="translate("+q[0]+"px,"+q[1]+"px)";knight.style.opacity=1;
+  }
+  function showCands(){
+    gC.innerHTML="";if(idx>=N*N-1)return;
+    var p=tour[idx],list=[],min=99;
+    for(var k=0;k<8;k++){var nx=p[0]+MV[k][0],ny=p[1]+MV[k][1];
+      if(inside(nx,ny)&&!visited[ny*N+nx]){var d=degree(nx,ny,visited);list.push([nx,ny,d]);if(d<min)min=d}}
+    var nxt=tour[idx+1];
+    list.forEach(function(o){
+      var q=c(o),isB=o[0]===nxt[0]&&o[1]===nxt[1];
+      gC.appendChild(el("circle",{cx:q[0],cy:q[1],r:22,"class":"cand"+(isB?" best":"")}));
+      var t=el("text",{x:q[0],y:q[1]+6,"text-anchor":"middle","class":"cand-t"+(isB?" best":"")});t.textContent=o[2];gC.appendChild(t);
+    });
+    $("sOpt").textContent=list.length;
+  }
+  function renderLog(){
+    var start=Math.max(0,idx-23),h="";
+    for(var i=start;i<=idx;i++)h+="<i"+(i===idx?' class="cur"':"")+">"+alg(tour[i])+"</i> ";
+    $("log").innerHTML=(start>0?"&hellip; ":"")+h;
+  }
+  function advance(){
+    if(!tour||idx>=N*N-1)return false;
+    idx++;var p=tour[idx],d=delay();visited[p[1]*N+p[0]]=1;
+    var r=rects[p[1]*N+p[0]];r.classList.add("v");
+    var n=nums[p[1]*N+p[0]];n.textContent=idx+1;n.classList.add("on");
+    if(idx>0){
+      var a=c(tour[idx-1]),b=c(p);
+      var ln=el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],"class":"seg"});ln.style.setProperty("--d",Math.max(120,d*.8)+"ms");gPath.appendChild(ln);
+    }
+    gNodes.appendChild(el("circle",{cx:c(p)[0],cy:c(p)[1],r:idx===0?9:6,"class":"node"+(idx===0?" start":"")}));
+    placeKnight(p,idx===0?0:Math.max(120,d*.8));
+    $("sMove").textContent=String(idx+1).padStart(2,"0");$("sSq").textContent=alg(p);
+    renderLog();showCands();
+    if(idx===N*N-1)finish();
+    return true;
+  }
+  function finish(){
+    stop();$("play").disabled=true;$("step").disabled=true;$("sOpt").textContent="0";
+    var f=tour[0],l=tour[N*N-1],dx=Math.abs(f[0]-l[0]),dy=Math.abs(f[1]-l[1]),closed=(dx*dy===2);
+    if(closed){var a=c(l),b=c(f);gPath.appendChild(el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],"class":"seg close"}))}
+    $("verdict").textContent=closed?"A closed tour: the final leap lands one move from home.":"An open tour: all sixty-four squares, ending at "+alg(l)+".";
+    $("verdict").classList.add("on");
+  }
+  function tick(){if(!playing)return;if(advance())timer=setTimeout(tick,delay());}
+  function stop(){playing=false;clearTimeout(timer);$("play").textContent=idx>=N*N-1?"Done":"Play"}
+  function start(x,y){
+    stop();clearBoard();tour=solve(x,y);if(!tour)return;
+    visited=new Array(N*N).fill(0);idx=-1;$("hint").style.opacity=0;ghost.style.opacity=0;
+    $("play").disabled=false;$("step").disabled=false;
+    if(reduce){advance();$("play").textContent="Play";return}
+    advance();playing=true;$("play").textContent="Pause";timer=setTimeout(tick,delay()+200);
+  }
+  $("board").addEventListener("click",function(e){
+    var t=e.target;if(!t.classList||!t.classList.contains("sq"))return;
+    start(+t.getAttribute("data-x"),+t.getAttribute("data-y"));
+  });
+  $("board").addEventListener("mouseover",function(e){
+    var t=e.target;if(tour||!t.classList||!t.classList.contains("sq"))return;
+    var x=+t.getAttribute("data-x"),y=+t.getAttribute("data-y");
+    ghost.setAttribute("transform","translate("+(x*S+S/2)+","+(y*S+S/2+3)+")");ghost.style.opacity=.28;
+  });
+  $("board").addEventListener("mouseleave",function(){ghost.style.opacity=0});
+  $("play").addEventListener("click",function(){
+    if(playing){stop();return}
+    if(!tour||idx>=N*N-1)return;playing=true;this.textContent="Pause";tick();
+  });
+  $("step").addEventListener("click",function(){stop();advance()});
+  $("reset").addEventListener("click",function(){start(Math.floor(Math.random()*N),Math.floor(Math.random()*N))});
+  document.addEventListener("keydown",function(e){
+    if(e.target.tagName==="INPUT")return;
+    if(e.key===" "&&tour){e.preventDefault();$("play").click()}
+    if(e.key==="ArrowRight"&&tour){stop();advance()}
+  });
+})();
+</script>
+</body>
+</html>

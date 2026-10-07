@@ -1,0 +1,23 @@
+Prompt
+
+Build a minimal specialty-coffee menu page for a fictional shop, "Oriel Coffee Room & small roastery". Palette: oat background #f3ede3, card paper #f8f4ec, espresso ink #231813, crema accent #b4733a, muted brown-grey #8c7b6c, hairlines rgba(35,24,19,.16), and cream #f3e6d2 for text on ink. Type: a high-contrast Didone stack (Didot, Bodoni 72, Bodoni MT, then Iowan Old Style / Georgia) for the masthead, drink names, prices and italic tasting notes; Avenir Next / Helvetica Neue for wide-tracked uppercase labels; ui-monospace for item numbers and recipe labels.
+
+Layout: a masthead with an enormous "Oriel" (up to about 190px, tight tracking), an italic crema subtitle beneath, three thin crema steam curves rising from just after the word, and a right-aligned uppercase address and hours block; a solid ink rule underneath. An intro row pairs a large italic Didone sentence with a right-aligned tab list (All, Espresso, Filter, With milk, Not coffee) carrying small mono count superscripts and a hairline underline that wipes in from the left on the selected tab. The menu is a borderless typographic grid (three columns on desktop, two on tablets, one on phones) where shared hairlines form the cells instead of floating cards. Each cell shows a mono number and category, a Didone drink name joined by a dotted leader to an italic crema price, a tracked uppercase origin and process line, and an italic tasting note at the bottom. Twelve drinks in total, three per category, each with a believable recipe. A footer under an ink rule carries roasting and water notes.
+
+Signature interaction, "ink hover": each cell holds an ink layer whose espresso-coloured circle starts at the exact point where the pointer enters and scales up with a slow ease-in-out until it floods the cell. An inline SVG feTurbulence + feDisplacementMap filter makes its edge bleed like ink on paper. Text crossfades to cream and the price to a warm caramel. When the pointer leaves, the ink drains back toward the exit point. Keyboard focus floods from the centre. Clicking, tapping, Enter or Space toggles the cell open: the tasting note slides up and away and a four-column recipe strip (dose, yield or water, time, temperature) rises in, while the cell stays inked. Filtering fades all cells out, swaps the visible set, and staggers the survivors back in. Reduced motion: the steam is static and transitions become near-instant.
+
+Title: Oriel Coffee Menu
+
+Description: A quiet, print-like specialty coffee menu built almost entirely from type and hairlines. Didone headlines, tracked small caps and italic tasting notes sit in a ruled grid on oat-coloured paper. Hovering a drink lets espresso ink bloom from the cursor with a turbulent, bleeding edge and reverses the type to cream, and tapping a drink reveals the bar's brew recipe.
+
+Visual techniques:
+- Didone display type paired with tracked sans small caps and mono numerals
+- Hairline grid cells built from shared borders instead of floating cards
+- Pointer-origin ink flood made with a scaled circle and CSS custom properties
+- SVG feTurbulence and feDisplacementMap filter for an organic ink edge
+- Colour crossfades from ink to cream on hover, focus and open
+- Dotted leader lines between drink names and prices
+- Animated SVG steam using stroke-dashoffset
+- Tab underline wipe and staggered filter transitions
+
+Interaction model: Hover over a drink to flood it with ink from where the pointer came in, and move away to let the ink drain toward where it left. Click, tap, or press Enter or Space on a focused drink to flip between its tasting note and its recipe. The tabs filter the menu by section, and the remaining drinks fade back in one after another.

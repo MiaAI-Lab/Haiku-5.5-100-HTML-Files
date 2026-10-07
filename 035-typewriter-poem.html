@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Letters to the Weather</title>
+<style>
+:root{--fg:#3a2a24;--glow:rgba(255,170,120,.55);--mote:#fff1e0;--ink:#1f1d1a;--red:#b3312c;--paper:#fbf8f1;--type:"American Typewriter","Courier Prime","Courier New",Courier,monospace;--ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#f2b8a6}
+body{min-height:100vh;color:var(--fg);font-family:var(--ui);overflow-x:hidden;transition:color 2.4s ease}
+.amb{position:fixed;inset:0;opacity:0;transition:opacity 2.8s ease;pointer-events:none}
+.amb.on{opacity:1}
+.a0{background:radial-gradient(ellipse 90% 50% at 50% 112%,#ffb38a,transparent 70%),linear-gradient(180deg,#f7dccf,#f2b8a6 60%,#e89a88)}
+.a1{background:radial-gradient(circle at 82% 8%,#fff8d2 0,rgba(255,248,210,0) 32%),linear-gradient(180deg,#b9dff5,#e7f3fb 62%,#fff4d4)}
+.a2{background:radial-gradient(ellipse at 20% 0%,rgba(120,170,180,.35),transparent 60%),linear-gradient(170deg,#3e505b,#27363e 60%,#182227)}
+.a3{background:radial-gradient(ellipse 80% 40% at 50% 105%,rgba(255,170,90,.75),transparent 70%),linear-gradient(180deg,#2e2350,#7d4778 55%,#e59a5e)}
+.a4{background:radial-gradient(ellipse at 50% -10%,#24306a,#0b0f27 62%,#06081a)}
+.motes{position:fixed;inset:0;pointer-events:none;color:var(--mote);transition:color 2.4s ease;overflow:hidden}
+.motes span{position:absolute;border-radius:50%;background:currentColor;filter:blur(.5px);opacity:0;animation:drift var(--d) ease-in-out var(--dl) infinite}
+@keyframes drift{0%{opacity:0;transform:translate(0,0)}20%{opacity:.7}80%{opacity:.5}100%{opacity:0;transform:translate(var(--x),-70px)}}
+.top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px clamp(16px,4vw,40px);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.brand b{font-weight:700}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{width:26px;height:26px;border-radius:50%;border:1px solid currentColor;background:transparent;color:inherit;font:600 9px/1 var(--type);letter-spacing:0;cursor:pointer;opacity:.45;transition:opacity .3s,background .4s,color .4s,transform .3s cubic-bezier(.34,1.56,.64,1)}
+.dot:hover,.dot:focus-visible{opacity:1;transform:scale(1.12);outline:none}
+.dot.on{opacity:1;background:var(--fg);color:var(--paper)}
+.stage{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:10px 16px 140px}
+.label{font:italic 15px/1.4 Georgia,"Times New Roman",serif;margin-bottom:16px;min-height:21px;transition:opacity .6s}
+.label.swap{opacity:0}
+.sheet{position:relative;width:min(640px,100%);background:var(--paper);background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.8),transparent 50%),repeating-linear-gradient(90deg,rgba(120,100,70,.018) 0 1px,transparent 1px 3px);padding:clamp(40px,7vw,72px) clamp(22px,7vw,72px) clamp(48px,8vw,80px);box-shadow:0 1px 0 rgba(0,0,0,.05),0 30px 70px -20px rgba(0,0,0,.35),0 0 140px 10px var(--glow);transition:box-shadow 2.4s ease;border-radius:2px}
+.sheet::before{content:"";position:absolute;left:-14px;right:-14px;top:-18px;height:26px;border-radius:13px;background:linear-gradient(180deg,#2b2b2e,#0e0e10 45%,#3a3a3e 55%,#151517);box-shadow:0 6px 12px rgba(0,0,0,.35)}
+.sheet::after{content:"";position:absolute;left:0;right:0;top:8px;height:40px;background:linear-gradient(180deg,rgba(0,0,0,.12),transparent);pointer-events:none}
+h1{font:400 clamp(22px,4vw,30px)/1.2 var(--type);color:var(--red);letter-spacing:.02em;margin-bottom:6px}
+.by{font:400 13px/1.6 var(--type);color:#7b746a;margin-bottom:clamp(26px,4vw,40px)}
+#poem{font:400 clamp(15px,2.4vw,19px)/1.75 var(--type);color:var(--ink);min-height:12em}
+.stanza{position:relative;margin-bottom:1.75em}
+.stanza .num{position:absolute;left:-2.2em;top:0;font-size:.7em;color:var(--red);opacity:.75;line-height:2.5}
+.line{min-height:1.75em;white-space:pre-wrap;overflow-wrap:break-word}
+.ch{display:inline;opacity:var(--o);position:relative;top:var(--y);animation:strike .16s ease-out}
+@keyframes strike{from{opacity:0;filter:blur(1.5px)}to{opacity:var(--o);filter:none}}
+.caret{display:inline-block;width:.55em;height:1.15em;vertical-align:-.2em;margin-left:1px;background:var(--red);opacity:.85;animation:blink 1.05s steps(1) infinite}
+.typing .caret{animation:none}
+@keyframes blink{50%{opacity:0}}
+.bell{position:absolute;right:18px;top:16px;font:600 10px/1 var(--type);letter-spacing:.2em;color:var(--red);opacity:0;transform:translateY(4px)}
+.bell.ding{animation:ding .7s ease-out}
+@keyframes ding{20%{opacity:.9;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+.sign{margin-top:8px;font:italic 15px/1.5 Georgia,serif;color:#7b746a;opacity:0;transform:translateY(8px);transition:opacity 1.2s ease,transform 1.2s cubic-bezier(.16,1,.3,1)}
+.sign.show{opacity:1;transform:none}
+.bar{position:fixed;left:50%;bottom:clamp(12px,3vw,24px);transform:translateX(-50%);z-index:5;display:flex;gap:6px;align-items:center;padding:6px;border-radius:999px;background:rgba(20,18,16,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100vw - 24px)}
+.bar button{font:500 12px/1 var(--ui);letter-spacing:.04em;color:#f3eee6;background:transparent;border:0;border-radius:999px;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:background .25s}
+.bar button:hover,.bar button:focus-visible{background:rgba(255,255,255,.12);outline:none}
+.bar button.pri{background:#f3eee6;color:#1f1d1a}
+.bar button.pri:hover,.bar button.pri:focus-visible{background:#fff}
+.bar .hint{font:11px/1 var(--ui);color:rgba(243,238,230,.55);padding:0 10px 0 4px;white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:560px){.bar .hint{display:none}.brand span{display:none}.stanza .num{left:-1.6em}.top{padding-top:16px}}
+@media (prefers-reduced-motion:reduce){.motes{display:none}.caret{animation:none}.amb,.sheet,body,.motes{transition:none}.ch{animation:none}}
+</style>
+</head>
+<body>
+<div class="amb a0 on"></div><div class="amb a1"></div><div class="amb a2"></div><div class="amb a3"></div><div class="amb a4"></div>
+<div class="motes" id="motes" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand"><b>Ondine</b> <span>&middot; Model 35 &middot; two-colour ribbon</span></div>
+  <nav class="dots" id="dots" aria-label="Stanzas"></nav>
+</header>
+
+<main class="stage">
+  <p class="label" id="label">I &middot; Dawn</p>
+  <article class="sheet" id="sheet">
+    <span class="bell" id="bell" aria-hidden="true">ding</span>
+    <h1>Letters to the Weather</h1>
+    <p class="by">five stanzas, typed in one sitting</p>
+    <div id="poem" aria-hidden="true"></div>
+    <div class="sr" id="sr"></div>
+    <p class="sign" id="sign">Typed on an Ondine 35, ribbon half spent.</p>
+  </article>
+</main>
+
+<div class="bar" role="toolbar" aria-label="Typewriter controls">
+  <button type="button" id="play" class="pri">Pause</button>
+  <button type="button" id="speed">Speed: steady</button>
+  <button type="button" id="again">Begin again</button>
+  <span class="hint">Space or click the page to hurry</span>
+</div>
+
+<script>
+(function(){
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var POEM = [
+    {label:'I · Dawn', fg:'#3a2a24', glow:'rgba(255,170,120,.55)', mote:'#fff1e0', lines:['Morning arrives like a letter','left on the step without a stamp,','the light still folded in its envelope,','the birds rehearsing what to say.']},
+    {label:'II · Noon', fg:'#22343f', glow:'rgba(255,240,180,.6)', mote:'#ffffff', lines:['By noon the street has read it twice.','The shadows shrink beneath the chairs;','a window throws its square of gold','across the [kitchin>kitchen] like a coat.']},
+    {label:'III · Squall', fg:'#dbe7ea', glow:'rgba(130,190,205,.35)', mote:'#9fc4cf', lines:['Then weather, honest as a hammer:','the sky unbuttons, rain types fast,','each drop a key struck on the roof,','each roof a page it cannot keep.']},
+    {label:'IV · Dusk', fg:'#fbe3d0', glow:'rgba(255,160,90,.5)', mote:'#ffd2a0', lines:['Evening edits what was said.','The hills go soft around their names,','the last bus carries off the verbs','and leaves the nouns to cool.']},
+    {label:'V · Night', fg:'#d9defa', glow:'rgba(120,140,255,.32)', mote:'#cfd8ff', lines:['At night I answer, line by line,','in ink the colour of the dark.','I sign it with the moon’s thin nail','and leave it, unstamped, on the step.']}
+  ];
+  var ROMAN = ['I','II','III','IV','V'];
+  var root = document.documentElement, body = document.body;
+  var poemEl = document.getElementById('poem'), labelEl = document.getElementById('label'), bell = document.getElementById('bell');
+  var sign = document.getElementById('sign'), sheet = document.getElementById('sheet');
+  var ambs = document.querySelectorAll('.amb'), dotsEl = document.getElementById('dots');
+  var playBtn = document.getElementById('play'), speedBtn = document.getElementById('speed');
+
+  /* screen reader text */
+  document.getElementById('sr').textContent = POEM.map(function(s){ return s.lines.join(' ').replace(/\[[^>]*>([^\]]*)\]/g, '$1'); }).join(' ');
+
+  /* motes */
+  var motes = document.getElementById('motes');
+  for(var m = 0; m < 16; m++){
+    var sp = document.createElement('span'), sz = 2 + Math.random() * 5;
+    sp.style.cssText = 'left:' + (Math.random()*100) + '%;top:' + (20 + Math.random()*80) + '%;width:' + sz + 'px;height:' + sz + 'px;--d:' + (9 + Math.random()*10) + 's;--dl:' + (-Math.random()*15) + 's;--x:' + ((Math.random()-.5)*80) + 'px';
+    motes.appendChild(sp);
+  }
+
+  /* ops */
+  var ops = [];
+  POEM.forEach(function(s, si){
+    ops.push({t:'stanza', i:si});
+    s.lines.forEach(function(line){
+      ops.push({t:'line'});
+      var re = /\[([^>]*)>([^\]]*)\]/g, last = 0, mm;
+      function chars(str){ for(var k = 0; k < str.length; k++) ops.push({t:'ch', c:str[k]}); }
+      while((mm = re.exec(line))){
+        chars(line.slice(last, mm.index)); chars(mm[1]);
+        ops.push({t:'pause', ms:520});
+        for(var d = 0; d < mm[1].length; d++) ops.push({t:'del'});
+        chars(mm[2]); last = re.lastIndex;
+      }
+      chars(line.slice(last));
+      ops.push({t:'eol'});
+    });
+    ops.push({t:'pause', ms:1500});
+  });
+  ops.push({t:'end'});
+
+  var idx = 0, timer = null, paused = false, done = false, stanzaEl = null, lineEl = null, curStanza = -1;
+  var SPEEDS = [['steady',1],['brisk',.5],['slow',1.7]], sIdx = 0;
+  var caret = document.createElement('span'); caret.className = 'caret';
+
+  POEM.forEach(function(s, i){
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'dot'; b.textContent = ROMAN[i];
+    b.setAttribute('aria-label', 'Go to stanza ' + ROMAN[i] + ', ' + s.label.split('· ')[1]);
+    b.addEventListener('click', function(e){ e.stopPropagation(); jump(i); });
+    dotsEl.appendChild(b);
+  });
+  var dots = dotsEl.querySelectorAll('.dot');
+
+  function setAmbient(i){
+    var s = POEM[i];
+    for(var k = 0; k < ambs.length; k++) ambs[k].classList.toggle('on', k === i);
+    root.style.setProperty('--fg', s.fg); root.style.setProperty('--glow', s.glow); root.style.setProperty('--mote', s.mote);
+    for(k = 0; k < dots.length; k++) dots[k].classList.toggle('on', k === i);
+    if(labelEl.textContent !== s.label){
+      labelEl.classList.add('swap');
+      setTimeout(function(){ labelEl.textContent = s.label; labelEl.classList.remove('swap'); }, RM ? 0 : 400);
+    }
+  }
+
+  function apply(op, instant){
+    if(op.t === 'stanza'){
+      curStanza = op.i;
+      stanzaEl = document.createElement('div'); stanzaEl.className = 'stanza'; stanzaEl.dataset.i = op.i;
+      var n = document.createElement('span'); n.className = 'num'; n.textContent = ROMAN[op.i];
+      stanzaEl.appendChild(n); poemEl.appendChild(stanzaEl);
+      if(!instant) setAmbient(op.i);
+    } else if(op.t === 'line'){
+      lineEl = document.createElement('p'); lineEl.className = 'line'; stanzaEl.appendChild(lineEl); lineEl.appendChild(caret);
+    } else if(op.t === 'ch'){
+      var c = document.createElement('span'); c.className = 'ch'; c.textContent = op.c;
+      c.style.setProperty('--o', (.72 + Math.random() * .28).toFixed(2));
+      c.style.setProperty('--y', ((Math.random() - .5) * 1.4).toFixed(2) + 'px');
+      if(instant) c.style.animation = 'none';
+      lineEl.insertBefore(c, caret);
+    } else if(op.t === 'del'){
+      var prev = caret.previousSibling; if(prev) lineEl.removeChild(prev);
+    } else if(op.t === 'eol'){
+      if(!instant){ bell.classList.remove('ding'); void bell.offsetWidth; bell.classList.add('ding'); }
+    } else if(op.t === 'end'){
+      done = true; sign.classList.add('show'); body.classList.remove('typing');
+      playBtn.textContent = 'Read again'; observe();
+    }
+  }
+
+  function delay(op){
+    var f = SPEEDS[sIdx][1];
+    if(op.t === 'ch'){
+      var c = op.c, base = 46 + Math.random() * 52;
+      if(c === ',' || c === ';' || c === ':') base += 230;
+      else if(c === '.') base += 420;
+      else if(c === ' ') base += 18;
+      return base * f;
+    }
+    if(op.t === 'del') return 70 * f;
+    if(op.t === 'eol') return 520 * f;
+    if(op.t === 'pause') return op.ms * f;
+    return 60 * f;
+  }
+
+  function step(){
+    timer = null;
+    if(paused || done) return;
+    var op = ops[idx++]; if(!op) return;
+    apply(op, false);
+    if(op.t === 'line' || op.t === 'eol') keepInView();
+    body.classList.toggle('typing', op.t === 'ch' || op.t === 'del');
+    if(!done) timer = setTimeout(step, delay(op));
+  }
+
+  function keepInView(){
+    var r = caret.getBoundingClientRect();
+    if(r.bottom > innerHeight - 120) window.scrollBy({top: r.bottom - innerHeight + 200, behavior: RM ? 'auto' : 'smooth'});
+  }
+
+  function runInstantUntil(test){
+    while(idx < ops.length && !test(ops[idx])) apply(ops[idx++], true);
+  }
+
+  function hurry(){
+    if(done) return;
+    clearTimeout(timer);
+    var start = curStanza;
+    runInstantUntil(function(op){ return op.t === 'end' || (op.t === 'stanza' && op.i > start); });
+    if(ops[idx] && ops[idx].t === 'end'){ apply(ops[idx++], true); return; }
+    keepInView();
+    if(!paused) timer = setTimeout(step, 700);
+  }
+
+  function reset(){
+    clearTimeout(timer); timer = null; idx = 0; done = false; curStanza = -1;
+    poemEl.textContent = ''; sign.classList.remove('show'); unobserve();
+  }
+
+  function jump(i){
+    if(i <= curStanza || done) reset();
+    runInstantUntil(function(op){ return op.t === 'stanza' && op.i === i; });
+    paused = false; playBtn.textContent = 'Pause';
+    if(RM){ runInstantUntil(function(op){ return op.t === 'end'; }); apply(ops[idx++], true); setAmbient(i); scrollToStanza(i); return; }
+    setAmbient(i);
+    clearTimeout(timer); timer = setTimeout(step, 300);
+  }
+
+  function scrollToStanza(i){
+    var el = poemEl.querySelector('.stanza[data-i="' + i + '"]'); if(el) el.scrollIntoView({block:'center'});
+  }
+
+  var io = null;
+  function observe(){
+    if(io || !('IntersectionObserver' in window)) return;
+    io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) setAmbient(+e.target.dataset.i); });
+    }, {rootMargin:'-45% 0px -45% 0px'});
+    poemEl.querySelectorAll('.stanza').forEach(function(s){ io.observe(s); });
+  }
+  function unobserve(){ if(io){ io.disconnect(); io = null; } }
+
+  playBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(done){ reset(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'}); paused = false; playBtn.textContent = 'Pause'; start(); return; }
+    paused = !paused; playBtn.textContent = paused ? 'Resume' : 'Pause';
+    if(paused){ clearTimeout(timer); timer = null; body.classList.remove('typing'); }
+    else if(!timer) step();
+  });
+  speedBtn.addEventListener('click', function(e){
+    e.stopPropagation(); sIdx = (sIdx + 1) % SPEEDS.length; speedBtn.textContent = 'Speed: ' + SPEEDS[sIdx][0];
+  });
+  document.getElementById('again').addEventListener('click', function(e){
+    e.stopPropagation(); reset(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'}); paused = false; playBtn.textContent = 'Pause'; start();
+  });
+  sheet.addEventListener('click', hurry);
+  document.addEventListener('keydown', function(e){
+    if(e.key === ' ' && !(e.target instanceof HTMLButtonElement)){ e.preventDefault(); hurry(); }
+  });
+
+  function start(){
+    if(RM){ runInstantUntil(function(op){ return op.t === 'end'; }); setAmbient(0); apply(ops[idx++], true); return; }
+    timer = setTimeout(step, 900);
+  }
+  setAmbient(0);
+  start();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+PROMPT
+
+Build a single standalone HTML5 page, "Galleria Pastello", a vaporwave shopping-mall museum where pastel marble statues stand in front of a striped grid sun. Everything is drawn in CSS: no images, no canvas, no external fonts.
+
+Scene and layout: one full-viewport stage (100svh, min 620px). The sky is a vertical gradient from deep violet (#24164a) through purple (#7d4ac4) and hot pink (#ff8fcf) to peach (#ffd3b0), meeting the horizon at 58% height. A large sun (52vmin circle, yellow #fff27a to pink #ff6fb8) sits on the horizon. Its lower half is cut into horizontal bars by a CSS mask-image gradient, and a pink drop-shadow glows around it. Below the horizon is a perspective floor: a container with perspective 240px holding a plane rotated rotateX(76deg) and tiled with cyan 2px grid lines (70px cells). Its background-position scrolls endlessly toward the viewer. A white horizon line glows pink and a peach haze fades into the floor.
+
+Statues: a "mbl" marble class stacks a soft radial highlight, two repeating-linear-gradient vein layers (lavender and pink at 118deg and 32deg), a base gradient and an inset shadow. The central bust is a <button> built from spans: a plinth in a dark-to-pink gradient with a "FIG. 03" label, a toga-draped torso shaped with clip-path and diagonal fold lines, a shaded neck, and an oval head. The head's face is suggested with radial-gradient eye sockets, a nose shadow and a lip line, and its curly hair is a tiled radial-gradient dot pattern. Fluted Doric columns flank the bust. They are made from repeating vertical gradients with a capital and base, and the right column is broken with a jagged clip-path top. A floating marble orb with a glowing cyan ring and a half-pink, half-cyan pyramid bob slowly.
+
+Typography: "Arial Black"/Impact for the giant outlined word MARBLE (transparent fill, white text-stroke, pink offset duplicate in screen blend). "Courier New" is used for the full-width subtitle, labels, ticker and placard. "Helvetica Neue"/Arial is the base.
+
+UI: the top-left brand reads "GALLERIA PASTELLO / Hall of Eternal Escalators". The top right has three pill buttons for exhibition editions: Dawn Mall (pink/peach), Midnight Plaza (navy/magenta grid/orange sun) and Seafoam Atrium (teal/mint/white grid). Each edition swaps all CSS custom properties. A Windows-95-style "placard.txt" window sits bottom-left. It has a bevelled border and a pink-lavender-cyan title bar, and shows the piece name, date/material and a wry one-line note. Its minimise button collapses the body. A scrolling bottom ticker carries mall announcements. A faint scanline overlay covers the whole scene.
+
+Motion: the grid floor scrolls, the orb and pyramid float, and the ticker marquees. Pointer movement drives a lerped parallax (--px/--py custom properties). The sun, title, columns, props and bust move at different depths, and the rAF loop stops when settled. Switching editions fires a CRT "channel change" flash that expands from a thin line with scanlines. Clicking the bust slides pink-to-cyan sunglasses onto it with a springy cubic-bezier(.3,1.7,.45,1) scaleX, and the head tilts. Hovering also nudges the head. prefers-reduced-motion stops the grid, bobbing, ticker, flash and parallax.
+
+Responsive: at 375px the bust and columns lift above the placard, the hint hides and the props shift inward. Nothing scrolls horizontally.
+
+Title: Galleria Pastello Statues
+
+Description: A pastel vaporwave tableau set inside an imaginary 1990s mall museum. A CSS marble bust stands between fluted columns in front of a banded grid sun and an endlessly scrolling neon floor grid. A giant outlined "MARBLE" headline, a Windows-95 placard and a mall-announcement ticker give it its nostalgic, ironic tone. Three "editions" restyle the whole scene: Dawn Mall, Midnight Plaza and Seafoam Atrium. Each comes with its own fictional artwork caption.
+
+Visual techniques:
+- CSS gradient sky and a banded sun made with mask-image stripes and a drop-shadow glow
+- 3D perspective floor grid (rotateX plane) with an animated background-position
+- Layered marble texture from radial and repeating-linear gradients plus inset shadows
+- Statue anatomy from positioned spans, clip-path drapery and gradient facial shading
+- Fluted columns from repeating gradients and a broken column via a jagged clip-path
+- Outlined display type with -webkit-text-stroke and a screen-blended offset duplicate
+- Theme editions driven entirely by CSS custom properties
+- Pointer parallax through lerped CSS variables in a self-stopping requestAnimationFrame loop
+- CRT channel-change flash, scanline overlay and a Win95 bevelled window
+- prefers-reduced-motion support
+
+Interaction model: Moving the pointer gently shifts the sun, title, columns, floating props and bust at different depths. Clicking or tapping the bust toggles springy pastel sunglasses and a head tilt. The three edition buttons recolour the whole scene with a CRT flash and update the placard caption. The placard's minimise button collapses and restores it. All controls are real buttons with visible focus outlines.

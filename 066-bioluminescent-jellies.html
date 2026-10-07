@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midwater Lanterns</title>
+<style>
+  :root{
+    --ink:#d9f6ff;
+    --dim:#7fa9bd;
+    --glow:#7ff4ff;
+    --deep:#010309;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:var(--deep);color:var(--ink)}
+  body{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+  canvas{position:fixed;inset:0;display:block;cursor:crosshair;touch-action:none}
+  .veil{position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(120% 70% at 50% -10%,rgba(80,170,210,.16),transparent 60%),
+      radial-gradient(140% 100% at 50% 120%,rgba(0,0,0,.7),transparent 55%)}
+  header{position:fixed;left:clamp(16px,4vw,48px);top:clamp(18px,5vh,48px);max-width:min(440px,calc(100vw - 32px));pointer-events:none}
+  .eyebrow{font:600 11px/1 ui-monospace,"SFMono-Regular",Menlo,"Courier New",monospace;letter-spacing:.32em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--glow))}
+  h1{font-weight:400;font-style:italic;font-size:clamp(38px,7vw,78px);line-height:.95;margin:14px 0 14px;letter-spacing:-.01em;
+     text-shadow:0 0 24px rgba(127,244,255,.35),0 0 2px rgba(220,255,255,.6)}
+  h1 span{display:block;font-style:normal;font-size:.42em;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);margin-top:10px;text-shadow:none}
+  header p{font-size:15px;line-height:1.6;color:#a9cbd9;max-width:34ch}
+  .hud{position:fixed;left:clamp(16px,4vw,48px);right:clamp(16px,4vw,48px);bottom:clamp(16px,4vh,36px);display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;pointer-events:none}
+  .gauge{font:12px/1.7 ui-monospace,"SFMono-Regular",Menlo,"Courier New",monospace;color:var(--dim);letter-spacing:.08em}
+  .gauge b{color:var(--ink);font-weight:500}
+  .controls{display:flex;gap:10px;pointer-events:auto;flex-wrap:wrap}
+  button{font:600 11px/1 ui-monospace,"SFMono-Regular",Menlo,"Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
+    background:rgba(10,40,60,.35);border:1px solid rgba(127,244,255,.28);padding:12px 16px;border-radius:999px;cursor:pointer;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:border-color .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s cubic-bezier(.2,.8,.2,1),transform .25s cubic-bezier(.3,1.6,.5,1)}
+  button:hover{border-color:rgba(127,244,255,.8);box-shadow:0 0 22px rgba(127,244,255,.3),inset 0 0 12px rgba(127,244,255,.15)}
+  button:active{transform:scale(.96)}
+  button:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+  button[aria-pressed="true"]{background:rgba(127,244,255,.14)}
+  .hint{position:fixed;right:clamp(16px,4vw,48px);top:clamp(18px,5vh,48px);font:11px/1.8 ui-monospace,Menlo,"Courier New",monospace;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;text-align:right;pointer-events:none;opacity:0;animation:fade 2.4s 1s forwards}
+  @keyframes fade{to{opacity:.85}}
+  @media (max-width:640px){.hint{display:none}header p{font-size:14px}}
+  @media (prefers-reduced-motion:reduce){.hint{animation:none;opacity:.85}}
+</style>
+</head>
+<body>
+<canvas id="sea" aria-label="Animated deep-sea scene of glowing jellyfish" role="img"></canvas>
+<div class="veil"></div>
+<header>
+  <div class="eyebrow">Station 7 · Twilight Zone</div>
+  <h1>Midwater Lanterns<span>Living light, 800 m down</span></h1>
+  <p>Below the reach of the sun, the only lamps are alive. These bells pulse with cold chemistry, trailing threads of light through water the colour of ink.</p>
+</header>
+<div class="hint">Move to lure<br>Tap to startle</div>
+<div class="hud">
+  <div class="gauge" id="gauge">Depth <b id="depth">812</b> m · Temp <b>4.1</b>°C<br>Lanterns adrift <b id="count">0</b></div>
+  <div class="controls">
+    <button id="add" type="button">Release a lantern</button>
+    <button id="dim" type="button" aria-pressed="false">Lights out</button>
+  </div>
+</div>
+<script>
+(function(){
+  const cv=document.getElementById('sea'),ctx=cv.getContext('2d');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  let W=0,H=0,DPR=1,speed=1;
+  const jellies=[],snow=[],sparks=[];
+  const lure={x:-9999,y:-9999,on:false};
+  let dark=false,darkAmt=0;
+  const HUES=[186,280,320,168,205,295];
+
+  function resize(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    W=innerWidth;H=innerHeight;
+    cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+    cv.style.width=W+'px';cv.style.height=H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+
+  function Jelly(x,y,r,hue){
+    this.r=r;this.hue=hue;this.x=x;this.y=y;
+    this.a=-Math.PI/2+(Math.random()-.5)*.7;
+    this.wander=this.a;
+    this.ph=Math.random()*Math.PI*2;
+    this.rate=.022+Math.random()*.014;
+    this.vx=0;this.vy=0;this.flash=0;
+    this.seg=r*.34;
+    this.n=8;this.m=13+((Math.random()*5)|0);
+    this.t=[];
+    for(let i=0;i<this.n;i++){
+      const ch=[];
+      for(let j=0;j<this.m;j++)ch.push({x:x,y:y+j*this.seg,px:x,py:y+j*this.seg});
+      this.t.push(ch);
+    }
+  }
+  Jelly.prototype.reset=function(x,y){
+    this.x=x;this.y=y;
+    for(const ch of this.t)for(let j=0;j<ch.length;j++){ch[j].x=ch[j].px=x;ch[j].y=ch[j].py=y+j*this.seg;}
+  };
+  function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return d;}
+
+  Jelly.prototype.update=function(){
+    this.ph+=this.rate*speed;
+    const c=Math.sin(this.ph);
+    const push=Math.pow(Math.max(0,c),2)*.075*(this.r/36)*speed;
+    this.wander+=(Math.random()-.5)*.06;
+    this.wander+=angDiff(-Math.PI/2,this.wander)*.01;
+    let target=this.wander;
+    const dx=lure.x-this.x,dy=lure.y-this.y,d=Math.hypot(dx,dy);
+    if(lure.on&&d<340&&d>this.r*1.5){target=Math.atan2(dy,dx);}
+    this.a+=angDiff(target,this.a)*.012*speed;
+    this.vx+=Math.cos(this.a)*push;this.vy+=Math.sin(this.a)*push;
+    this.vx*=.972;this.vy*=.972;this.vy+=.0035*speed;
+    this.x+=this.vx*speed;this.y+=this.vy*speed;
+    this.flash*=.955;
+    const m=this.r*5;
+    if(this.y<-m)this.reset(this.x,H+m*.6);
+    else if(this.y>H+m*1.2)this.reset(this.x,-m*.5);
+    if(this.x<-m)this.reset(W+m*.5,this.y);
+    else if(this.x>W+m)this.reset(-m*.5,this.y);
+    // geometry
+    this.c=c;
+    this.w=this.r*(1-.16*Math.max(0,c)+.05*Math.max(0,-c));
+    this.h=this.r*(.78+.2*Math.max(0,c));
+    this.rot=this.a+Math.PI/2;
+    const cs=Math.cos(this.rot),sn=Math.sin(this.rot);
+    for(let i=0;i<this.n;i++){
+      const u=i/(this.n-1)*2-1;
+      const lx=u*this.w*.82,ly=-this.h*.04;
+      const ch=this.t[i],p0=ch[0];
+      p0.x=this.x+lx*cs-ly*sn;p0.y=this.y+lx*sn+ly*cs;
+      p0.px=p0.x;p0.py=p0.y;
+      const drift=Math.sin(this.ph*.5+i)*.02;
+      for(let j=1;j<ch.length;j++){
+        const p=ch[j];
+        const vx=(p.x-p.px)*.93,vy=(p.y-p.py)*.93;
+        p.px=p.x;p.py=p.y;
+        p.x+=vx+drift;p.y+=vy+.045*speed;
+      }
+      for(let j=1;j<ch.length;j++){
+        const p=ch[j],q=ch[j-1];
+        const ex=p.x-q.x,ey=p.y-q.y,dd=Math.hypot(ex,ey)||1;
+        const seg=this.seg*(i===3||i===4?.8:1);
+        if(dd>seg){p.x=q.x+ex/dd*seg;p.y=q.y+ey/dd*seg;}
+      }
+    }
+  };
+
+  Jelly.prototype.draw=function(){
+    const hue=this.hue,glow=.55+.45*Math.max(0,this.c)+this.flash;
+    const lit=1-darkAmt*.75;
+    // tentacles
+    ctx.lineCap='round';
+    for(let i=0;i<this.n;i++){
+      const ch=this.t[i],thick=(i===3||i===4);
+      ctx.beginPath();ctx.moveTo(ch[0].x,ch[0].y);
+      for(let j=1;j<ch.length-1;j++){
+        const mx=(ch[j].x+ch[j+1].x)/2,my=(ch[j].y+ch[j+1].y)/2;
+        ctx.quadraticCurveTo(ch[j].x,ch[j].y,mx,my);
+      }
+      ctx.lineWidth=thick?2.4:.9;
+      ctx.strokeStyle='hsla('+(hue+(thick?30:0))+',100%,'+(thick?72:80)+'%,'+((thick?.32:.5)*glow*lit+darkAmt*.15)+')';
+      ctx.stroke();
+    }
+    ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.rot);
+    const w=this.w,h=this.h,r=this.r;
+    // halo
+    const hr=r*(2.8+this.flash*2);
+    const g=ctx.createRadialGradient(0,-h*.45,0,0,-h*.45,hr);
+    g.addColorStop(0,'hsla('+hue+',100%,70%,'+(.2*glow*lit+darkAmt*.12)+')');
+    g.addColorStop(1,'hsla('+hue+',100%,50%,0)');
+    ctx.fillStyle=g;ctx.fillRect(-hr,-h*.45-hr,hr*2,hr*2);
+    // bell
+    ctx.beginPath();ctx.moveTo(-w,0);
+    ctx.bezierCurveTo(-w*1.02,-h*1.32,w*1.02,-h*1.32,w,0);
+    const k=9;
+    for(let s=1;s<=k;s++){
+      const x1=w-2*w*s/k,cx=x1+w/k;
+      ctx.quadraticCurveTo(cx,h*(.1+.08*Math.max(0,-this.c)),x1,0);
+    }
+    ctx.closePath();
+    const bg=ctx.createLinearGradient(0,-h,0,h*.1);
+    bg.addColorStop(0,'hsla('+hue+',95%,82%,'+(.55*glow*lit+.1)+')');
+    bg.addColorStop(.6,'hsla('+(hue+20)+',90%,62%,'+(.22*glow*lit+.05)+')');
+    bg.addColorStop(1,'hsla('+(hue+40)+',90%,60%,'+(.08+.3*darkAmt)+')');
+    ctx.fillStyle=bg;ctx.fill();
+    ctx.lineWidth=1.2;
+    ctx.strokeStyle='hsla('+hue+',100%,88%,'+(.55*glow*lit+.25*darkAmt)+')';ctx.stroke();
+    // inner organ
+    ctx.beginPath();ctx.ellipse(0,-h*.42,w*.42,h*.28,0,0,Math.PI*2);
+    ctx.fillStyle='hsla('+(hue+50)+',100%,82%,'+(.2*glow*lit)+')';ctx.fill();
+    ctx.beginPath();
+    for(let q=0;q<4;q++){const a=q*Math.PI/2+.6;ctx.moveTo(0,-h*.42);ctx.quadraticCurveTo(Math.cos(a)*w*.5,-h*.42+Math.sin(a)*h*.4,Math.cos(a)*w*.3,-h*.42+Math.sin(a)*h*.18);}
+    ctx.strokeStyle='hsla('+(hue+60)+',100%,90%,'+(.35*glow*lit)+')';ctx.lineWidth=.8;ctx.stroke();
+    // rim photophores
+    for(let s=0;s<=10;s++){
+      const u=s/10*2-1;
+      const tw=.5+.5*Math.sin(this.ph*2+s*1.7);
+      ctx.beginPath();ctx.arc(u*w*.96,h*.04,1.1+tw*.9,0,Math.PI*2);
+      ctx.fillStyle='hsla('+(hue-20)+',100%,92%,'+((.35+.6*tw)*(.6+darkAmt*.6))+')';ctx.fill();
+    }
+    ctx.restore();
+  };
+
+  function spawn(x,y,r){
+    const hue=HUES[(Math.random()*HUES.length)|0]+(Math.random()*10-5);
+    jellies.push(new Jelly(x,y,r||18+Math.random()*30,hue));
+    document.getElementById('count').textContent=jellies.length;
+  }
+
+  function init(){
+    resize();
+    const n=W<640?6:9;
+    for(let i=0;i<n;i++)spawn(Math.random()*W,H*.2+Math.random()*H*.9);
+    const sn=reduce.matches?50:(W<640?70:140);
+    for(let i=0;i<sn;i++)snow.push({x:Math.random()*W,y:Math.random()*H,s:Math.random()*1.6+.3,v:Math.random()*.25+.05,p:Math.random()*6});
+  }
+
+  function burst(x,y){
+    const n=reduce.matches?12:36;
+    for(let i=0;i<n;i++){
+      const a=Math.random()*Math.PI*2,v=Math.random()*2.4+.4;
+      sparks.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,h:160+Math.random()*60});
+    }
+    for(const j of jellies){
+      const d=Math.hypot(j.x-x,j.y-y);
+      if(d<260){
+        j.flash=1.1*(1-d/260)+.2;
+        const away=Math.atan2(j.y-y,j.x-x);
+        j.a=away;j.wander=away;
+        j.ph=Math.PI*.5-.6;
+        j.vx+=Math.cos(away)*1.2;j.vy+=Math.sin(away)*1.2;
+      }
+    }
+  }
+
+  function bg(){
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'rgb('+(6-5*darkAmt|0)+','+(28-22*darkAmt|0)+','+(44-34*darkAmt|0)+')');
+    g.addColorStop(.55,'#020a16');
+    g.addColorStop(1,'#010207');
+    ctx.globalCompositeOperation='source-over';
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+
+  let depth=812;
+  function frame(){
+    speed=reduce.matches?.35:1;
+    darkAmt+=((dark?1:0)-darkAmt)*.04;
+    bg();
+    ctx.globalCompositeOperation='lighter';
+    // marine snow
+    ctx.fillStyle='rgba(190,225,240,'+(.35-darkAmt*.2)+')';
+    for(const s of snow){
+      s.y+=s.v*speed;s.p+=.01*speed;
+      const x=s.x+Math.sin(s.p)*6;
+      if(s.y>H+4){s.y=-4;s.x=Math.random()*W;}
+      ctx.fillRect(x,s.y,s.s,s.s);
+    }
+    for(const j of jellies){j.update();j.draw();}
+    for(let i=sparks.length-1;i>=0;i--){
+      const p=sparks[i];
+      p.x+=p.vx*speed;p.y+=p.vy*speed;p.vx*=.95;p.vy*=.95;p.life-=.012*speed;
+      if(p.life<=0){sparks.splice(i,1);continue;}
+      ctx.beginPath();ctx.arc(p.x,p.y,1.6*p.life+.4,0,Math.PI*2);
+      ctx.fillStyle='hsla('+p.h+',100%,75%,'+p.life+')';ctx.fill();
+    }
+    if(lure.on){
+      const g=ctx.createRadialGradient(lure.x,lure.y,0,lure.x,lure.y,60);
+      g.addColorStop(0,'rgba(170,255,240,.18)');g.addColorStop(1,'rgba(170,255,240,0)');
+      ctx.fillStyle=g;ctx.fillRect(lure.x-60,lure.y-60,120,120);
+    }
+    ctx.globalCompositeOperation='source-over';
+    const target=812+(lure.on?(lure.y/H-.5)*40:0);
+    depth+=(target-depth)*.05;
+    depthEl.textContent=Math.round(depth);
+    requestAnimationFrame(frame);
+  }
+  const depthEl=document.getElementById('depth');
+
+  cv.addEventListener('pointermove',e=>{lure.x=e.clientX;lure.y=e.clientY;lure.on=true;});
+  cv.addEventListener('pointerleave',()=>{lure.on=false;});
+  cv.addEventListener('pointerdown',e=>{lure.x=e.clientX;lure.y=e.clientY;lure.on=true;burst(e.clientX,e.clientY);});
+  document.getElementById('add').addEventListener('click',()=>{
+    if(jellies.length>=18)jellies.shift();
+    const x=W*.2+Math.random()*W*.6;spawn(x,H+60,22+Math.random()*26);
+  });
+  const dimBtn=document.getElementById('dim');
+  dimBtn.addEventListener('click',()=>{dark=!dark;dimBtn.setAttribute('aria-pressed',String(dark));dimBtn.textContent=dark?'Lights on':'Lights out';});
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(resize,120);});
+  init();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

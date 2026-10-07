@@ -1,0 +1,35 @@
+PROMPT
+
+Build a standalone HTML page called "The Meridian Walk", a folded pocket walking guide from an invented printer, Kestrel & Fold. The concept is paper-accordion-fold: 3D folded paper panels that unfold as the page scrolls, using CSS transforms only (no canvas, no WebGL).
+
+Palette: a dark charcoal desk background (#22211e fading to #171614, lifted to #3a3731 at the top with a radial gradient and a faint diagonal hairline texture). Warm cream paper panels (#f8f1e2 to #f4ecda to #e6d8ba) with very fine horizontal and vertical fibre lines from repeating-linear-gradients. Deep ink navy text (#1c2944, soft #56607a). Vermilion accent (#c4472a) for numerals, the dotted route and progress bars. The cover panel is navy with cream and peach (#e9b49a) type.
+
+Type: "Iowan Old Style", Palatino, Georgia serif for headlines and body, with italic Roman numerals for the panels. "Gill Sans" / Trebuchet small caps tracked to .22em for labels, and ui-monospace for mileage and the readout.
+
+Layout: a fixed thin masthead ("Kestrel & Fold · Pocket Guides" left; "Scroll to unfold" with an animated dripping hairline on the right). A 420vh scroll track holds a sticky full-height stage with two columns on desktop: a meta column (small vermilion kicker "Pocket Guide No. 14", a large serif title with italic "Walk", a short intro, a six-segment progress meter, a monospace readout "Panels open N / 6 · X mi", and two pill buttons "Unfold all" and "Fold up"), and a scene column max 560px wide with perspective 1300px viewed from above. On phones (under 760px) it stacks into one column, hides the intro paragraph and tightens the buttons.
+
+The guide is seven nested .fold elements. Each fold is panel-height (clamp(66px, 10.6vh, 112px)), has transform-origin at its top edge, uses transform-style: preserve-3d, and holds the next fold absolutely positioned at top:100%. Panel 0 is the navy cover (title, "3.8 miles · seven stops · est. 1931", a round "K&F" seal that rotates on hover). Panels i to vi are the stops: The Ropewalk 0.0 mi, Salt Steps 0.6, Chandler's Row 1.3, The Tide Clock 2.0, Lantern Quay 2.9, Home by the Ferry 3.8. Each has a short evocative line. Each face is a three-column grid: an italic numeral, the text, and a small map strip with a grid texture and an SVG dotted vermilion route whose x position at the bottom of one panel matches the top of the next, so the route runs continuously down the unfolded sheet with a stop dot on each panel.
+
+Motion: JavaScript reads scroll progress p (0 to 1) through the track and sets a --r rotateX custom property on each fold. Each panel i has an absolute tilt that alternates in sign, (+/-)80deg * (1 - s_i), where s_i is a cubic in-out eased, staggered unfold value (start offset 0.62 per panel). Because the folds are nested, the relative rotation written to each one is its absolute tilt minus its parent's. This gives a true zig-zag accordion that opens top-down. Lighting comes from the face normal: panels tilted away get a darker multiply overlay (--shade), panels tilted toward the viewer get a cream highlight (--lite). A soft blurred contact shadow under the guide grows in scaleY with progress. Updates are throttled with requestAnimationFrame on scroll.
+
+Details: the panel heading gets a vermilion underline that draws in on hover or focus, and the route dot turns vermilion. Buttons invert to cream on hover and press to scale .96. The progress meter segments fill per panel, and the readout updates the miles walked. A colophon after the track: a vermilion gradient rule, the italic line "Fold it back along the creases it already knows.", and a printer's note.
+
+Interaction: scroll to unfold. Click a panel (or press Enter or Space on it) to smooth-scroll to the point where that panel has just opened; clicking the cover folds everything. "Unfold all" and "Fold up" scroll to the end and the start of the track.
+
+Reduced motion: the track collapses to auto height, the stage is no longer sticky, the guide renders fully unfolded, smooth scrolling and the hint animation are off, and transitions are near zero.
+
+Title: The Meridian Walk
+
+Description: A premium, tactile scroll piece in which a hand-folded pocket guide hangs from its navy cover over a dark desk and opens panel by panel into a true 3D accordion as the reader scrolls. Alternating creases catch and lose the light, a dotted vermilion route threads continuously across every panel once it lies flat, and the quiet editorial serif typography and invented harbour stops make it read like a keepsake from a small letterpress printer.
+
+Visual techniques:
+- Nested preserve-3d elements with top-edge transform origins forming a real accordion zig-zag
+- Relative rotateX per fold computed from alternating absolute tilts (absolute minus parent)
+- Staggered cubic in-out easing mapped from scroll progress through a sticky stage
+- Normal-based lighting using CSS custom properties for shade and highlight overlays
+- Paper fibre texture from layered repeating-linear-gradients
+- A continuous SVG dotted route split across panels with matching edge coordinates
+- Blurred contact shadow that scales with the unfold progress
+- Hover underline draw-in, rotating seal and an animated scroll hint hairline
+
+Interaction model: Scrolling is the main control. Moving down the page unfolds the guide one crease at a time, and scrolling back up refolds it. Each panel is a focusable button: clicking it or pressing Enter smooth-scrolls to the moment that panel lies flat, and the cover folds the guide back up. Two pill buttons jump to fully unfolded or fully folded, while a segmented meter and a monospace readout report how many panels are open and how far along the walk the reader is.

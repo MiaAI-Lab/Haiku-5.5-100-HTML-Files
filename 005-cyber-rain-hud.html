@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KESTREL//NET — Cyber Rain HUD</title>
+<style>
+:root{
+  --void:#03050a;
+  --cyan:#29f6ff;
+  --mag:#ff2bd6;
+  --lime:#b6ff3b;
+  --text:#d8fbff;
+  --dim:rgba(216,251,255,.55);
+  --panel:rgba(4,14,22,.72);
+  --cut:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--void)}
+body{color:var(--text);font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;overflow-x:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.scan{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),
+  radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.65) 100%)}
+.hud{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:22px 16px 40px;min-height:100vh;
+  display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:min-content;gap:16px;align-content:start}
+.topbar{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid rgba(41,246,255,.25);padding-bottom:12px}
+.topbar .id{color:var(--cyan)}
+.topbar .rec::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mag);margin-right:8px;box-shadow:0 0 10px var(--mag);animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.15}}
+.panel{position:relative;padding:20px 20px 18px;background:var(--panel);
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);outline:none;transition:background .3s}
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;padding:1px;
+  background:linear-gradient(135deg,var(--cyan),transparent 40%,transparent 60%,var(--mag));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.8}
+.panel:hover,.panel:focus-visible{background:rgba(6,22,34,.86)}
+.panel:focus-visible::before{opacity:1;background:var(--cyan)}
+.panel h2{font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;justify-content:space-between}
+.panel h2 span:last-child{color:var(--dim)}
+.hero{grid-column:1/9;padding:30px 28px}
+.side{grid-column:9/13}
+.third{grid-column:span 4}
+.glitch{position:relative;display:inline-block;font-family:"Arial Black","Helvetica Neue",Impact,sans-serif;font-weight:900;
+  font-size:clamp(40px,8.4vw,96px);line-height:.9;letter-spacing:-.02em;text-transform:uppercase;color:var(--text);
+  text-shadow:0 0 18px rgba(41,246,255,.45)}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;opacity:0;pointer-events:none}
+.glitch::before{color:var(--mag);transform:translate(-3px,0);mix-blend-mode:screen}
+.glitch::after{color:var(--cyan);transform:translate(3px,0);mix-blend-mode:screen}
+.panel:hover .glitch::before,.panel:focus-visible .glitch::before{opacity:1;animation:slice1 .9s steps(1) infinite}
+.panel:hover .glitch::after,.panel:focus-visible .glitch::after{opacity:1;animation:slice2 .7s steps(1) infinite}
+.panel:hover .glitch,.panel:focus-visible .glitch{animation:jitter .35s steps(2) infinite}
+@keyframes slice1{0%{clip-path:inset(10% 0 70% 0)}20%{clip-path:inset(60% 0 12% 0);transform:translate(-6px,0)}40%{clip-path:inset(30% 0 48% 0)}60%{clip-path:inset(80% 0 4% 0);transform:translate(-2px,0)}80%{clip-path:inset(4% 0 86% 0)}100%{clip-path:inset(45% 0 30% 0)}}
+@keyframes slice2{0%{clip-path:inset(70% 0 8% 0)}25%{clip-path:inset(18% 0 66% 0);transform:translate(5px,0)}50%{clip-path:inset(50% 0 32% 0)}75%{clip-path:inset(6% 0 78% 0);transform:translate(2px,0)}100%{clip-path:inset(88% 0 2% 0)}}
+@keyframes jitter{0%{transform:translate(0)}50%{transform:translate(1px,-1px)}}
+.flick{transition:none}
+.panel:hover .flick,.panel:focus-visible .flick{animation:flicker 1.6s linear infinite}
+@keyframes flicker{0%,19%,22%,62%,64%,100%{opacity:1}20%,63%{opacity:.25}21%{opacity:.8}}
+.sub{margin-top:18px;max-width:560px;color:var(--dim);font-size:14px;line-height:1.7}
+.sub b{color:var(--lime);font-weight:500}
+.btns{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-size:12px;letter-spacing:.2em;text-transform:uppercase;padding:12px 16px;cursor:pointer;color:var(--void);background:var(--cyan);border:0;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);transition:background .2s,transform .2s,box-shadow .2s}
+.btn:hover{background:var(--lime)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--mag);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--cyan);box-shadow:inset 0 0 0 1px var(--cyan)}
+.btn.ghost:hover{background:rgba(41,246,255,.12)}
+.stat{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px dashed rgba(41,246,255,.18);font-size:13px}
+.stat:last-child{border-bottom:0}
+.stat span{color:var(--dim);letter-spacing:.1em;text-transform:uppercase;font-size:11px}
+.stat strong{font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}
+.stat strong.hot{color:var(--mag);text-shadow:0 0 8px var(--mag)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:70px;margin-top:6px}
+.bars i{flex:1;background:linear-gradient(to top,var(--cyan),rgba(41,246,255,.15));transition:height .5s cubic-bezier(.2,.8,.2,1);min-height:3px}
+.log{font-size:12px;line-height:1.75;color:var(--dim);height:132px;overflow:hidden;position:relative}
+.log p::before{content:"> ";color:var(--mag)}
+.log p.new{color:var(--lime)}
+.big{font-family:"Arial Black",Impact,sans-serif;font-size:44px;line-height:1;color:var(--text);text-shadow:0 0 14px rgba(255,43,214,.6);font-variant-numeric:tabular-nums}
+.big small{font-family:ui-monospace,monospace;font-size:13px;color:var(--dim);margin-left:6px;text-shadow:none}
+.ring{width:100%;max-width:150px;margin:6px auto 0;display:block}
+@media (max-width:900px){.hero,.side{grid-column:1/-1}.third{grid-column:span 6}}
+@media (max-width:620px){.third{grid-column:1/-1}.hud{gap:12px}.hero{padding:24px 18px}}
+@media (prefers-reduced-motion:reduce){
+  .topbar .rec::before,.panel:hover .glitch,.panel:hover .glitch::before,.panel:hover .glitch::after,.panel:hover .flick,
+  .panel:focus-visible .glitch,.panel:focus-visible .glitch::before,.panel:focus-visible .glitch::after,.panel:focus-visible .flick{animation:none}
+}
+</style>
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<div class="scan" aria-hidden="true"></div>
+<main class="hud">
+  <div class="topbar">
+    <span class="id">KESTREL//NET · NODE 7-ALBA</span>
+    <span class="rec">Uplink live</span>
+    <span id="clock">00:00:00</span>
+  </div>
+
+  <section class="panel hero" tabindex="0">
+    <h2><span>Signal intercept</span><span>CH 04</span></h2>
+    <h1 class="glitch" data-text="Rain over Sector 9">Rain over Sector 9</h1>
+    <p class="sub">The city's weather grid is leaking. Every falling glyph is a packet escaping the old municipal mesh. Your job, operator: <b>watch the storm, read the pattern, and keep the lights on</b> until dawn shift.</p>
+    <div class="btns">
+      <button class="btn" type="button" id="surge">Trigger surge</button>
+      <button class="btn ghost" type="button" id="palette">Swap spectrum</button>
+    </div>
+  </section>
+
+  <aside class="panel side" tabindex="0">
+    <h2><span class="flick">Core status</span><span>v3.2</span></h2>
+    <div class="stat"><span>Packet rate</span><strong id="rate">0</strong></div>
+    <div class="stat"><span>Mesh integrity</span><strong id="integ">97.2%</strong></div>
+    <div class="stat"><span>Rain density</span><strong id="dens">Moderate</strong></div>
+    <div class="stat"><span>Threat level</span><strong class="hot" id="threat">Amber</strong></div>
+    <div class="stat"><span>Operator</span><strong>N. VASQUELLE</strong></div>
+  </aside>
+
+  <section class="panel third" tabindex="0">
+    <h2><span class="flick">Throughput</span><span>12 s</span></h2>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <section class="panel third" tabindex="0">
+    <h2><span class="flick">Uplink</span><span>ALBA ↔ ORIN</span></h2>
+    <div class="big" id="lat">38<small>ms</small></div>
+    <svg class="ring" viewBox="0 0 120 60" aria-hidden="true">
+      <path d="M10 55 A50 50 0 0 1 110 55" fill="none" stroke="rgba(41,246,255,.18)" stroke-width="6"/>
+      <path id="latArc" d="M10 55 A50 50 0 0 1 110 55" fill="none" stroke="#ff2bd6" stroke-width="6" stroke-dasharray="157" stroke-dashoffset="100" style="transition:stroke-dashoffset .6s"/>
+    </svg>
+  </section>
+
+  <section class="panel third" tabindex="0">
+    <h2><span class="flick">Event log</span><span>tail -f</span></h2>
+    <div class="log" id="log" aria-live="off"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canvas = document.getElementById('rain'), ctx = canvas.getContext('2d');
+  var glyphs = 'アカサタナハマヤラワ0123456789ΞΣΔΛ#$%&*+=<>ｦｱｳｴｵｶｷｸｹｺ'.split('');
+  var W, H, DPR, size, cols, drops = [], speeds = [];
+  var spectra = [['#29f6ff', '#ff2bd6'], ['#b6ff3b', '#29f6ff'], ['#ff2bd6', '#ffb02b']];
+  var spec = 0, surge = 0;
+  var mx = -999, my = -999;
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    size = W < 600 ? 14 : 17;
+    cols = Math.ceil(W / size);
+    drops = []; speeds = [];
+    for (var i = 0; i < cols; i++){ drops.push(Math.random() * -H / size); speeds.push(.35 + Math.random() * .75); }
+    ctx.fillStyle = '#03050a'; ctx.fillRect(0, 0, W, H);
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('pointermove', function(e){ mx = e.clientX; my = e.clientY; });
+
+  var acc = 0, last = performance.now();
+  function draw(now){
+    var dt = now - last; last = now; acc += dt;
+    var step = reduce ? 140 : 40;
+    if (acc >= step){
+      acc = 0;
+      ctx.fillStyle = 'rgba(3,5,10,' + (reduce ? .3 : .12) + ')';
+      ctx.fillRect(0, 0, W, H);
+      ctx.font = size + 'px ui-monospace, Menlo, Consolas, monospace';
+      ctx.textBaseline = 'top';
+      var c = spectra[spec];
+      var boost = 1 + surge * 2.2;
+      for (var i = 0; i < cols; i++){
+        var x = i * size, y = drops[i] * size;
+        var ch = glyphs[(Math.random() * glyphs.length) | 0];
+        var near = Math.abs(x - mx) < 70 && Math.abs(y - my) < 140;
+        ctx.fillStyle = near ? '#ffffff' : (i % 7 === 0 ? c[1] : c[0]);
+        ctx.globalAlpha = near ? 1 : .85;
+        ctx.fillText(ch, x, y);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#eaffff';
+        if (Math.random() > .985) ctx.fillText(ch, x, y);
+        drops[i] += speeds[i] * boost * (reduce ? .6 : 1);
+        if (y > H && Math.random() > .972) drops[i] = Math.random() * -8;
+      }
+      surge *= .975;
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();
+  requestAnimationFrame(draw);
+
+  // HUD data
+  var $ = function(id){ return document.getElementById(id); };
+  var bars = $('bars'), barEls = [];
+  for (var b = 0; b < 18; b++){ var i = document.createElement('i'); bars.appendChild(i); barEls.push(i); }
+  var log = $('log');
+  var lines = ['handshake ORIN-4 accepted','rerouting packets via tower 12','mesh node 7-ALBA nominal','storm cell drifting north-east',
+    'decrypting municipal beacon','integrity check passed','phantom packet quarantined','grid lamp 0x3F restored','new rain front detected'];
+  function addLog(text, fresh){
+    var p = document.createElement('p'); p.textContent = text;
+    if (fresh) p.className = 'new';
+    log.appendChild(p);
+    while (log.children.length > 6) log.removeChild(log.firstChild);
+    Array.prototype.forEach.call(log.children, function(n){ if (n !== p) n.className = ''; });
+  }
+  for (var k = 0; k < 5; k++) addLog(lines[k]);
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var d = new Date();
+    $('clock').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    var rate = Math.round(1800 + Math.random() * 600 + surge * 4000);
+    $('rate').textContent = rate.toLocaleString('en-US') + ' /s';
+    var integ = 94 + Math.random() * 5 - surge * 12;
+    $('integ').textContent = integ.toFixed(1) + '%';
+    $('dens').textContent = surge > .4 ? 'Torrential' : (rate > 2200 ? 'Heavy' : 'Moderate');
+    $('threat').textContent = surge > .4 ? 'Crimson' : (integ < 96 ? 'Amber' : 'Calm');
+    barEls.forEach(function(el, j){
+      var v = 20 + Math.random() * 70 + surge * 30;
+      el.style.height = Math.min(100, v) + '%';
+    });
+    var lat = Math.round(24 + Math.random() * 40 + surge * 60);
+    $('lat').innerHTML = lat + '<small>ms</small>';
+    $('latArc').setAttribute('stroke-dashoffset', (157 - Math.min(157, lat * 1.4)).toFixed(1));
+  }
+  tick();
+  setInterval(tick, 1000);
+  setInterval(function(){ addLog(lines[(Math.random() * lines.length) | 0], true); }, 2600);
+
+  $('surge').addEventListener('click', function(){
+    surge = 1; addLog('SURGE: rain density spike injected', true); tick();
+  });
+  $('palette').addEventListener('click', function(){
+    spec = (spec + 1) % spectra.length;
+    var c = spectra[spec];
+    document.documentElement.style.setProperty('--cyan', c[0]);
+    document.documentElement.style.setProperty('--mag', c[1]);
+    addLog('spectrum shifted to ' + ['cyan/magenta', 'lime/cyan', 'magenta/amber'][spec], true);
+  });
+})();
+</script>
+</body>
+</html>

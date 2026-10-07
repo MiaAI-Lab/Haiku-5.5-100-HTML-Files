@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signal Loss: Datamosh Slices</title>
+<style>
+:root{--ink:#07070a;--paper:#ecebe4;--mag:#ff2bd6;--cy:#21f3ff;--lime:#c6ff3d;--dim:#62626e;--line:#24242c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--paper)}
+body{font-family:"Helvetica Neue",Arial,sans-serif;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased}
+#noise{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:0;opacity:.5;mix-blend-mode:screen}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:18px clamp(16px,4vw,48px) 72px}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,"Courier New",monospace}
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;font-size:11px;line-height:1.4;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:12px}
+.bar b{color:var(--lime);font-weight:600}
+.rec::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mag);margin-right:8px;vertical-align:1px;animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.meter{display:inline-flex;align-items:center;gap:8px}
+.meter i{display:block;width:72px;height:6px;background:var(--line);position:relative;overflow:hidden}
+.meter i::after{content:"";position:absolute;inset:0;transform-origin:left;transform:scaleX(var(--k,0));background:linear-gradient(90deg,var(--cy),var(--mag))}
+.mosh{position:relative;overflow:hidden;outline:none;cursor:crosshair;-webkit-tap-highlight-color:transparent}
+.mosh:focus-visible{outline:2px solid var(--lime);outline-offset:5px}
+.mosh .slice{position:absolute;inset:0;pointer-events:none;will-change:transform}
+.mosh.key::after{content:"";position:absolute;inset:0;background:var(--paper);mix-blend-mode:difference;animation:key .22s ease-out forwards;pointer-events:none;z-index:5}
+@keyframes key{from{opacity:1}to{opacity:0}}
+.hero{margin-top:clamp(28px,6vw,64px)}
+.hero .src{background:var(--ink) repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);padding:clamp(18px,3vw,32px) 0}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--cy)}
+h1{font:900 clamp(66px,17vw,224px)/.8 "Arial Black","Helvetica Neue",Impact,sans-serif;letter-spacing:-.045em;margin:.18em 0 .12em;text-transform:uppercase}
+h1 span{display:block}
+h1 .b{color:transparent;-webkit-text-stroke:2px var(--paper);padding-left:.5em}
+h1 .b em{font-style:normal;color:var(--mag);-webkit-text-stroke:0}
+.lede{max-width:34em;font-size:clamp(15px,1.6vw,18px);line-height:1.55;color:#b9b8b0}
+.lede strong{color:var(--paper);font-weight:600;background:linear-gradient(transparent 62%,rgba(255,43,214,.45) 62%)}
+.hint{margin-top:22px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.hint kbd{font:inherit;color:var(--lime);border:1px solid var(--line);padding:2px 6px}
+.frames{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);margin-top:clamp(40px,7vw,80px)}
+.frame .src{background:#0c0c11;border:1px solid var(--line);transition:border-color .3s cubic-bezier(.2,.8,.2,1)}
+.frame.on .src{border-color:var(--mag)}
+.art{position:relative;aspect-ratio:4/5;overflow:hidden}
+.a1{background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 7px),radial-gradient(circle at 50% 63%,#ffd23d 0 19%,transparent 19.5%),linear-gradient(180deg,#1d0638 0%,#7a138f 38%,#ff2bd6 56%,#ff8a3d 70%,#0b0b14 70.4%,#200f38 100%)}
+.a1::after{content:"";position:absolute;left:0;right:0;bottom:0;height:29.6%;background:repeating-linear-gradient(180deg,transparent 0 9px,rgba(255,43,214,.55) 9px 10px)}
+.a2{background:radial-gradient(ellipse 70% 40% at 50% 100%,rgba(33,243,255,.55),transparent 70%),linear-gradient(180deg,#05202c,#021017 70%,#03070a)}
+.a2::before{content:"";position:absolute;left:36%;right:36%;top:28%;bottom:18%;background:linear-gradient(180deg,#eafcff,#21f3ff 60%,#0a7d8a);box-shadow:0 0 60px 10px rgba(33,243,255,.45)}
+.a2::after{content:"";position:absolute;left:44%;width:9%;top:52%;bottom:18%;background:#030a0d;border-radius:40% 40% 0 0}
+.a3{background:conic-gradient(from 148deg at 50% 44%,#15151c 0 64deg,transparent 64deg),linear-gradient(180deg,#0b0b12 0%,#2b2b3a 44%,#0f0f15 44.2%)}
+.a3::before{content:"";position:absolute;left:49%;width:2%;top:44%;bottom:0;background:repeating-linear-gradient(180deg,var(--lime) 0 6%,transparent 6% 14%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%)}
+.a3::after{content:"";position:absolute;left:0;right:0;top:20%;height:9%;background:repeating-linear-gradient(90deg,#ff2bd6 0 3px,transparent 3px 26px);opacity:.6;filter:blur(1px)}
+.cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:12px 14px 14px}
+.cap h2{font:700 clamp(16px,1.7vw,19px)/1.15 "Helvetica Neue",Arial,sans-serif;letter-spacing:-.01em}
+.cap span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.note{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-top:clamp(48px,8vw,96px);padding-top:24px;border-top:1px solid var(--line)}
+.note h3{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mag);font-weight:600}
+.note p{font:400 clamp(20px,2.6vw,30px)/1.3 Georgia,"Times New Roman",serif;color:var(--paper)}
+.note p em{color:var(--cy)}
+footer{margin-top:40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+@media (max-width:760px){.frames{grid-template-columns:minmax(0,1fr)}.art{aspect-ratio:16/11}.note{grid-template-columns:minmax(0,1fr)}h1 .b{padding-left:.2em}}
+@media (prefers-reduced-motion:reduce){.rec::before{animation:none}.mosh.key::after{animation-duration:.01s}}
+</style>
+</head>
+<body>
+<canvas id="noise" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="bar mono">
+    <span class="rec">CH&nbsp;31 / <b>Live feed</b></span>
+    <span class="meter">Corruption <i id="meterBar"></i> <b id="meterTxt">04%</b></span>
+    <span id="tc">00:00:00:00</span>
+  </div>
+
+  <section class="mosh hero" role="group" tabindex="0" data-slices="11" aria-label="Signal Loss title, hover or focus to corrupt">
+    <div class="src">
+      <p class="kicker mono">Codec failure studies, vol. 3</p>
+      <h1><span>Signal</span><span class="b">L<em>o</em>ss</span></h1>
+      <p class="lede">A gallery of pictures that forgot their keyframes. Each image is cut into horizontal bands that slip, smear and change colour the moment your attention lands on it. <strong>Look closer and it breaks further.</strong></p>
+      <p class="hint mono">Hover to corrupt &middot; click or <kbd>Enter</kbd> to force a keyframe</p>
+    </div>
+  </section>
+
+  <div class="frames">
+    <div class="mosh frame" role="group" tabindex="0" data-slices="9" aria-label="Frame one, Sunset Codec">
+      <div class="src"><div class="art a1"></div><div class="cap"><h2>Sunset Codec</h2><span class="mono">I-frame 0x3A</span></div></div>
+    </div>
+    <div class="mosh frame" role="group" tabindex="0" data-slices="9" aria-label="Frame two, The Blue Room">
+      <div class="src"><div class="art a2"></div><div class="cap"><h2>The Blue Room</h2><span class="mono">P-frame 0x7F</span></div></div>
+    </div>
+    <div class="mosh frame" role="group" tabindex="0" data-slices="9" aria-label="Frame three, Highway Zero">
+      <div class="src"><div class="art a3"></div><div class="cap"><h2>Highway Zero</h2><span class="mono">B-frame 0x1F</span></div></div>
+    </div>
+  </div>
+
+  <section class="note">
+    <h3 class="mono">On datamoshing</h3>
+    <p>When a compressor loses its keyframe, the motion vectors keep working anyway. They push <em>yesterday's pixels</em> across today's picture, and the result is neither image, but the drag between them.</p>
+  </section>
+
+  <footer class="mono"><span>Vectorfield Broadcast Archive</span><span>No signal is ever fully lost</span></footer>
+</div>
+<script>
+(function(){
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var moshes = Array.prototype.slice.call(document.querySelectorAll('.mosh'));
+  var FILTERS = ['none','none','none','invert(1)','hue-rotate(110deg) saturate(3)','contrast(2.4) saturate(2)','hue-rotate(-70deg) brightness(1.4)'];
+  var anyOn = 0;
+
+  function reslice(m, active){
+    var s = m._s, n = s.length, cuts = [], total = 0, i;
+    for(i=0;i<n;i++){ var h = active ? (Math.random()<.3 ? .3+Math.random()*.6 : 1+Math.random()*2.2) : 1; cuts.push(h); total += h; }
+    var y = 0, amp = m.clientWidth * (m.classList.contains('hero') ? .07 : .12);
+    for(i=0;i<n;i++){
+      var top = y/total*100; y += cuts[i]; var bot = 100 - y/total*100;
+      var el = s[i];
+      el.style.clipPath = 'inset(' + top.toFixed(2) + '% 0 ' + Math.max(0,bot).toFixed(2) + '% 0)';
+      if(active && Math.random() < .72){
+        var big = Math.random() < .35;
+        var dx = (Math.random()-.5) * 2 * amp * (big ? 1 : .22);
+        el.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,0,0)' + (Math.random()<.12 ? ' scaleX(1.08)' : '');
+        el.style.filter = FILTERS[(Math.random()*FILTERS.length)|0];
+      } else {
+        el.style.transform = 'none';
+        el.style.filter = 'none';
+      }
+    }
+  }
+
+  function setOn(m, v){
+    if(m._on === v) return;
+    m._on = v; anyOn += v ? 1 : -1;
+    m.classList.toggle('on', v);
+    if(!v){ reslice(m,false); }
+    else if(RM.matches){ reslice(m,true); }
+  }
+
+  function keyframe(m){
+    m.classList.remove('key'); void m.offsetWidth; m.classList.add('key');
+    m._hold = performance.now() + 380;
+    reslice(m,false);
+    setTimeout(function(){ m.classList.remove('key'); }, 260);
+  }
+
+  moshes.forEach(function(m){
+    var src = m.querySelector('.src'), n = +m.dataset.slices || 9;
+    m._s = []; m._on = false; m._next = 0; m._hold = 0;
+    for(var i=0;i<n;i++){
+      var c = src.cloneNode(true);
+      c.classList.add('slice'); c.setAttribute('aria-hidden','true');
+      m.appendChild(c); m._s.push(c);
+    }
+    reslice(m,false);
+    m.addEventListener('pointerenter', function(e){ if(e.pointerType !== 'touch') setOn(m,true); });
+    m.addEventListener('pointerleave', function(e){ if(e.pointerType !== 'touch') setOn(m,false); });
+    m.addEventListener('focus', function(){ setOn(m,true); });
+    m.addEventListener('blur', function(){ setOn(m,false); });
+    m.addEventListener('pointerup', function(e){
+      if(e.pointerType === 'touch'){ var v = !m._on; moshes.forEach(function(o){ if(o!==m) setOn(o,false); }); setOn(m,v); }
+      else keyframe(m);
+    });
+    m.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); keyframe(m); } });
+  });
+
+  /* noise canvas */
+  var cv = document.getElementById('noise'), cx = cv.getContext('2d');
+  var W, H, img, buf, K = .06, last = 0, t0 = performance.now();
+  var MAG = (255<<24)|(214<<16)|(43<<8)|255, CY = (255<<24)|(255<<16)|(243<<8)|33;
+  function size(){
+    var d = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.max(40, Math.ceil(innerWidth * d / 7)); H = Math.max(40, Math.ceil(innerHeight * d / 7));
+    cv.width = W; cv.height = H;
+    img = cx.createImageData(W, H); buf = new Uint32Array(img.data.buffer);
+    draw(K);
+  }
+  function draw(k){
+    var dens = .05 + k * .5, i = 0;
+    for(var y=0;y<H;y++){
+      var band = Math.random() < .02 + k * .06, tint = Math.random() < .5 ? MAG : CY;
+      var rowD = band ? .55 : dens;
+      for(var x=0;x<W;x++,i++){
+        if(Math.random() < rowD){
+          if(band && Math.random() < .7) buf[i] = tint;
+          else { var v = (40 + Math.random() * 180 * (.4 + k)) | 0; if(v>255) v=255; buf[i] = (255<<24)|(v<<16)|(v<<8)|v; }
+        } else buf[i] = 0;
+      }
+    }
+    cx.putImageData(img, 0, 0);
+    var smears = (k * 16) | 0;
+    for(var s=0;s<smears;s++){
+      var bw = 6 + Math.random() * W * .35, bh = 2 + Math.random() * H * .12;
+      var sx = Math.random() * (W - bw), sy = Math.random() * (H - bh);
+      cx.drawImage(cv, sx, sy, bw, bh, sx + (Math.random()-.5) * W * .2, sy + (Math.random()-.5) * 6, bw, bh);
+    }
+  }
+
+  var meterBar = document.getElementById('meterBar'), meterTxt = document.getElementById('meterTxt'), tc = document.getElementById('tc');
+  function pad(n){ return (n<10?'0':'') + n; }
+  function loop(now){
+    var target = anyOn > 0 ? 1 : .06;
+    K += (target - K) * .06;
+    meterBar.style.setProperty('--k', K.toFixed(3));
+    meterTxt.textContent = pad(Math.round(K*99)) + '%';
+    var el = (now - t0) / 1000;
+    tc.textContent = pad((el/3600|0)%24) + ':' + pad((el/60|0)%60) + ':' + pad((el|0)%60) + ':' + pad((el*25|0)%25);
+    if(!RM.matches){
+      if(now - last > 33){ last = now; draw(K); }
+      for(var i=0;i<moshes.length;i++){
+        var m = moshes[i];
+        if(m._on && now > m._hold && now > m._next){ reslice(m,true); m._next = now + 45 + Math.random() * 110; }
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize', function(){ size(); moshes.forEach(function(m){ reslice(m, m._on && RM.matches); }); });
+  size();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

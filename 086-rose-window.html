@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rose Window of Saint Ondine</title>
+<style>
+:root{--ink:#efe6d4;--muted:#a3957d;--gold:#d8b25a;--tint:255,214,150}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#070605}
+body{min-height:100vh;overflow-x:hidden;color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+background:radial-gradient(90% 60% at 50% 18%,rgba(var(--tint),.10),transparent 70%),radial-gradient(130% 90% at 50% 0%,#28201a 0%,#110e0b 55%,#060504 100%);transition:background 1.2s ease}
+.nave{max-width:1180px;margin:0 auto;padding:24px 16px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:26px;align-items:center}
+@media(min-width:900px){.nave{grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr);padding:44px 32px 72px;gap:56px}}
+header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px 24px;border-bottom:1px solid rgba(216,178,90,.22);padding-bottom:16px}
+.kicker{font-variant:small-caps;text-transform:lowercase;letter-spacing:.24em;font-size:.86rem;color:var(--muted)}
+h1{font-weight:400;font-size:clamp(2rem,6.4vw,3.7rem);line-height:.98;letter-spacing:-.012em}
+h1 em{color:var(--gold);font-style:italic}
+.stage{position:relative;width:100%;max-width:620px;margin:0 auto}
+.halo{position:absolute;inset:-8%;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--tint),.22),rgba(var(--tint),.05) 60%,transparent);pointer-events:none;transition:background 1.2s ease}
+.win{position:relative;aspect-ratio:1;width:100%}
+#rose{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+.grain{position:absolute;inset:2.4%;border-radius:50%;mix-blend-mode:multiply;opacity:.55;pointer-events:none;background-size:180px}
+.pane{cursor:pointer;stroke:#0c0a08;stroke-width:2.2;transition:stroke .25s ease,stroke-width .25s ease}
+.pane:focus{outline:none}
+.pane:focus-visible,.pane.sel{stroke:#ffe3a1;stroke-width:3.4}
+.deco{pointer-events:none;stroke:#0c0a08;stroke-width:1.6}
+.stone{fill:none;stroke:#3d342b;pointer-events:none}
+.floor{position:relative;height:110px;margin-top:-6px;perspective:420px;overflow:hidden;pointer-events:none;-webkit-mask:linear-gradient(#000 20%,transparent);mask:linear-gradient(#000 20%,transparent)}
+.pool{position:absolute;left:-25%;width:150%;top:-30%;height:150%;transform:rotateX(66deg);transform-origin:50% 0;filter:blur(16px);opacity:.75;
+background:radial-gradient(closest-side at 22% 40%,rgba(179,18,46,.7),transparent),radial-gradient(closest-side at 40% 55%,rgba(30,63,174,.75),transparent),radial-gradient(closest-side at 55% 35%,rgba(242,193,78,.6),transparent),radial-gradient(closest-side at 70% 60%,rgba(19,119,90,.6),transparent),radial-gradient(closest-side at 84% 42%,rgba(91,42,134,.7),transparent)}
+.ledger{position:relative;padding:26px 22px 24px;border:1px solid rgba(216,178,90,.3);background:linear-gradient(160deg,rgba(40,32,25,.72),rgba(14,11,9,.85));box-shadow:0 30px 60px -30px #000,inset 0 1px 0 rgba(255,235,190,.06)}
+.ledger::before,.ledger::after{content:"";position:absolute;width:14px;height:14px;border:1px solid var(--gold)}
+.ledger::before{top:-5px;left:-5px;border-right:0;border-bottom:0}
+.ledger::after{bottom:-5px;right:-5px;border-left:0;border-top:0}
+.num{font-style:italic;color:var(--gold);font-size:3.2rem;line-height:1;float:right;margin:-6px 0 0 12px;opacity:.85}
+.ledger h2{font-weight:400;font-size:clamp(1.5rem,3.6vw,2.1rem);line-height:1.1;margin:10px 0 12px}
+.ledger p.d{color:#d8ccb4;line-height:1.65;font-size:1.04rem}
+.ledger .swap{transition:opacity .35s ease,transform .35s ease}
+.ledger.fade .swap{opacity:0;transform:translateY(6px)}
+.hours{display:flex;margin-top:22px;border:1px solid rgba(216,178,90,.35);border-radius:999px;padding:3px;gap:3px}
+.hours button{flex:1;font:inherit;font-variant:small-caps;text-transform:lowercase;letter-spacing:.16em;font-size:.92rem;color:var(--muted);background:none;border:0;border-radius:999px;padding:9px 6px;cursor:pointer;transition:color .3s,background .3s}
+.hours button:hover{color:var(--ink)}
+.hours button:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.hours button[aria-pressed="true"]{background:linear-gradient(180deg,#e2c072,#a8823a);color:#1a130b}
+.hint{margin-top:14px;font-size:.88rem;color:var(--muted);font-style:italic}
+footer{grid-column:1/-1;text-align:center;color:#6f6453;font-size:.82rem;letter-spacing:.18em;font-variant:small-caps;text-transform:lowercase}
+</style>
+</head>
+<body>
+<main class="nave">
+  <header>
+    <div>
+      <p class="kicker">Abbey of Saint Ondine &middot; north transept</p>
+      <h1>The <em>Rose</em> of the Hours</h1>
+    </div>
+    <p class="kicker">Glazed c. 1241 &middot; thirty-seven lights</p>
+  </header>
+  <div>
+    <div class="stage">
+      <div class="halo"></div>
+      <div class="win">
+        <svg id="rose" viewBox="-210 -210 420 420" role="group" aria-label="Stained glass rose window; each light can be selected">
+          <defs>
+            <radialGradient id="sun" gradientUnits="userSpaceOnUse" cx="0" cy="-120" r="175">
+              <stop id="s0" offset="0" stop-color="rgb(255,214,150)" stop-opacity=".62"/>
+              <stop id="s1" offset=".45" stop-color="rgb(255,214,150)" stop-opacity=".16"/>
+              <stop offset="1" stop-color="#000" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="rim" cx="0" cy="0" r="1">
+              <stop offset=".9" stop-color="#4a4036"/>
+              <stop offset="1" stop-color="#1b1712"/>
+            </radialGradient>
+          </defs>
+          <circle r="202" fill="#15110d"/>
+          <g id="glass"></g>
+          <g id="tracery"></g>
+          <circle r="186" fill="url(#sun)" pointer-events="none" style="mix-blend-mode:screen"/>
+        </svg>
+        <div class="grain" id="grain"></div>
+      </div>
+      <div class="floor"><div class="pool" id="pool"></div></div>
+    </div>
+  </div>
+  <aside class="ledger" id="ledger" aria-live="polite">
+    <div class="swap">
+      <span class="num" id="num">&#8224;</span>
+      <p class="kicker" id="ring">A wheel of light</p>
+      <h2 id="ttl">Read the window as the monks did</h2>
+      <p class="d" id="desc">At the heart sits the oculus, the eye of morning. Around it turn the twelve signs of heaven; beyond them, in tall lancets, the twelve labours of the year; between the lancets, the virtues that hold the wheel together. Select any light to hear what it was made to say.</p>
+    </div>
+    <div class="hours" role="group" aria-label="Hour of the light">
+      <button type="button" data-h="lauds" aria-pressed="false">Lauds</button>
+      <button type="button" data-h="sext" aria-pressed="true">Sext</button>
+      <button type="button" data-h="vespers" aria-pressed="false">Vespers</button>
+    </div>
+    <p class="hint">Move across the glass to carry the sun. Tab and Enter work too.</p>
+  </aside>
+  <footer>Lead, iron, pot-metal glass &middot; restored in the year of the long frost</footer>
+</main>
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg";
+var svg=document.getElementById("rose"),glass=document.getElementById("glass"),trac=document.getElementById("tracery");
+var C={ruby:"#b3122e",cobalt:"#1e3fae",emerald:"#13775a",amber:"#e09a1c",violet:"#5b2a86",rose:"#c2416b",azure:"#2f86c9",gold:"#f2c14e"};
+var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var panes=[];
+function mk(tag,a,p){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);(p||glass).appendChild(e);return e}
+function add(tag,a,color,cx,cy,info){
+  a.fill=color;
+  if(info){a["class"]="pane";a.tabindex="0";a.role="button";a["aria-label"]=info.r+": "+info.t}else a["class"]="deco";
+  var e=mk(tag,a);panes.push({e:e,cx:cx,cy:cy,info:info,ph:Math.random()*6.283,o:-1});return e}
+var zod=[["Aries","The ram turns the year toward spring; his fleece was glazed in the costliest ruby."],["Taurus","The bull of plough-time, shoulders set against the hard April earth."],["Gemini","Two brothers holding one shield, for the long light that is shared."],["Cancer","The crab walks backward as the sun turns back from its height."],["Leo","The lion of high summer, his mane leaded in nine pieces of amber."],["Virgo","The maiden with a sheaf, keeper of the first cut grain."],["Libra","The scales that weigh the day against the night and find them equal."],["Scorpio","The scorpion of the falling leaf, a small cold sting of autumn."],["Sagittarius","The archer looses his arrow toward the shortest day."],["Capricorn","The sea-goat climbs from the dark water into a new year."],["Aquarius","The water-bearer pours the winter rains over the sleeping fields."],["Pisces","Two fish bound by a cord, swimming in opposite directions toward spring."]];
+var lab=[["January","Feasting at a long table while snow fills the cloister."],["February","Warming bare feet at the fire, boots steaming on the hearth."],["March","Pruning the vines with a hooked knife in a thin wind."],["April","Gathering the first flowers for the altar of the north chapel."],["May","Riding out with a hawk on the wrist, the hedges loud with birds."],["June","Mowing hay in long rows, the scythe glazed in a single blade of white."],["July","Reaping wheat with sickles, a jug of cider cooling in the shade."],["August","Threshing on the barn floor, the chaff glittering like dust in a beam."],["September","Treading grapes barefoot in a vat, the juice a stain of violet."],["October","Sowing the winter wheat from a fold of the cloak."],["November","Driving the swine into the oak wood to fatten on acorns."],["December","Baking bread for the long nights; the oven glows gold at the hem."]];
+var vir=["Faith","Hope","Charity","Prudence","Justice","Fortitude","Temperance","Patience","Humility","Constancy","Mercy","Wisdom"];
+var virD=["who sees the morning before it comes","who keeps a lamp for the traveller","who breaks the loaf in two","who measures twice and cuts once","who holds the scales level","who stands in the doorway in a storm","who leaves the cup half full","who waits through the whole of winter","who kneels lowest in the choir","who returns at every hour","who opens the gate at night","who reads the window and understands it"];
+function rad(d){return (d-90)*Math.PI/180}
+/* backing fields */
+add("circle",{r:179},"#22103a",0,0,null);
+add("circle",{r:91},"#0d2466",0,0,null);
+/* outer gold beads */
+for(var i=0;i<24;i++){var a=rad(i*15+7.5);add("circle",{cx:185*Math.cos(a),cy:185*Math.sin(a),r:4.6},C.gold,185*Math.cos(a),185*Math.sin(a),null)}
+/* lancets with labours */
+for(i=0;i<12;i++){
+  var ang=i*30,a2=rad(ang),mx=134*Math.cos(a2),my=134*Math.sin(a2);
+  var g=mk("g",{transform:"rotate("+ang+")"});
+  var info={r:"Labour of the month",t:lab[i][0],d:lab[i][1],n:i+1};
+  var col=i%2?C.cobalt:C.ruby;
+  var p=document.createElementNS(NS,"path");
+  p.setAttribute("d","M-15 -96 L-15 -140 Q-15 -163 0 -172 Q15 -163 15 -140 L15 -96 Z");
+  p.setAttribute("fill",col);p.setAttribute("class","pane");p.setAttribute("tabindex","0");p.setAttribute("role","button");p.setAttribute("aria-label",info.r+": "+info.t);
+  g.appendChild(p);panes.push({e:p,cx:mx,cy:my,info:info,ph:Math.random()*6.283,o:-1});
+  var c=document.createElementNS(NS,"circle");
+  c.setAttribute("cy","-146");c.setAttribute("r","8.5");c.setAttribute("fill",i%2?C.gold:C.emerald);c.setAttribute("class","deco");g.appendChild(c);
+  panes.push({e:c,cx:146*Math.cos(a2),cy:146*Math.sin(a2),info:null,ph:Math.random()*6.283,o:-1});
+  var c2=document.createElementNS(NS,"rect");
+  c2.setAttribute("x","-6");c2.setAttribute("y","-122");c2.setAttribute("width","12");c2.setAttribute("height","20");c2.setAttribute("rx","6");c2.setAttribute("fill",i%2?C.azure:C.rose);c2.setAttribute("class","deco");g.appendChild(c2);
+  panes.push({e:c2,cx:112*Math.cos(a2),cy:112*Math.sin(a2),info:null,ph:Math.random()*6.283,o:-1});
+}
+/* virtues between lancets */
+for(i=0;i<12;i++){var a3=rad(i*30+15),x=160*Math.cos(a3),y=160*Math.sin(a3);
+  add("circle",{cx:x,cy:y,r:14},i%2?C.violet:C.emerald,x,y,{r:"Virtue",t:vir[i],d:vir[i]+", "+virD[i]+".",n:i+1})}
+/* zodiac ring */
+for(i=0;i<12;i++){var a4=rad(i*30+15),zx=66*Math.cos(a4),zy=66*Math.sin(a4);
+  add("circle",{cx:zx,cy:zy,r:21},i%2?C.azure:C.rose,zx,zy,{r:"Sign of heaven",t:zod[i][0],d:zod[i][1],n:i+1})}
+/* oculus */
+add("circle",{r:40},C.amber,0,0,{r:"The oculus",t:"The Eye of Morning",d:"The only clear-gold light in the window. At Sext on midsummer day it throws a coin of fire onto the abbot's chair, and the bells are rung by it.",n:"I"});
+add("circle",{r:17},C.ruby,0,0,null);
+/* stone tracery */
+[[41,3.4],[91,4],[179,4],[195,13]].forEach(function(s){mk("circle",{r:s[0],"stroke-width":s[1],"class":"stone"},trac)});
+mk("circle",{r:201,fill:"none",stroke:"#5a4d3f","stroke-width":1.2,"pointer-events":"none"},trac);
+for(i=0;i<12;i++){var a5=rad(i*30);mk("line",{x1:41*Math.cos(a5),y1:41*Math.sin(a5),x2:91*Math.cos(a5),y2:91*Math.sin(a5),"class":"stone","stroke-width":2.4},trac)}
+
+/* glass grain texture, generated once */
+(function(){var cv=document.createElement("canvas");cv.width=cv.height=180;var x=cv.getContext("2d"),im=x.createImageData(180,180);
+for(var k=0;k<im.data.length;k+=4){var v=200+Math.random()*55;im.data[k]=v;im.data[k+1]=v*.97;im.data[k+2]=v*.92;im.data[k+3]=255}
+x.putImageData(im,0,0);x.globalAlpha=.08;for(k=0;k<90;k++){x.fillStyle="#000";x.beginPath();x.arc(Math.random()*180,Math.random()*180,Math.random()*9+2,0,7);x.fill()}
+document.getElementById("grain").style.backgroundImage="url("+cv.toDataURL()+")"})();
+
+/* ledger */
+var led=document.getElementById("ledger"),elR=document.getElementById("ring"),elT=document.getElementById("ttl"),elD=document.getElementById("desc"),elN=document.getElementById("num");
+var sel=null,swapT;
+function choose(p){
+  if(sel)sel.e.classList.remove("sel");sel=p;p.e.classList.add("sel");
+  led.classList.add("fade");clearTimeout(swapT);
+  swapT=setTimeout(function(){elR.textContent=p.info.r;elT.textContent=p.info.t;elD.textContent=p.info.d;elN.textContent=p.info.n;led.classList.remove("fade")},reduce?0:220);
+  target.x=p.cx;target.y=p.cy;held=performance.now();
+  if(reduce){sun.x=p.cx;sun.y=p.cy;frame(held,true)}
+}
+panes.forEach(function(p){if(!p.info)return;
+  p.e.addEventListener("click",function(){choose(p)});
+  p.e.addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();choose(p)}});
+});
+
+/* hours */
+var H={lauds:{x:-120,y:-70,t:"255,170,170"},sext:{x:0,y:-110,t:"255,214,150"},vespers:{x:115,y:60,t:"255,150,70"}};
+var hour=H.sext,root=document.documentElement,s0=document.getElementById("s0"),s1=document.getElementById("s1");
+function setHour(k){hour=H[k];root.style.setProperty("--tint",hour.t);s0.setAttribute("stop-color","rgb("+hour.t+")");s1.setAttribute("stop-color","rgb("+hour.t+")");
+  document.querySelectorAll(".hours button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.h===k?"true":"false")});
+  held=0;if(reduce){sun.x=hour.x;sun.y=hour.y;frame(performance.now(),true)}}
+document.querySelectorAll(".hours button").forEach(function(b){b.addEventListener("click",function(){setHour(b.dataset.h)})});
+
+/* light */
+var sun={x:0,y:-110},target={x:0,y:-110},held=0,grad=document.getElementById("sun"),pool=document.getElementById("pool");
+svg.addEventListener("pointermove",function(e){var r=svg.getBoundingClientRect();target.x=(e.clientX-r.left)/r.width*420-210;target.y=(e.clientY-r.top)/r.height*420-210;held=performance.now();if(reduce){sun.x=target.x;sun.y=target.y;frame(held,true)}});
+function frame(t,once){
+  var idle=t-held>2600;
+  if(idle){target.x=hour.x+Math.cos(t*.00023)*48;target.y=hour.y+Math.sin(t*.00031)*34}
+  if(!reduce){sun.x+=(target.x-sun.x)*.05;sun.y+=(target.y-sun.y)*.05}
+  grad.setAttribute("cx",sun.x.toFixed(1));grad.setAttribute("cy",sun.y.toFixed(1));
+  for(var i=0;i<panes.length;i++){var p=panes[i],dx=p.cx-sun.x,dy=p.cy-sun.y;
+    var gl=Math.exp(-(dx*dx+dy*dy)/16200);
+    var sh=reduce?0:Math.sin(t*.0009+p.ph)*.05;
+    var o=p===sel?1:Math.min(1,.36+.62*gl+sh);
+    if(Math.abs(o-p.o)>.004){p.e.style.opacity=o.toFixed(3);p.o=o}}
+  pool.style.transform="rotateX(66deg) translateX("+(sun.x*.35).toFixed(1)+"px)";
+  if(!once&&!reduce)requestAnimationFrame(frame);
+}
+if(reduce){frame(0,true)}else requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

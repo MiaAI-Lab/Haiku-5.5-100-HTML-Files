@@ -1,0 +1,23 @@
+Prompt:
+Build a standalone HTML page, "paper-plane-path": a scroll-driven story of one paper plane's flight across an afternoon sky. Background is a fixed vertical gradient from pale sky blue #cfe3f1 through #e3eef5 to peach #fbe9dc. Seven soft white CSS clouds (pill shapes with pseudo-element puffs) are scattered at random depths and drift upward at different parallax rates as you scroll.
+A fixed, full-viewport SVG layer sits above the clouds and below nothing interactive. In it, JavaScript builds a looping flight route from normalized points scaled to the current viewport (one set of points for landscape, another for portrait), converted from Catmull-Rom to cubic Bezier segments. The route is drawn as a faint navy dotted line; a coral (#ef6a4c) trail path on the same geometry is revealed with stroke-dashoffset as you progress. A folded paper plane built from three SVG paths (white top, pale grey underside, navy fold lines) is placed with getPointAtLength, rotated to the path tangent, mirrored vertically when heading left so it never flies upside down, and gently bobs. A soft ellipse shadow tracks beneath it, darker as the plane gets lower. Small waypoint dots at 20/40/60/80% fill coral as they are passed. Plane position eases toward scroll progress with a lerp in requestAnimationFrame. The route is rebuilt on resize.
+Content: six full-height sections. The hero has a huge Georgia headline "One sheet, one afternoon." with the second line italic coral, a short paragraph about a fictional "Ledgerline" notepaper sheet, and an animated dripping line with "Scroll to launch". Five chapter cards (Fold, Launch, Updraft, Loop, Landing) alternate left and right on desktop and center on phones; each is translucent paper with backdrop blur, a dog-eared top-right corner, a coral tracked uppercase step label in Avenir Next / Helvetica Neue, an italic Georgia heading, and short narrative copy. Cards rise and fade in via IntersectionObserver. The last card has a pill "Fold another" button with a springy tilt hover that scrolls back to the top.
+A right-edge HUD (desktop only) shows an "ALT" label, a thin coral progress gauge, and a three-digit monospace altitude derived from the plane's height.
+Reduced motion: no smooth scroll, no bob, no easing, no card transitions.
+
+Title: Flightpath
+
+Description:
+A light, airy scrollytelling page in pastel sky tones where the reader's scroll literally flies a paper plane along a looping dotted route. The coral trail inks itself behind the plane, clouds drift in parallax, and five dog-eared paper cards narrate the plane's afternoon from the first crease to a skid across a hopscotch square. Serif italics and clean geometric sans give it a picture-book-meets-editorial feel.
+
+Visual techniques:
+- Fixed full-viewport SVG with a JS-generated Catmull-Rom to Bezier flight path scaled to the viewport
+- getPointAtLength and tangent sampling to position and rotate the plane
+- stroke-dashoffset trail reveal tied to scroll progress
+- Lerped requestAnimationFrame loop for smooth easing and a gentle bob
+- Parallax CSS clouds built from pseudo-elements
+- IntersectionObserver card reveals with backdrop-filter glass paper and dog-ear corners
+- Altitude HUD gauge and waypoint markers that change state as they are passed
+
+Interaction model:
+Scrolling down flies the plane forward along the route and scrolling up flies it back, with smooth easing. Cards fade in as each chapter arrives. The altitude HUD and waypoint dots track progress. At the end, the "Fold another" button scrolls back to the top so the flight can be replayed.

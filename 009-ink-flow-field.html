@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Currents in Ink — Flow Field</title>
+<style>
+:root{--paper:#ece7dc;--ink:#1d2340;--mute:#6c6a63;--seal:#b8352a;--line:rgba(29,35,64,.18);--ease:cubic-bezier(.3,1.3,.5,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--paper);color:var(--ink);font-family:"Courier New",ui-monospace,Menlo,monospace;-webkit-font-smoothing:antialiased}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background:radial-gradient(circle at 20% 30%,rgba(120,100,60,.08),transparent 40%),radial-gradient(circle at 80% 75%,rgba(120,100,60,.07),transparent 45%),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.012) 0 1px,transparent 1px 3px)}
+.title{position:fixed;left:clamp(16px,4vw,48px);top:clamp(16px,4vw,44px);pointer-events:none;max-width:min(420px,80vw)}
+.title small{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+.title h1{font-family:Georgia,"Iowan Old Style",serif;font-style:italic;font-weight:400;font-size:clamp(34px,6.5vw,72px);line-height:.95;letter-spacing:-.02em;margin:8px 0 12px}
+.title p{font-family:Georgia,serif;font-size:14px;line-height:1.6;color:var(--mute);max-width:32ch}
+.seal{position:fixed;right:clamp(16px,4vw,48px);top:clamp(16px,4vw,44px);width:54px;height:54px;border:2px solid var(--seal);color:var(--seal);display:grid;place-items:center;
+  font-family:Georgia,serif;font-size:11px;line-height:1.05;text-align:center;letter-spacing:.08em;transform:rotate(-4deg);border-radius:4px;pointer-events:none;opacity:.85}
+.panel{position:fixed;left:50%;bottom:clamp(14px,3vw,28px);transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px;
+  background:rgba(236,231,220,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 30px -12px rgba(29,35,64,.35);max-width:calc(100vw - 24px)}
+.panel button{font:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:transparent;border:0;border-radius:999px;padding:9px 12px;cursor:pointer;transition:background .3s,color .3s,transform .4s var(--ease);white-space:nowrap}
+.panel button:hover{background:rgba(29,35,64,.08)}
+.panel button:active{transform:scale(.94)}
+.panel button:focus-visible{outline:1px solid var(--ink);outline-offset:2px}
+.dot{width:26px;height:26px;padding:0!important;border:2px solid transparent!important;background:var(--c)!important;background-clip:content-box!important}
+.dot[aria-pressed="true"]{border-color:var(--ink)!important}
+.sep{width:1px;height:20px;background:var(--line)}
+.hint{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);pointer-events:none;transition:opacity 1.2s;white-space:nowrap}
+.hint.gone{opacity:0}
+.count{position:fixed;right:clamp(16px,4vw,48px);bottom:clamp(20px,3vw,36px);font-size:11px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase;pointer-events:none}
+@media (max-width:640px){.count{display:none}.title p{display:none}.hint{bottom:70px;font-size:10px}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Ink particles drifting along a flow field; click to add whirlpools"></canvas>
+<div class="grain"></div>
+<div class="title">
+  <small>Study 09 · Suminagashi engine</small>
+  <h1>Currents<br>in Ink</h1>
+  <p>Thousands of hairline strokes follow an invisible river. Press the paper to set a whirlpool spinning and watch the ink bend around it.</p>
+</div>
+<div class="seal" aria-hidden="true">FLOW<br>墨<br>2026</div>
+<div class="hint" id="hint">Click to place a vortex · again to reverse</div>
+<div class="count" id="count">0 vortices</div>
+<div class="panel" role="toolbar" aria-label="Ink controls">
+  <button class="dot" type="button" style="--c:#1d2340" data-c="29,35,64" aria-pressed="true" aria-label="Indigo ink"></button>
+  <button class="dot" type="button" style="--c:#5a3a22" data-c="90,58,34" aria-pressed="false" aria-label="Sepia ink"></button>
+  <button class="dot" type="button" style="--c:#b8352a" data-c="184,53,42" aria-pressed="false" aria-label="Vermilion ink"></button>
+  <span class="sep"></span>
+  <button type="button" id="calm">Still water</button>
+  <button type="button" id="clear">New sheet</button>
+</div>
+<script>
+(()=>{
+  const cv=document.getElementById("c"),ctx=cv.getContext("2d");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W,H,dpr,P=[],vort=[],t=0,rgb="29,35,64";
+  const countEl=document.getElementById("count"),hint=document.getElementById("hint");
+  function resize(){
+    dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.fillStyle="#ece7dc";ctx.fillRect(0,0,W,H);
+    const n=Math.round(Math.min(2600,W*H/(reduce?900:420)));
+    P=[];for(let i=0;i<n;i++)P.push(spawn());
+  }
+  function spawn(){return{x:Math.random()*W,y:Math.random()*H,life:60+Math.random()*240,w:.3+Math.random()*.9};}
+  // smooth pseudo-noise angle field from layered sines
+  function field(x,y){
+    const s=.0026;
+    return Math.sin(x*s+t*.13)*1.6+Math.cos(y*s*1.3-t*.09)*1.4+Math.sin((x+y)*s*.7+t*.05)*1.1+Math.cos(Math.hypot(x-W*.5,y-H*.5)*s*.9-t*.07);
+  }
+  function step(){
+    t+=reduce?.15:1/60*3;
+    ctx.fillStyle=reduce?"rgba(236,231,220,.03)":"rgba(236,231,220,.018)";ctx.fillRect(0,0,W,H);
+    ctx.lineCap="round";
+    const speed=reduce?.6:1.4;
+    ctx.strokeStyle=`rgba(${rgb},.16)`;
+    ctx.beginPath();
+    for(const p of P){
+      const a=field(p.x,p.y);let vx=Math.cos(a)*speed,vy=Math.sin(a)*speed;
+      for(const v of vort){
+        const dx=p.x-v.x,dy=p.y-v.y,d2=dx*dx+dy*dy+400,f=v.s*v.k*2600/d2;
+        vx+=-dy*f*.06;vy+=dx*f*.06;
+        const pull=v.k*90/d2;vx-=dx*pull*.02;vy-=dy*pull*.02;
+      }
+      const nx=p.x+vx,ny=p.y+vy;
+      ctx.moveTo(p.x,p.y);ctx.lineTo(nx,ny);
+      p.x=nx;p.y=ny;p.life--;
+      if(p.life<0||p.x<-10||p.x>W+10||p.y<-10||p.y>H+10){Object.assign(p,spawn());}
+    }
+    ctx.lineWidth=.8;ctx.stroke();
+    // vortex markers: thin rings that settle
+    for(const v of vort){
+      v.k+=(v.target-v.k)*.04;v.ring+=(1-v.ring)*.06;
+      ctx.strokeStyle=`rgba(184,53,42,${.5*v.k})`;ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(v.x,v.y,6+14*(1-v.ring)+ (reduce?0:Math.sin(t*1.5+v.x)*1.5),0,Math.PI*2);ctx.stroke();
+    }
+    vort=vort.filter(v=>!(v.target===0&&v.k<.02));
+    requestAnimationFrame(step);
+  }
+  function setCount(){const n=vort.filter(v=>v.target>0).length;countEl.textContent=n+(n===1?" vortex":" vortices");}
+  cv.addEventListener("pointerdown",e=>{
+    const x=e.clientX,y=e.clientY;
+    const near=vort.find(v=>Math.hypot(v.x-x,v.y-y)<26&&v.target>0);
+    if(near){near.s*=-1;near.ring=0;}
+    else{vort.push({x,y,s:vort.length%2?-1:1,k:0,target:1,ring:0});const live=vort.filter(v=>v.target>0);if(live.length>9){live[0].target=0;}}
+    hint.classList.add("gone");setCount();
+    // ink drop
+    ctx.fillStyle=`rgba(${rgb},.5)`;ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();
+  });
+  document.querySelectorAll(".dot").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(".dot").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");rgb=b.dataset.c;
+  }));
+  document.getElementById("calm").addEventListener("click",()=>{vort.forEach(v=>v.target=0);setCount();});
+  document.getElementById("clear").addEventListener("click",()=>{ctx.fillStyle="#ece7dc";ctx.fillRect(0,0,W,H);});
+  let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(resize,150);});
+  resize();requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>

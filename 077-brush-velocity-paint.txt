@@ -1,0 +1,24 @@
+Prompt:
+Build a standalone HTML page called "Quickhand Atelier": a full-screen canvas brushstroke painting studio where brush width follows pointer velocity. Mood: a calm painter's studio on warm, toothy paper. Palette: paper cream (#f2ebdd) with a soft white light pool top-left, a warm umber shadow bottom-right and a fine fractal-noise grain from an inline data-URI SVG feTurbulence tile; ink brown text (#2a221b), muted taupe labels (#8a7a66). Pigments, all invented names: Persimmon #d9502b, Prussian #1f3b63, Ochre #c48a1c, Viridian #2f7a5f, Madder #9c2342 and Lamp Black #1d1a17. The selected pigment becomes the page accent (CSS variable). Typography: Iowan Old Style / Palatino / Georgia in italic for display, small caps for meta lines, and Helvetica Neue / Arial for the toolbar.
+
+Layout: two stacked fixed canvases fill the viewport. Top-left masthead "Quickhand Atelier" in large italic (the second word takes the pigment color) with a small-caps line "study no. 7 · N strokes". Top-right is a "wrist pace" gauge: a dotted semicircular SVG dial with a springy needle, a word state (at rest, lingering, flowing, darting) and a dot whose diameter previews the current brush width. Centered empty state: "Paint with pace." with a one-sentence explanation and an SVG brush line that draws itself in a loop; it lifts and fades on the first stroke. A floating pill toolbar sits bottom center with blob-shaped pigment swatches (asymmetric border-radius, inner highlights, hover wobble and lift, a small dot under the selected one), a brush-size slider, an italic toggle between "speed thins" and "speed swells", and Undo, Wash and Keep buttons. On phones the toolbar wraps into rows and the gauge moves above it.
+
+Stroke engine: pointer events with coalesced events. Velocity is smoothed in px/ms; the target width is base*(0.14 + 1.25/(1+1.5v)) in thin mode, or the inverse in swell mode; width eases toward the target. Each segment is a filled quad between perpendicular offsets of the two widths plus a round dab. Eleven per-stroke random bristles cut thin destination-out streaks along the stroke, stronger as the brush speeds up and as its load of pigment runs dry over about 2600px of travel, which gives a dry-brush finish. The live stroke is drawn opaque on its own canvas shown at 0.9 opacity with multiply blend; on pointerup it is composited onto the paint canvas with multiply at 0.9 alpha so overlapping strokes deepen like glazes. Canvases are sized to devicePixelRatio and the painting is kept on resize.
+
+Extras: an undo stack of up to 8 canvas snapshots (Ctrl or Cmd+Z), Wash fades and blurs the sheet away before clearing, and Keep exports a PNG on a paper-colored background through toBlob. Keys 1 to 6 pick pigments, and [ and ] change the size. Under prefers-reduced-motion the hint line is static, Wash clears instantly and UI transitions are removed.
+
+Title: Quickhand Atelier
+
+Description: A quiet painting studio on warm grained paper where the speed of your wrist is the brush. Slow, lingering strokes bloom wide and saturated. Quick flicks narrow to dry, streaky lines with visible bristle texture as the pigment runs out. Strokes glaze over one another with multiply blending, so color builds up like real paint. A small italic masthead, a needle gauge of wrist pace and a floating pill of blob-shaped pigment swatches frame the sheet without crowding it.
+
+Visual techniques:
+- Dual DPR-aware canvases: an opaque live stroke layer shown with multiply, then composited onto the paint layer
+- Velocity-smoothed variable-width ribbon built from quads and round dabs
+- Per-stroke bristle offsets erased with destination-out for dry-brush streaks, driven by speed and pigment load
+- Inline SVG feTurbulence paper grain as a data URI with layered radial-gradient lighting
+- Springy needle gauge in SVG and a live width-preview dot
+- Organic swatches from asymmetric border-radius with spring-eased hover morphs
+- Self-drawing SVG stroke empty state using stroke-dashoffset
+- Undo snapshots, an animated wash clear and PNG export via toBlob
+
+Interaction model: Press and drag anywhere to paint. Moving slowly makes broad, wet strokes and moving quickly makes thin, dry ones; the toggle reverses this so speed swells the brush. Pick a pigment from the swatches or with keys 1 to 6, change the brush with the slider or the bracket keys, step back with Undo or Ctrl/Cmd+Z, Wash the sheet clean, or Keep it as a PNG download.

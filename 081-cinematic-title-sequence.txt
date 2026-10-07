@@ -1,0 +1,19 @@
+Prompt:
+Build a standalone HTML page for "cinematic-title-sequence": a letter-by-letter cinematic title reveal that continues as the viewer scrolls. Frame it as the opening of a fictional 1950s film, "The Lantern Keeper", from an invented studio, Halvard Pictures. Palette: near-black stage (#050505), warm lantern amber (#e8b56a) for accents, bone white (#efe6d6) for type, and a muted taupe (#7d7366) for secondary labels. Typography: a high-contrast Didone serif stack (Didot, Bodoni 72, Bodoni MT, Iowan Old Style, Georgia) for titles and names, widely tracked uppercase Helvetica Neue/Arial for small credit roles and HUD labels. Layout: fixed black letterbox bars at top and bottom that start at 9vh and ease open to 6vh after load; a small HUD row inside the frame showing "Reel 01" and a running 24fps timecode; a thin amber progress hairline riding on the bottom bar. Content is a vertical sequence of full-viewport scenes, each centered: the main title card (kicker plus "The / LANTERN / KEEPER"), an italic epigraph about the sea forgetting the shore, four credit cards (Starring, With, Music by, Written and Directed by) with invented names, and an end card "Only in the dark / Winter, 1954" with a "Roll it again" button. Motion: JavaScript splits every text element into per-character spans; when a scene crosses 45 percent visibility, characters fade in from blur(14px), slight upward offset and 1.08 scale with long cubic-bezier(.2,.7,.1,1) easing, staggered per letter and sequenced per element so the kicker resolves before the title. A soft amber radial glow behind each scene fades in and flickers like a lantern. Under each credit an amber hairline draws outward. Atmosphere comes from a stepped CSS film-grain layer made of repeating radial gradients and a dark vignette. A "Scroll to continue" cue appears after the title resolves with a dripping amber line. Scenes un-light when scrolled back above, so they re-reveal. Reduced motion: no grain jitter, no flicker, no blur or transform, just quick fades without stagger. Accessibility: split elements carry aria-label with the original text and character spans are aria-hidden.
+
+Title: The Lantern Keeper Titles
+
+Description: A moody opening-credits sequence for an invented mid-century film. Black letterbox bars frame the screen while serif letters condense out of blur one at a time, as if focusing through a projector lens. Each scroll step brings a new card into the lantern-lit center: the title, an epigraph, and the cast and crew credits. Grain, vignette, a ticking timecode and an amber progress hairline make it feel like a real reel being projected.
+
+Visual techniques:
+- Per-character span splitting with staggered transition delays sequenced across elements
+- Blur, scale and translate transitions with long custom cubic-bezier easing
+- IntersectionObserver-driven scene lighting that resets when scrolling back up
+- Fixed letterbox bars that animate open after load
+- Stepped CSS keyframe film grain from repeating radial gradients, plus a radial vignette
+- Flickering amber radial glow behind each scene
+- Hairline rules that draw outward under credits
+- requestAnimationFrame timecode at 24 frames per second and a scroll progress line
+- Reduced-motion fallback that removes grain, flicker, blur and stagger
+
+Interaction model: The viewer scrolls down through the sequence; each full-screen scene reveals its letters as it comes into view and goes dark again if scrolled back past. The timecode runs continuously and the amber hairline tracks scroll progress. At the end, the "Roll it again" button resets the timecode and scrolls back to the top so the whole sequence replays.

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halcyon Night Camera</title>
+<style>
+:root{
+  --bg:#0c0c10;--card:#15151b;--card2:#1a1a22;--line:rgba(255,255,255,.08);--text:#ededf2;--muted:#8d8d9c;
+  --violet:#a78bfa;--cyan:#5eead4;--lime:#d9f99d;--hue:260;
+  --sans:"Helvetica Neue",Helvetica,"Segoe UI",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(60% 40% at 50% -5%,hsla(var(--hue),80%,60%,.16),transparent 70%)}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(40px,7vw,96px) 16px 64px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+.tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 12px;border-radius:999px;margin-bottom:20px}
+.tag i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}
+h1{font-size:clamp(38px,6vw,72px);line-height:1;letter-spacing:-.035em;font-weight:600;max-width:720px}
+h1 span{background:linear-gradient(90deg,var(--violet),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.top p{max-width:340px;color:var(--muted);line-height:1.6;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(190px,auto);gap:14px}
+.card{
+  position:relative;border-radius:22px;background:linear-gradient(180deg,var(--card2),var(--card));padding:24px;overflow:hidden;
+  border:1px solid var(--line);outline:none;isolation:isolate;
+  transition:transform .5s var(--ease);
+  --mx:-999px;--my:-999px;
+}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:radial-gradient(340px circle at var(--mx) var(--my),hsla(var(--hue),95%,72%,.95),hsla(calc(var(--hue) + 60),90%,65%,.35) 30%,transparent 60%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;opacity:0;transition:opacity .5s var(--ease);
+  background:radial-gradient(520px circle at var(--mx) var(--my),hsla(var(--hue),90%,70%,.11),transparent 45%)}
+.grid:hover .card::after,.card:focus-visible::after{opacity:1}
+.card:hover{transform:translateY(-3px)}
+.card:focus-visible{box-shadow:0 0 0 2px hsla(var(--hue),90%,72%,.8)}
+.k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card h2{font-size:clamp(20px,2vw,24px);letter-spacing:-.02em;font-weight:600;margin:8px 0 6px}
+.card p{color:var(--muted);font-size:14px;line-height:1.55;max-width:420px}
+.c-hero{grid-column:span 4;grid-row:span 2;display:flex;flex-direction:column;justify-content:flex-end;min-height:400px}
+.c-hero svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.c-hero h2{font-size:clamp(26px,3.2vw,40px)}
+.trails{transform-origin:72% 18%;animation:turn 120s linear infinite}
+@keyframes turn{to{transform:rotate(360deg)}}
+.c-dial,.c-hist,.c-stat,.c-lock,.c-quote,.c-batt{grid-column:span 2}
+.dial{position:absolute;right:-30px;bottom:-30px;width:170px;height:170px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.35) 0 .6deg,transparent .6deg 7.5deg);
+  -webkit-mask:radial-gradient(circle,transparent 58%,#000 59%,#000 70%,transparent 71%);mask:radial-gradient(circle,transparent 58%,#000 59%,#000 70%,transparent 71%);
+  transition:transform 1.2s var(--ease)}
+.c-dial:hover .dial{transform:rotate(-48deg)}
+.big{font-size:clamp(44px,5vw,64px);font-weight:600;letter-spacing:-.04em;line-height:1;margin-top:10px;font-variant-numeric:tabular-nums}
+.big small{font-size:.35em;color:var(--muted);letter-spacing:0;margin-left:6px;font-weight:400}
+.bars{display:flex;align-items:flex-end;gap:3px;height:74px;margin-top:16px}
+.bars i{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(var(--cyan),hsla(var(--hue),80%,60%,.4));transform-origin:bottom;transition:transform .9s var(--ease)}
+.lock{position:absolute;right:22px;top:22px;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.c-quote blockquote{font-size:17px;line-height:1.5;letter-spacing:-.01em}
+.c-quote cite{display:block;margin-top:14px;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.meter{height:10px;border-radius:999px;background:rgba(255,255,255,.06);margin-top:18px;overflow:hidden}
+.meter b{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--lime),var(--cyan));transition:width 1.6s var(--ease)}
+.in .meter b{width:82%}
+.foot{margin-top:28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;font-family:var(--mono)}
+.btn{display:inline-flex;gap:10px;align-items:center;margin-top:18px;padding:12px 18px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:600;font-size:14px;text-decoration:none;border:0;cursor:pointer;font-family:inherit;transition:transform .3s var(--ease),box-shadow .3s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 30px -10px hsla(var(--hue),90%,70%,.9)}
+.btn:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+.card{opacity:0;transform:translateY(16px)}
+.grid.ready .card{opacity:1;transform:none;transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.grid.ready .card:hover{transform:translateY(-3px)}
+@media (max-width:900px){.grid{grid-template-columns:repeat(4,1fr)}.c-hero{grid-column:span 4}}
+@media (max-width:600px){.grid{grid-template-columns:1fr}.c-hero,.c-dial,.c-hist,.c-stat,.c-lock,.c-quote,.c-batt{grid-column:span 1}.c-hero{grid-row:span 1;min-height:360px}}
+@media (prefers-reduced-motion:reduce){.trails{animation:none}.card,.grid.ready .card{opacity:1;transform:none;transition:none}.bars i,.meter b,.dial{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="tag"><i></i>Halcyon 3 · now shooting</div>
+      <h1>The camera that <span>waits for the dark.</span></h1>
+    </div>
+    <p>Halcyon is a fictional night-photography app that stacks a hundred short exposures into one clean frame. Move your cursor across the grid; each tile lights up like a sensor catching starlight.</p>
+  </div>
+  <div class="grid" id="grid">
+    <article class="card c-hero" tabindex="0">
+      <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><linearGradient id="hz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0c10" stop-opacity="0"/><stop offset="1" stop-color="#0c0c10"/></linearGradient></defs>
+        <g class="trails" id="trails" fill="none" stroke-linecap="round"></g>
+        <path d="M0 330 L120 290 L210 312 L330 260 L450 300 L560 270 L680 305 L800 280 L800 400 L0 400Z" fill="#0f0f15"/>
+        <rect width="800" height="400" fill="url(#hz)"/>
+      </svg>
+      <span class="k">Starstack engine</span>
+      <h2>Ninety seconds of sky,<br>one frame of silence.</h2>
+      <p>Hold still, press once. Halcyon aligns the stars as the earth turns and quietly removes the noise between them.</p>
+      <div><a class="btn" href="#grid" id="shoot">Try a stack <span aria-hidden="true">→</span></a></div>
+    </article>
+    <article class="card c-dial" tabindex="0">
+      <span class="k">Exposure</span>
+      <div class="big" id="exp">30<small>sec</small></div>
+      <p>Auto-bracketing from 1/4 s to 30 s, chosen by the light it finds.</p>
+      <div class="dial" aria-hidden="true"></div>
+    </article>
+    <article class="card c-hist" tabindex="0">
+      <span class="k">Live histogram</span>
+      <div class="bars" id="bars" aria-hidden="true"></div>
+    </article>
+    <article class="card c-stat" tabindex="0">
+      <span class="k">Dynamic range</span>
+      <div class="big"><span id="stops">0</span><small>stops</small></div>
+      <p>Moonlit cliffs and a lit window, both holding detail.</p>
+    </article>
+    <article class="card c-lock" tabindex="0">
+      <div class="lock" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9f99d" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+      <span class="k">On-device</span>
+      <h2>Your sky stays yours.</h2>
+      <p>Every stack is processed on the phone. Nothing leaves unless you send it.</p>
+    </article>
+    <article class="card c-quote" tabindex="0">
+      <blockquote>"I stood on a jetty for two minutes and came home with the Milky Way over my grandmother's lighthouse."</blockquote>
+      <cite>Teodor V., amateur astronomer</cite>
+    </article>
+    <article class="card c-batt" tabindex="0" id="batt">
+      <span class="k">Battery-aware</span>
+      <h2>A full night, 82% left.</h2>
+      <p>The sensor sleeps between frames, so a long session barely dents the charge.</p>
+      <div class="meter" aria-hidden="true"><b></b></div>
+    </article>
+  </div>
+  <div class="foot"><span>Halcyon Optics is an invented studio.</span><span>Spotlight hue follows your cursor.</span></div>
+</div>
+<script>
+(function(){
+  var grid=document.getElementById('grid'),cards=[].slice.call(grid.querySelectorAll('.card')),root=document.documentElement;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var px=-9999,py=-9999,queued=false;
+  function paint(){
+    queued=false;
+    for(var i=0;i<cards.length;i++){var r=cards[i].getBoundingClientRect();cards[i].style.setProperty('--mx',(px-r.left)+'px');cards[i].style.setProperty('--my',(py-r.top)+'px')}
+    root.style.setProperty('--hue',Math.round(250+(px/innerWidth)*-90));
+  }
+  function track(e){px=e.clientX;py=e.clientY;if(!queued){queued=true;requestAnimationFrame(paint)}}
+  window.addEventListener('pointermove',track,{passive:true});
+  window.addEventListener('scroll',function(){if(!queued){queued=true;requestAnimationFrame(paint)}},{passive:true});
+  cards.forEach(function(c){c.addEventListener('focus',function(){var r=c.getBoundingClientRect();px=r.left+r.width*.3;py=r.top+r.height*.2;paint()})});
+
+  var trails=document.getElementById('trails'),ns='http://www.w3.org/2000/svg',cx=576,cy=72;
+  for(var i=0;i<46;i++){
+    var rad=20+Math.random()*560,a0=Math.random()*Math.PI*2,len=.25+Math.random()*.35,p=document.createElementNS(ns,'path');
+    var x1=cx+Math.cos(a0)*rad,y1=cy+Math.sin(a0)*rad,x2=cx+Math.cos(a0+len)*rad,y2=cy+Math.sin(a0+len)*rad;
+    p.setAttribute('d','M'+x1.toFixed(1)+' '+y1.toFixed(1)+' A'+rad.toFixed(1)+' '+rad.toFixed(1)+' 0 0 1 '+x2.toFixed(1)+' '+y2.toFixed(1));
+    var h=Math.random();p.setAttribute('stroke',h<.6?'#e6e6ff':h<.85?'#a78bfa':'#5eead4');
+    p.setAttribute('stroke-width',(Math.random()*1.4+.4).toFixed(2));p.setAttribute('opacity',(Math.random()*.6+.25).toFixed(2));
+    trails.appendChild(p);
+  }
+
+  var bars=document.getElementById('bars'),bi=[];
+  for(var b=0;b<28;b++){var el=document.createElement('i');bars.appendChild(el);bi.push(el)}
+  function hist(){var peak=Math.random()*20+4;bi.forEach(function(el,k){var v=Math.exp(-Math.pow((k-peak)/6,2))*.9+Math.random()*.12+.04;el.style.transform='scaleY('+Math.min(1,v).toFixed(3)+')'})}
+  hist();if(!reduce)setInterval(hist,1600);
+
+  var expEl=document.getElementById('exp'),exps=['1/4','1','4','8','15','30'],ei=5;
+  document.querySelector('.c-dial').addEventListener('pointerenter',function(){ei=(ei+1)%exps.length;expEl.firstChild.nodeValue=exps[ei]});
+
+  var stops=document.getElementById('stops'),done=false;
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return;
+    if(e.target.classList.contains('c-stat')&&!done){done=true;var t0=performance.now();(function run(t){var k=Math.min(1,(t-t0)/1400),v=1-Math.pow(1-k,4);stops.textContent=(v*14.2).toFixed(1);if(k<1)requestAnimationFrame(run)})(reduce?t0+1400:t0)}
+    if(e.target.id==='batt')e.target.classList.add('in');
+  })},{threshold:.4});
+  io.observe(document.querySelector('.c-stat'));io.observe(document.getElementById('batt'));
+
+  document.getElementById('shoot').addEventListener('click',function(e){
+    e.preventDefault();var t=e.currentTarget;t.firstChild.nodeValue='Stacking 100 frames… ';
+    t.style.pointerEvents='none';
+    setTimeout(function(){t.firstChild.nodeValue='Stack complete ';t.style.pointerEvents='';hist();setTimeout(function(){t.firstChild.nodeValue='Try a stack '},1800)},reduce?200:1500);
+  });
+
+  requestAnimationFrame(function(){grid.classList.add('ready');cards.forEach(function(c,i){c.style.transitionDelay=reduce?'0s':(i*70)+'ms';setTimeout(function(){c.style.transitionDelay=''},900+i*70)})});
+})();
+</script>
+</body>
+</html>

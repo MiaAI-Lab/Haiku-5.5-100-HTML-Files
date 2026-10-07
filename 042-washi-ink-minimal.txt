@@ -1,0 +1,34 @@
+PROMPT
+
+Build a single standalone HTML5 page called "SUMI: a study in the weight of ink". It is a quiet, Japanese-inspired minimal composition written in English and laid out in vertical columns that read right to left. The paper and brushwork are generated entirely with inline SVG filters. No images, no web fonts.
+
+Paper: a fixed, full-viewport inline SVG sits behind everything. It holds two rects with feTurbulence filters. The first is a long-fibre layer (fractalNoise, baseFrequency "0.008 0.22") pushed through a feColorMatrix to tinted brown alpha at 18% opacity, giving kozo fibres. The second is a fine speckle layer (baseFrequency 0.85) at 22% for inclusions. The body background is a soft radial gradient of warm washi tones: #f6f0e3 to #f1eadb to #e6dcc8.
+
+Palette: sumi ink #1c1a17, diluted grey #6b655b, a single vermilion seal colour #c63d2b. Nothing else.
+
+Typography: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia. Vertical text uses writing-mode: vertical-rl. The title SUMI uses text-orientation: upright with wide tracking, so the letters stack like a hanging scroll. The italic subtitle, section headings (22px, tracked) and body copy (15.5px, line-height 1.9) use rotated mixed orientation. Section numerals i to iv and the colophon accents are vermilion. The colophon is small uppercase with 0.28em tracking.
+
+Layout: the main element is a horizontal flex row with flex-direction: row-reverse and wrapping, so reading starts at the right. From right to left: the title column with a vermilion hanko seal button beneath it, then a large ensō brush circle with a caption, then four vertical "Four quiet hours" articles, then a vertical colophon. Each article has a fixed block height (min(66vh, 440px)) and contains a numeral, a heading, a hand-drawn vertical brush stroke SVG and a short paragraph. The articles are First Light, The Long Noon, Dusk Wash and Night Ink, each a short aphorism about grinding ink, letting a stroke go, wash and resting the brush. The colophon credits fictional "Kōyō Paper Works, hand-laid kozo, 42 g/m², one colour, one breath". Below 720px the ensō takes a full row and the columns wrap with shorter heights, so nothing scrolls sideways.
+
+Brushwork: there are two filters. "brush" uses feTurbulence plus feDisplacementMap for ragged, bleeding edges. "dry" thresholds streaky turbulence through feColorMatrix and feComposite "in" to punch dry-brush (kasure) gaps, then displaces. Each stroke path uses pathLength="1" and is revealed by animating stroke-dashoffset from 1 to 0 with cubic-bezier(.55,.05,.35,1), staggered per column. The ensō is generated in JS from about 120 points around a slightly wobbling radius, with a random start angle and an 84 to 94% sweep. It has a thick "brush" body path (width 15) and a thinner "dry" tail path (width 7) that runs further, so the stroke ends in a scratchy trail.
+
+Motion and details: the title and subtitle rise in softly. The strokes draw on load. A faint, multiply-blended ink-wash bloom follows a fine pointer with lerp easing, and its rAF loop stops when idle. The seal has a rough displaced edge, rotates slightly on hover and presses down when clicked. Each press leaves a fading vermilion "imprint" with a dry-brush texture below it.
+
+Reduced motion: strokes appear already drawn, entrance animations and the follower are disabled, and the seal imprint is skipped.
+
+Title: Sumi, Weight of Ink
+
+Description: A restrained, scroll-like page on handmade washi. Paper fibres and specks come from SVG turbulence, and ink brush strokes have displaced, dry-brush edges that paint themselves in. English text runs in vertical right-to-left columns: an upright SUMI title, four short meditations on the hours of an ink painter's day, and a colophon. A large ensō circle forms the visual centre and a single vermilion seal provides the only colour. Generous empty space, slow easing and a near-monochrome palette keep it calm and premium.
+
+Visual techniques:
+- Full-page washi texture from two feTurbulence + feColorMatrix SVG filter layers
+- Brush edge filters: feDisplacementMap for bleed and a thresholded turbulence composite for dry-brush gaps
+- Stroke-dashoffset drawing with pathLength="1" and staggered delays
+- Procedurally generated ensō (wobbling radius, random sweep) built from a thick body and a dry tail
+- writing-mode: vertical-rl with an upright title and mixed-orientation body text in a row-reverse flex layout
+- Multiply-blended ink-wash cursor follower with a self-stopping rAF lerp
+- Seal press keyframes and fading multiply "imprint" elements
+- Hover and focus dimming of sibling columns
+- prefers-reduced-motion support
+
+Interaction model: Hovering or focusing a column (each is keyboard-focusable) redraws its brush stroke and lifts it slightly, while the other columns fade back. Clicking the ensō paints a fresh, randomly shaped circle and increments its number in the caption. Clicking the vermilion seal presses it and leaves a fading stamp imprint. On fine-pointer devices a soft ink wash trails the cursor across the paper.

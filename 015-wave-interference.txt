@@ -1,0 +1,37 @@
+PROMPT
+
+Build a standalone HTML page, "Interference", presented as a laboratory ripple tank from an invented instrument maker, Lumen & Hale (Ripple Tank No. 3). The concept is wave-interference: a full-screen canvas interference pattern made by wave sources the user can drag.
+
+Palette: a deep ink-navy tank (#04060f) with selectable "dye" colour maps, each a diverging 256-entry lookup table with smoothstep blending between stops.
+- Abyss (default): troughs ultramarine #2440c4 to #0b1446, still water black #04060f, crests teal #0b5a6c to cyan #58d4e6 to near-white #f0feff.
+- Ember: troughs plum #8a1f66, still water black, crests rust #a63a12 to orange #f39a3a to cream #fff1c9.
+- Paper: still water parchment #efe9dc, crests ink #121110 and troughs blue-grey. The page background switches to match.
+Sources are amber #ffb547 everywhere. Panel text is pale blue-grey #d6e4ee, dim labels #7f93a6, and the constructive and destructive verdicts are cyan #7eeaff and lilac #c9a7ff.
+
+Type: an italic "Iowan Old Style" / Palatino / Georgia serif for the large "Interference" title; "Avenir Next" / Segoe UI / system-ui tracked uppercase for labels and buttons; ui-monospace for every readout, slider value and the hint.
+
+Layout: the canvas fills the viewport (no page scroll). Top left: an amber kicker "Lumen & Hale · Ripple Tank No. 3", the serif title and a one-line mono caption ("Where two crests meet, the water stands up. Where crest meets trough, it goes perfectly still."). Top right: a frosted probe readout showing pointer coordinates, instantaneous and envelope amplitude, the path difference between sources 1 and 2 in wavelengths, and a glowing verdict dot ("constructive · antinode", "destructive · nodal line", "mostly ..."). Bottom left: a 310px frosted "Instrument" panel built as a details/summary disclosure. It holds custom range sliders (wavelength 16 to 90px, wave speed 0 to 3x, phase step 0 to 360 degrees; thin tracks with an amber filled portion and hollow amber thumbs), a Wave / Intensity segmented view switch, a dye switch (Abyss / Ember / Paper), presets (Two point, Array, Ring) and actions (+ Add, − Remove, Still/Flow). A pill hint at the bottom centre ("drag the amber sources · double-click to add one") fades away after the first interaction or after 9 seconds. On phones the panel becomes a full-width bottom sheet that starts collapsed, the probe sits just above it (hidden while the sheet is open), and the caption and hint are hidden.
+
+Simulation: the field is computed on a low-resolution grid (cell size chosen so there are about 42k cells, at least 3px) into an ImageData through a Uint32Array view, then drawn with bilinear smoothing onto a full-screen canvas sized to devicePixelRatio (capped at 2). For each source, a per-cell distance array and an amplitude falloff 1/sqrt(1 + r/70) are cached in Float32Arrays and recomputed only when that source moves or the window resizes. Wave view sums a·sin(k·r − ωt + q·Δφ) over the sources and maps the result to the diverging LUT. Intensity view computes the time-averaged envelope |Σ a·e^{i(k r + qΔφ)}| and maps it from still (dark) to bright, which shows the static nodal lines; it only redraws when something changes. The phase step applies q·Δφ to source q, so the Array preset turns into a steerable phased-array beam.
+
+Markers: each source is an amber ring with its index number on a dark halo, and it grows while hovered or dragged. The selected source gets a dashed outer ring. In wave mode, three faint amber crest rings expand from each source exactly in phase with the field (crest radius = (ωt − qΔφ + π/2)/k mod λ). A small split crosshair marks the probe.
+
+Interaction: drag sources with the pointer (pointer capture, grab and grabbing cursors). Double-click or double-tap empty water to add a source (up to 6). Presets rearrange the sources. Remove deletes the selected one. Still/Flow freezes or resumes time. The canvas is focusable: number keys 1 to 6 select a source and the arrow keys nudge it (Shift for bigger steps). The probe updates about 11 times a second. The canvas fades in on load.
+
+Reduced motion: the page opens in Intensity view (static), and if Wave view is chosen, time runs at 15% speed. Fade transitions are off.
+
+Title: Ripple Tank Interference
+
+Description: A full-bleed scientific instrument for exploring wave interference. Amber point sources sit in a dark tank and send out expanding crests that cross into glowing antinodes and perfectly still nodal lines, rendered as a smooth colour-mapped field. Frosted instrument panels with serif and monospace typography, three dye palettes, a live probe that explains constructive versus destructive interference at the cursor, and phased-array presets make it feel like a premium lab tool rather than a demo.
+
+Visual techniques:
+- Low-resolution field buffer written through a Uint32Array into ImageData, upscaled with smoothing to a devicePixelRatio-sized canvas
+- Cached per-source distance and amplitude Float32Arrays, recomputed only on move or resize
+- A diverging 256-entry colour LUT with smoothstep stops and three palettes
+- An instantaneous wave view and an analytic time-averaged intensity view for nodal lines
+- Phase-stepped sources for beam steering
+- Expanding crest rings on the source markers, synchronised to the field phase
+- Frosted backdrop-filter panels, custom range sliders with filled tracks, and segmented toggles
+- A dirty-flag render loop that idles when the field is static
+
+Interaction model: The user drags the amber sources around the tank and watches the interference pattern reorganise in real time. They double-click or double-tap to add sources, use presets for two-point, linear-array and ring arrangements, and adjust wavelength, speed and phase step from the instrument panel. Hovering anywhere shows the local amplitude and path difference, with a verdict on whether that spot is an antinode or a nodal line. The canvas also works from the keyboard, with number keys to select a source and arrow keys to move it.

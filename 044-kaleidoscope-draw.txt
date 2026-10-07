@@ -1,0 +1,36 @@
+PROMPT
+
+Build a single standalone HTML5 page, "Prismata: a mirror for your hand". It is a full-screen canvas kaleidoscope where every pointer stroke is repeated around the centre into N rotational segments, optionally mirrored, and glows with additive colour on a deep violet-black field.
+
+Canvases: two fixed, full-viewport canvases sized to devicePixelRatio (capped at 2). "art" holds the persistent drawing. "ui" sits on top with pointer-events: none and redraws only on pointer events: faint radial symmetry guides (N spokes, brighter while the pointer is active), a gold centre dot and a ring reticle sized to the brush. On resize the art is copied to an offscreen canvas and redrawn centred, so nothing is lost.
+
+Drawing engine: each pointer move (using getCoalescedEvents when available) creates a segment from the last to the current point relative to the centre. One path is built by applying setTransform plus rotate(k * 2π/N) for every segment, and, when Mirror is on, a scale(1,-1) reflection. That gives up to 32 strokes in a single path. The path is stroked twice with globalCompositeOperation "lighter": a wide 10%-alpha glow pass (3.2 × width) and a bright 85% core pass. Brush width follows pointer speed: fast strokes thin out and slow ones swell, with smoothing. Hue advances with distance travelled, so long gestures sweep through the active palette.
+
+Palettes (cycled by one button with a gradient swatch): Spectrum (full hue wheel), Ember (red to amber), Glacier (cyan to violet), Orchid (magenta to lilac).
+
+Typography and look: the "Prismata" wordmark is italic Didot / Bodoni 72 / Georgia, filled with a pink-gold-cyan-violet gradient. Everything else is ui-monospace / SF Mono / Menlo, uppercase with wide tracking. The background is a radial gradient (#141027 to #0b0916 to #07060d). The top right shows a large serif fold count (segments × 2 when mirrored, labelled "fold symmetry").
+
+Toolbar: a floating frosted-glass pill at bottom centre (backdrop blur and saturate, 1px hairline, deep shadow). It holds a Segments range (3 to 16) with a live value, a Brush range (1 to 12), Mirror and Afterglow toggle buttons with aria-pressed and gold active states, a palette button, Clear and Save. The range thumbs are custom white dots on a pink-to-cyan track. It wraps neatly at 375px.
+
+Empty state: a centred pulsing, rotating gold ring with an inner dashed cyan ring and a glowing core above "Draw anywhere / every stroke becomes many". It fades and scales away on the first stroke and returns after Clear.
+
+Autopilot: after 5 s idle on a blank canvas (12 s once something is drawn), a ghost hand traces a slow Lissajous-style curve through the same engine and a gold "autopilot · touch to take over" label appears. Any pointerdown stops it instantly. Afterglow mode fades the art each frame with a low-alpha destination-out fill, so strokes leave trails. Afterglow and autopilot share one requestAnimationFrame loop that stops itself when neither is active.
+
+Save exports a PNG composited onto the background gradient. Keyboard shortcuts: [ and ] change segments, M toggles mirror, C clears, S saves. With prefers-reduced-motion, autopilot and the hint pulse are disabled.
+
+Title: Prismata Kaleidoscope
+
+Description: A meditative, jewel-toned drawing toy. A full-screen canvas turns each stroke into a rotational, optionally mirrored kaleidoscope pattern with additive neon glow, velocity-sensitive line weight and palette-driven hue drift. A floating glass toolbar controls symmetry, brush, palette, afterglow trails, clearing and PNG export. A gentle autopilot draws on its own when the canvas sits idle. Gradient serif display type and a monospace UI give it a polished studio-instrument feel.
+
+Visual techniques:
+- DPR-aware dual canvases (persistent art plus a lightweight UI/guide overlay) with content-preserving resize
+- Single-path rotational and reflected stroke batching via setTransform/rotate/scale
+- Additive "lighter" compositing with a two-pass glow and core stroke
+- Velocity-mapped, smoothed brush width and distance-driven hue
+- destination-out afterglow fading in a self-stopping requestAnimationFrame loop
+- Parametric autopilot path drawn through the same engine
+- Frosted-glass toolbar with custom range styling and aria-pressed toggles
+- Gradient-clipped serif wordmark and an animated empty-state ring
+- PNG export composited onto the background
+
+Interaction model: Drag with a mouse, pen or finger anywhere to draw, and every stroke is instantly repeated around the centre. Adjust segment count and brush size with the sliders, toggle mirroring and afterglow trails, and cycle palettes. Clear the canvas or save a PNG. Keyboard users can change segments with [ and ], toggle mirror with M, clear with C and save with S. When the canvas is left alone the autopilot draws by itself, and touching the canvas takes back control.

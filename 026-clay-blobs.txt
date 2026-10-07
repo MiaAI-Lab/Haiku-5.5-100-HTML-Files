@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page for "026 clay-blobs: claymorphism soft 3D blobs with spring squish on hover." Make it a fictional studio called Squishworks Clay Studio. Background is warm putty (#f6e9e1) with two faint radial washes (peach top-left, lilac bottom-right). Typography uses a rounded system stack (ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", Nunito, "Trebuchet MS", system-ui), with heavy 800 to 900 weights. Header has a small clay pebble logo and a clay pill button labeled "Reshape the clay". The centered hero has a small uppercase kicker, a huge two-line headline "Press gently. / They press back.", with the second line in peach and stacked text-shadows so it looks extruded. Below it, a 3 by 2 grid (2 by 3 on phones) of six clay blobs: Apricot, Mintleaf, Lavendough, Butterpat, Puddle, Blush, in peach, mint, lilac, butter, sky and rose. Each blob is a button with an organic asymmetric border-radius, layered inset shadows (dark tinted bottom-right, white top-left), a soft drop shadow, a blurred specular highlight pseudo-element, and two little dot eyes that blink flat when squished. Each blob has a name and a one-line personality caption. Motion: a JavaScript spring (stiffness about 0.16, damping about 0.78) drives scaleX/scaleY and a small rotation, transform-origin at the bottom so blobs squash on the floor. Hover widens and flattens a little, click slams it to 1.32 by 0.62 and lets it wobble back, sometimes re-randomizing its border-radius (which eases over 1.2s by CSS transition). An idle timer gives a random blob a tiny jiggle every 1.8s. Below sits a clay tray with a squish counter, an inset groove meter that fills with a peach-rose-lilac gradient with an overshoot easing, and a mood line that changes every five squishes. The Reshape button re-randomizes all shapes in a staggered cascade. Reduced motion: stiffer, heavily damped springs, no idle jiggle, no CSS transitions.
+
+Title: Squishworks Clay Studio
+
+Description: A tactile, pastel claymorphism showcase where six soft 3D blobs sit on a warm putty surface like freshly kneaded modelling clay. Layered inner and outer shadows sell the volume, organic border-radius values give each blob its own lumpy silhouette, and a hand-rolled spring simulation makes every hover and tap feel physical. A clay tray at the bottom tallies squishes and reports the clay's mood, turning a simple shading study into a small, joyful toy.
+
+Visual techniques:
+- Claymorphism via stacked inset box-shadows (tinted shade plus white highlight) and soft drop shadows
+- Organic eight-value border-radius shapes, randomized in JS and eased with CSS transitions
+- Blurred, rotated pseudo-element specular highlights
+- Extruded headline using stacked text-shadows
+- Custom JS spring physics on scaleX, scaleY and rotation with bottom transform origin
+- Inset groove progress meter with overshoot cubic-bezier fill
+- Blinking eyes via scaleY on squish
+- Responsive grid that collapses from three to two columns
+
+Interaction model: Hovering or focusing a blob makes it squash and settle with a springy wobble; clicking or pressing Enter squishes it flat, blinks its eyes, and may give it a new shape as it bounces back. Each squish increments the counter, fills the meter, and updates the mood text. The "Reshape the clay" button remolds all six blobs in a staggered cascade. Idle blobs occasionally jiggle on their own unless reduced motion is requested.

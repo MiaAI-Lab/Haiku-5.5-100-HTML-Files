@@ -1,0 +1,26 @@
+Prompt:
+Build a standalone HTML page called "Cormorant Station Radar": a radar sweep map with generated blips that fade. The setting is a fictional coastal surveillance post, Cormorant Station, watching a Northern Approach with an invented surface-search radar called MK-VII "Heron". Palette: near-black green background (#020a06) under a soft radial green glow (#07301b), phosphor green ink (#7dffb0), pale highlight mint (#d6ffe6), dim green labels (#3f8a60), and a single amber accent (#ffb347) reserved for the locked track. Typography: monospace only (ui-monospace, SF Mono, Menlo, Consolas, Courier New), wide letter-spacing, uppercase labels, small text-shadow glow on the important numbers. A full-page CRT scanline overlay (repeating linear gradient, multiply blend) sits above everything.
+
+Layout: a header bar with station name and a live UTC clock; below, a two-column grid with a large circular scope on the left (square aspect ratio, inside a dark metal bezel built from a conic gradient with a dashed inner ring and a glass highlight overlay) and a 300px instrument column on the right. On screens under 820px the column stacks under the scope. A short evocative paragraph sits at the bottom.
+
+Scope (canvas, sized to devicePixelRatio, rebuilt on ResizeObserver): a static background layer is pre-rendered to an offscreen canvas with a radial green fill, six procedurally wobbled islands drawn in world coordinates (nautical miles) with a faint fill and dashed coastline, four range rings with mile labels, a crosshair, and bearing ticks every 5 degrees with three-digit labels every 30 degrees. Every frame: draw the background, then a 90-degree afterglow wedge made of ~34 thin arc slices whose alpha falls off with a power curve, then a glowing gradient sweep line. Contacts are simulated in nautical miles with slow headings; when the sweep crosses a contact's bearing (angular test against the previous frame's angle) it records an echo position and lights to full brightness, then decays over just over one rotation, so blips glow where they were last heard rather than where they are now. Contact classes: trawler, cargo, skiff, squall (drawn as a large diffuse cloud), buoy (stationary), ferry, unknown. Contacts expire and new ones enter from the edge to keep about 18 in play.
+
+Instrument panels: thin bordered panels with corner brackets. Panel one shows the echo count, live sweep bearing and revolution counter, plus a 12/24/48 nm range toggle (aria-pressed; the active one is a solid green pill with glow) that redraws the islands and rings at the new scale. Panel two is a Track Lock readout (aria-live) showing ID, class, bearing, range, course, speed and echo age for the locked contact, with an empty state that has a tiny animated radar icon and an instruction line. Panel three is a contact log of up to 12 visible echoes as buttons in a stable order, which slide in when new and lock that track on click.
+
+Motion: the sweep takes 4.2 seconds per revolution; the lock reticle (four amber corner brackets, a dashed projected course vector and an ID label) pulses gently; clicks leave an expanding ring. Under prefers-reduced-motion the sweep slows to 16 seconds per revolution, the afterglow uses fewer slices, the reticle stops pulsing and CSS blinks and spinners stop.
+
+Title: Cormorant Station Radar
+
+Description: A phosphor-green radar console for an invented coastal station. A circular scope inside a heavy bezel sweeps the bay and paints islands, range rings and bearing ticks. Echoes from trawlers, squalls and buoys light up as the beam passes and fade before it comes round again. A cool instrument column with corner-bracketed panels tracks the echo count, the bearing and a selectable track lock. The whole page sits under a fine scanline veil, and amber is used for the one contact the operator is watching.
+
+Visual techniques:
+- Canvas 2D with devicePixelRatio scaling and an offscreen pre-rendered static layer
+- Procedural coastlines from summed sine perturbations in world coordinates
+- Afterglow wedge built from alpha-graded arc slices; glowing gradient sweep line with shadowBlur
+- Radial-gradient blips with per-contact decay; echo positions frozen at detection time
+- Amber lock reticle with corner brackets and a dashed course projection
+- Conic-gradient metal bezel, glass highlight overlay and a CSS scanline overlay with multiply blend
+- Keyed DOM diffing for the contact log so rows animate in without rebuilding the list
+- Reduced-motion mode with a slower sweep, simpler afterglow and no blinking
+
+Interaction model: Hovering near an echo on the scope highlights it with a ring and label. Clicking an echo locks the track, which turns it amber and fills the Track Lock panel with live bearing, range, course and speed. Clicking empty water leaves a ping ring and releases the lock. The range buttons rescale the map between 12, 24 and 48 nautical miles. Contact log rows also lock tracks. With the scope focused from the keyboard, L or Enter locks the echo nearest the center and Escape releases it.

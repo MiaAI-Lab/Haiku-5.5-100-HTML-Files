@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Marlow Evening Courier</title>
+<style>
+:root{
+  --paper:#f1ead9;
+  --paper2:#e7dec7;
+  --ink:#1b1814;
+  --soft:#5b5246;
+  --red:#a3261b;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --mast:"Old English Text MT","Engravers Old English","Blackletter",Georgia,serif;
+  --cond:"Arial Narrow","Helvetica Neue Condensed","Franklin Gothic Medium",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#2c2822;color:var(--ink);font-family:var(--serif);padding:24px 12px 72px}
+.sheet{max-width:1120px;margin:0 auto;padding:22px clamp(14px,3vw,38px) 40px;position:relative;
+  background:
+    radial-gradient(ellipse at 20% 10%,rgba(255,255,255,.35),transparent 50%),
+    radial-gradient(ellipse at 80% 90%,rgba(120,90,40,.12),transparent 55%),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.018) 0 1px,transparent 1px 3px),
+    var(--paper);
+  box-shadow:0 30px 60px rgba(0,0,0,.45),0 2px 0 var(--paper2)}
+.sheet::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.08),transparent);pointer-events:none}
+.ears{display:flex;justify-content:space-between;align-items:center;gap:12px;font:600 10px/1.3 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.ears span{max-width:30%}
+.ears .box{border:1px solid var(--ink);padding:6px 8px;text-align:center}
+.mast{text-align:center;font-family:var(--mast);font-weight:400;font-size:clamp(38px,9vw,104px);line-height:1;margin:10px 0 6px;letter-spacing:.01em}
+.dateline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;border-top:3px double var(--ink);border-bottom:1px solid var(--ink);padding:6px 0;font:600 11px/1.2 var(--cond);letter-spacing:.12em;text-transform:uppercase}
+.edition{display:flex;gap:4px}
+.edition button{font:inherit;letter-spacing:inherit;text-transform:inherit;background:none;border:1px solid transparent;color:var(--soft);padding:2px 8px;cursor:pointer;transition:color .2s,border-color .2s}
+.edition button:hover,.edition button:focus-visible{color:var(--ink);border-color:var(--ink);outline:none}
+.edition button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lead{padding:18px 0 14px;border-bottom:1px solid var(--ink);text-align:center;position:relative}
+.lead .kick{font:700 12px/1 var(--cond);letter-spacing:.3em;text-transform:uppercase;color:var(--red)}
+.lead h1{font-size:clamp(30px,6.6vw,78px);line-height:.98;font-weight:700;letter-spacing:-.01em;margin:10px auto 10px;max-width:16ch}
+.lead .deck{font-style:italic;font-size:clamp(15px,2vw,20px);color:var(--soft);max-width:60ch;margin:0 auto}
+.lead.press h1,.lead.press .deck,.lead.press .kick{animation:press .7s cubic-bezier(.3,1.4,.5,1)}
+@keyframes press{0%{opacity:0;transform:scale(1.18);filter:blur(3px)}60%{opacity:1;filter:blur(0)}100%{transform:none}}
+.stamp{position:absolute;right:4%;top:14px;font:700 13px/1 var(--cond);letter-spacing:.2em;color:var(--red);border:2px solid var(--red);padding:6px 10px;transform:rotate(8deg);opacity:0}
+.lead.press .stamp{animation:stamp .9s cubic-bezier(.2,1.6,.4,1) .25s forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(8deg) scale(2.4)}100%{opacity:.85;transform:rotate(8deg) scale(1)}}
+.grid{display:grid;grid-template-columns:1fr;gap:0;margin-top:14px}
+@media(min-width:820px){.grid{grid-template-columns:2.1fr 1fr}}
+.main{columns:1;column-gap:26px;column-rule:1px solid rgba(27,24,20,.35);padding-right:0}
+@media(min-width:560px){.main{columns:2}}
+@media(min-width:820px){.main{padding-right:24px;border-right:1px solid var(--ink)}}
+.main p{font-size:15px;line-height:1.55;text-align:justify;hyphens:auto;margin-bottom:.8em}
+.main p:first-of-type::first-letter{float:left;font-size:4.2em;line-height:.8;padding:.06em .08em 0 0;font-weight:700}
+.byline{font:700 11px/1.3 var(--cond);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;break-after:avoid}
+.fig{break-inside:avoid;margin:4px 0 14px}
+.fig svg{width:100%;height:auto;display:block;border:1px solid var(--ink)}
+.fig figcaption{font-size:12px;font-style:italic;color:var(--soft);margin-top:4px}
+aside{padding-top:18px}
+@media(min-width:820px){aside{padding:0 0 0 24px}}
+.brief{border-bottom:1px solid rgba(27,24,20,.4);padding:0 0 14px;margin-bottom:14px;cursor:pointer}
+.brief h3{font-size:19px;line-height:1.15;margin-bottom:6px;background:linear-gradient(var(--ink),var(--ink)) 0 100%/0 1px no-repeat;display:inline;transition:background-size .45s cubic-bezier(.6,0,.2,1)}
+.brief:hover h3,.brief:focus-visible h3{background-size:100% 1px}
+.brief:focus-visible{outline:2px solid var(--red);outline-offset:4px}
+.brief p{font-size:14px;line-height:1.5;color:var(--soft);margin-top:6px;max-height:0;overflow:hidden;transition:max-height .5s ease}
+.brief .tease{max-height:6em}
+.brief.open p{max-height:14em}
+.brief small{font:700 10px/1 var(--cond);letter-spacing:.2em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:6px}
+.weather{border:2px solid var(--ink);padding:12px;text-align:center}
+.weather h4{font:700 11px/1 var(--cond);letter-spacing:.3em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:6px;margin-bottom:8px}
+.weather .t{font-size:44px;font-weight:700;line-height:1}
+.weather p{font-size:13px;font-style:italic;color:var(--soft)}
+.ticker{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--paper);display:flex;align-items:stretch;z-index:5;font:600 13px/1 var(--cond);letter-spacing:.08em;text-transform:uppercase;border-top:3px solid var(--red)}
+.ticker b{background:var(--red);padding:14px 14px;flex:none;letter-spacing:.2em}
+.track{overflow:hidden;flex:1;display:flex;align-items:center}
+.run{display:flex;white-space:nowrap;animation:run 46s linear infinite}
+.ticker:hover .run,.ticker:focus-within .run{animation-play-state:paused}
+.run span{padding:0 28px}
+.run span::before{content:"\25C6";color:var(--red);margin-right:28px}
+@keyframes run{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.run{animation-duration:140s}.lead.press *{animation:none!important}.lead.press .stamp{opacity:.85}}
+</style>
+</head>
+<body>
+<article class="sheet">
+  <div class="ears">
+    <span>"All the tide that's fit to print"</span>
+    <span class="box">Price<br>Two Pence</span>
+    <span style="text-align:right">Est. 1871 &middot; Vol. CLII No. 48,113</span>
+  </div>
+  <h2 class="mast">The Marlow Evening Courier</h2>
+  <div class="dateline">
+    <span>Thursday, October 7</span>
+    <div class="edition" role="group" aria-label="Edition">
+      <button type="button" data-ed="0" aria-pressed="true">Morning</button>
+      <button type="button" data-ed="1" aria-pressed="false">Late City</button>
+      <button type="button" data-ed="2" aria-pressed="false">Extra</button>
+    </div>
+    <span>Fair, Fog at Dusk</span>
+  </div>
+
+  <header class="lead" id="lead">
+    <span class="stamp" id="stamp">Late Edition</span>
+    <p class="kick" id="kick">Harbour Affairs</p>
+    <h1 id="headline">Lighthouse Keeper Reports Sea "Unusually Polite"</h1>
+    <p class="deck" id="deck">Calm waters for the eleventh straight night prompt the Harbour Board to question whether its foghorn has been heard at all.</p>
+  </header>
+
+  <div class="grid">
+    <section class="main">
+      <p class="byline">By Edmund Ashgrove &middot; Staff Correspondent</p>
+      <p>MARLOW-ON-TIDE &mdash; For eleven nights running the waters off Gull Point have lain so flat that the keeper of the Saltmarsh Light, Mr. Abel Penhallow, has taken to logging the stars reflected in them, and has now filled a second ledger with what he describes as "an entire upside-down sky, quite intact."</p>
+      <p>The Harbour Board, convened Tuesday in the upper room of the Customs House, heard testimony from three fishermen, a schoolmistress and one exceedingly tired ferryman, all of whom agreed that the sea had not raised its voice in living memory of the week.</p>
+      <figure class="fig">
+        <svg viewBox="0 0 300 160" role="img" aria-label="Engraving of the Saltmarsh Light at dusk">
+          <rect width="300" height="160" fill="#e7dec7"/>
+          <g stroke="#1b1814" stroke-width=".6" opacity=".55">
+            <path d="M0 20H300M0 26H300M0 32H300M0 38H300M0 44H300M0 50H300M0 56H300M0 62H300M0 68H300M0 74H300M0 80H300M0 86H300M0 92H300"/>
+          </g>
+          <circle cx="210" cy="60" r="18" fill="#e7dec7"/>
+          <path d="M0 108 Q60 98 120 104 T300 100 V160 H0Z" fill="#1b1814"/>
+          <g stroke="#f1ead9" stroke-width=".7" opacity=".7"><path d="M10 120H120M40 128H200M90 136H280M20 144H170M140 152H290"/></g>
+          <path d="M70 104 L78 40 H92 L100 104Z" fill="#f1ead9" stroke="#1b1814" stroke-width="1.5"/>
+          <path d="M76 58H94M75 72H96M73 86H98" stroke="#1b1814" stroke-width="5"/>
+          <rect x="76" y="28" width="18" height="12" fill="#1b1814"/>
+          <path d="M85 22 L80 28 H90Z" fill="#1b1814"/>
+          <path d="M94 32 L170 18 L170 46Z" fill="#a3261b" opacity=".35"/>
+        </svg>
+        <figcaption>The Saltmarsh Light, as engraved by our staff artist from the harbour wall.</figcaption>
+      </figure>
+      <p>"I have rung the bell, I have lit the lamp, I have sounded the horn twice nightly as the regulations require," Mr. Penhallow told the Board. "The sea has simply declined to make any trouble. One begins to feel rather unnecessary."</p>
+      <p>Board chairman Mrs. Hester Quayle said a surveyor would be dispatched to confirm the foghorn remains audible, and that the keeper's wages would continue regardless, "since calm is precisely what we have been paying for all along."</p>
+      <p>Fishmongers along Cooper's Row report record catches of mackerel, which they attribute to the fish being "able to hear themselves think." The ferry has run to time for the first time since the Coronation.</p>
+      <p>Meteorologists at the Marlow Observatory decline to speculate, noting only that the barometer has been "stubbornly content" and that fog is expected at dusk, as it is most evenings, out of habit.</p>
+    </section>
+
+    <aside>
+      <div class="brief" tabindex="0" role="button" aria-expanded="false">
+        <small>Civic</small>
+        <h3>Clock Tower Gains Four Minutes, Refuses to Return Them</h3>
+        <p class="tease">Horologists summoned from the county seat found the escapement in fine health and the clock in no apparent hurry. The Council will vote on whether to simply adopt the new time.</p>
+      </div>
+      <div class="brief" tabindex="0" role="button" aria-expanded="false">
+        <small>Society</small>
+        <h3>Annual Lantern Regatta Draws Record Flotilla</h3>
+        <p>One hundred and forty boats, each bearing a paper lantern, drifted the estuary on Saturday. Judges awarded first prize to a dinghy shaped, with some ambition, like a swan.</p>
+      </div>
+      <div class="brief" tabindex="0" role="button" aria-expanded="false">
+        <small>Letters</small>
+        <h3>Reader Insists Gulls Have Learned to Queue</h3>
+        <p>"I watched them form a line outside the bakery on Mill Lane," writes Mrs. D. Fenwick. "They were more orderly than the 8:15 omnibus." The editor makes no comment.</p>
+      </div>
+      <div class="weather">
+        <h4>The Weather</h4>
+        <div class="t">54&deg;</div>
+        <p>Fair and still. Fog arriving at dusk, as is customary. Tide high at 6:42.</p>
+      </div>
+    </aside>
+  </div>
+</article>
+
+<div class="ticker" tabindex="0" aria-label="Wire ticker, hover or focus to pause">
+  <b>Wire</b>
+  <div class="track"><div class="run" id="run"></div></div>
+</div>
+
+<script>
+(function(){
+  var wires = [
+    "Ferry runs on time: passengers demand explanation",
+    "Mackerel catch up 40 per cent on Cooper's Row",
+    "Customs House roof repairs to finish by spring",
+    "Observatory reports barometer 'stubbornly content'",
+    "Lantern regatta swan dinghy declared county champion",
+    "Council to debate adopting clock tower's new time",
+    "Fog expected at dusk, out of habit"
+  ];
+  var run = document.getElementById('run'), html = '';
+  for (var k = 0; k < 2; k++) wires.forEach(function(w){ html += '<span>' + w + '</span>'; });
+  run.innerHTML = html;
+
+  var editions = [
+    {k:"Harbour Affairs", h:'Lighthouse Keeper Reports Sea "Unusually Polite"', d:"Calm waters for the eleventh straight night prompt the Harbour Board to question whether its foghorn has been heard at all.", s:"Morning"},
+    {k:"Late City", h:"Board Votes to Keep the Light Burning Anyway", d:"In a unanimous show of hands the Harbour Board resolves that a calm sea deserves a lit lamp all the more.", s:"Late Edition"},
+    {k:"Extra! Extra!", h:"Wave Sighted Off Gull Point; Town Exhales", d:"A single modest swell broke against the harbour wall at 9:14 p.m., ending the long quiet. Mr. Penhallow described it as 'a relief, frankly.'", s:"Extra"}
+  ];
+  var lead = document.getElementById('lead'), btns = document.querySelectorAll('.edition button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var e = editions[+b.dataset.ed];
+      btns.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      document.getElementById('kick').textContent = e.k;
+      document.getElementById('headline').textContent = e.h;
+      document.getElementById('deck').textContent = e.d;
+      document.getElementById('stamp').textContent = e.s;
+      lead.classList.remove('press'); void lead.offsetWidth; lead.classList.add('press');
+    });
+  });
+
+  document.querySelectorAll('.brief').forEach(function(br){
+    var p = br.querySelector('p'); p.classList.remove('tease');
+    function toggle(){
+      var o = br.classList.toggle('open');
+      br.setAttribute('aria-expanded', o ? 'true' : 'false');
+    }
+    br.addEventListener('click', toggle);
+    br.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  });
+  var first = document.querySelector('.brief'); first.classList.add('open'); first.setAttribute('aria-expanded','true');
+})();
+</script>
+</body>
+</html>

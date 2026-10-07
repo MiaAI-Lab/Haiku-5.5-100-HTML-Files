@@ -1,0 +1,20 @@
+Prompt:
+Build a standalone HTML page: a full-viewport corkboard called "Studio Wren · Launch wall" for a fictional design studio's spring catalogue, covered in sticky notes you can drag around. Palette: cork tan (#c4935e) built from three layered, offset radial-gradient speckle patterns plus a vignette and an inline SVG feTurbulence grain overlay (multiply blend). The board sits inside a wooden frame made of stacked inset box-shadows (#6b4426, #3a2211 and a pale bevel line). Note colors: sunflower #ffe46b, mint #b4efc6, rose #ffb6c9, sky #a8dbff and tangerine #ffc580, each with a white sheen gradient, a darker bottom edge and an asymmetric bottom-right radius that suggests a lifted, curling corner. Notes are held by either a translucent torn-edge strip of tape (a clip-path polygon) or a glossy blue pushpin (a radial gradient). A pinned paper label in the top-left carries the title in Georgia italic, with a red pin. Type: handwriting system stack ("Segoe Print", "Bradley Hand", "Marker Felt", "Chalkboard SE", "Comic Sans MS", cursive) for note text; ui-monospace for tags, tools and toasts.
+Content: six starter notes with real studio to-dos (print deadline, paper stock call, hidden birds idea, sage swatch, team noodle lunch, "done is a feature"), each with a small mono hashtag.
+Interaction: pointer-drag any note. On pickup it rises to the top, scales up 6% and gets a deep lifted shadow. While moving, it tilts in the direction of horizontal velocity, then springs back to its resting angle on release, using a cubic-bezier(.3,1.45,.5,1) transform transition. A wire bin in the bottom-right lifts its lid and swells when a note hovers over it; dropping the note there plays a crumple keyframe (spins, shrinks and blurs into the bin) and a toast confirms it. A frosted bottom toolbar has five color swatches (aria-pressed), "+ Note", which pops a new note in with a spring and opens it for editing, and "Tidy", which springs every note into a grid. Edit text by double-clicking, using the pencil button (always visible on touch) or pressing Enter. Escape or blur saves, and empty text falls back to a sentence. Keyboard: notes are focusable, arrow keys nudge them (Shift moves further), and Delete sends one to the bin. Positions are stored as fractions of the board, so notes re-flow on resize and stay inside the frame. The board persists to localStorage (wrapped in try/catch). Reduced motion removes tilt, scaling and spring transitions.
+
+Title: Studio Wren Launch Wall
+
+Description: A tactile corkboard in a wooden frame, where pastel sticky notes held by tape or pushpins carry a small studio's real to-dos in a handwritten hand. Picking a note up lifts it off the cork with a deep shadow and a tilt that follows your hand, and letting go springs it back into place. A frosted toolbar adds new notes in five paper colors, a tidy button snaps everything into a grid, and a little bin swallows discarded notes with a crumple animation.
+
+Visual techniques:
+- Layered radial-gradient speckle cork texture with an SVG feTurbulence grain overlay
+- Wooden frame built from stacked inset box-shadows
+- Paper notes with sheen gradients, an asymmetric corner radius for curl, and clip-path torn tape
+- Radial-gradient glossy pushpins
+- Transform-based positioning with spring cubic-bezier transitions and velocity-driven tilt
+- Crumple-into-bin keyframes driven by a CSS custom property target
+- Backdrop-filter frosted toolbar, toast notifications
+- Fractional coordinates for resize-safe layout, with localStorage persistence
+
+Interaction model: Drag notes anywhere on the board; they tilt as you move them and settle when dropped. Drop a note on the bin to throw it away. Pick a color and press "+ Note" to add one, then type straight into it; double-click, the pencil button or Enter edits an existing note. "Tidy" lines everything up. With the keyboard, Tab moves between notes, arrow keys nudge them, and Delete removes one.

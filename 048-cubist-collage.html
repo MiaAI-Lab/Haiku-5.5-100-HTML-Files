@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Still Life, Reassembled</title>
+<style>
+:root{
+  --paper:#efe6d2;--ink:#2b2724;--ochre:#c8962e;--slate:#4b6a8a;--terra:#b5532f;--sage:#8a9a74;--wood:#a8743f;--night:#1f3550;
+  --serif:"Didot","Bodoni 72","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --label:"Gill Sans","Gill Sans MT","Futura","Trebuchet MS",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#e3d8c0;background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.5),transparent 50%),repeating-linear-gradient(90deg,rgba(43,39,36,.025) 0 1px,transparent 1px 6px);color:var(--ink);font-family:var(--serif);min-height:100vh;overflow-x:hidden}
+.wrap{max-width:1240px;margin:0 auto;padding:clamp(18px,4vw,48px) 16px 40px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:clamp(20px,4vw,56px);align-items:start}
+@media (max-width:820px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.kicker{font-family:var(--label);font-size:11px;letter-spacing:.32em;text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.kicker::before{content:"";width:28px;height:2px;background:var(--terra)}
+h1{font-weight:400;font-size:clamp(40px,6.4vw,84px);line-height:.92;letter-spacing:-.02em;margin:18px 0 18px}
+h1 em{display:block;font-style:italic;color:var(--terra);padding-left:.6em}
+.lede{font-size:clamp(16px,1.5vw,19px);line-height:1.55;margin:0 0 18px;max-width:34em}
+.lede::first-letter{float:left;font-size:3.4em;line-height:.8;padding:.06em .1em 0 0;color:var(--slate)}
+.note{font-family:var(--label);font-size:13px;line-height:1.6;color:#5b524a;margin:0 0 24px;max-width:32em}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.btn{font-family:var(--label);font-size:12px;letter-spacing:.2em;text-transform:uppercase;padding:12px 18px;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;position:relative;transition:color .3s var(--ease),transform .3s var(--ease);overflow:hidden;isolation:isolate}
+.btn::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(101%);transition:transform .35s var(--ease);z-index:-1;clip-path:polygon(0 18%,100% 0,100% 100%,0 100%)}
+.btn:hover,.btn:focus-visible{color:var(--paper);outline:none}
+.btn:hover::before,.btn:focus-visible::before{transform:translateY(0)}
+.btn:active{transform:translateY(1px) rotate(-1deg)}
+.btn b{font-weight:600;color:var(--ochre)}
+.plaque{font-family:var(--label);font-size:11.5px;letter-spacing:.08em;line-height:1.7;border-top:1px solid rgba(43,39,36,.35);padding-top:12px;color:#5b524a}
+.plaque strong{color:var(--ink);letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+.frame{background:#2b2724;padding:clamp(10px,1.6vw,18px);box-shadow:0 30px 60px rgba(43,39,36,.35),0 2px 0 rgba(255,255,255,.4) inset;position:relative}
+.frame::after{content:"Drag to recompose \00B7  double-click to turn";position:absolute;left:0;right:0;bottom:-28px;text-align:center;font-family:var(--label);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:#6b6157}
+.board{position:relative;width:100%;aspect-ratio:5/4;background:var(--paper);overflow:hidden;isolation:isolate;
+  background-image:radial-gradient(circle at 70% 30%,rgba(255,255,255,.6),transparent 60%),repeating-linear-gradient(0deg,rgba(43,39,36,.035) 0 1px,transparent 1px 5px);touch-action:none}
+@media (max-width:820px){.board{aspect-ratio:4/5}}
+.piece{position:absolute;cursor:grab;outline:none;transition:left .9s var(--ease),top .9s var(--ease),transform .9s var(--ease),filter .3s,opacity .6s;will-change:transform}
+.piece .face{width:100%;height:100%;transition:filter .3s}
+.piece:hover .face{filter:brightness(1.07) saturate(1.1)}
+.piece:focus-visible{filter:drop-shadow(2px 2px 0 var(--terra)) drop-shadow(-2px -2px 0 var(--terra))}
+.piece.grab{cursor:grabbing;transition:transform .2s var(--ease),filter .2s;filter:drop-shadow(8px 12px 10px rgba(43,39,36,.35))}
+.board.m-normal .piece{mix-blend-mode:normal!important}
+.board.m-difference .piece{mix-blend-mode:difference!important}
+.gazette{background:#f4ecd8;color:#2b2724;padding:6% 7%;font-family:Georgia,"Times New Roman",serif;overflow:hidden;font-size:clamp(5px,.75vw,9px);line-height:1.25;column-count:2;column-gap:8%}
+.gazette h3{column-span:all;margin:0 0 4%;font-size:2.1em;letter-spacing:.04em;text-align:center;border-bottom:1px solid;padding-bottom:2%;font-weight:700;white-space:nowrap}
+.gazette p{margin:0 0 4%}
+.stencil{display:grid;place-items:center;font-family:"Futura","Gill Sans","Trebuchet MS",sans-serif;font-weight:700;letter-spacing:.06em;font-size:clamp(16px,3vw,40px);color:var(--ink);background:#f6efdc}
+.status{position:absolute;right:10px;top:10px;z-index:99999;font-family:var(--label);font-size:10px;letter-spacing:.24em;text-transform:uppercase;background:var(--paper);color:var(--ink);padding:5px 8px;border:1px solid var(--ink);pointer-events:none;opacity:0;transform:translateY(-6px);transition:opacity .4s,transform .4s var(--ease)}
+.status.show{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.piece,.btn,.btn::before,.status{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section>
+    <div class="kicker">Room IV &middot; Atelier Ferrand</div>
+    <h1>Still Life, <em>Reassembled</em></h1>
+    <p class="lede">A guitar, a newspaper and a bottle of ochre light were sitting on a table, and then someone looked at them from five directions at once. Every plane here is a separate glance. Move them and the table remembers it differently.</p>
+    <p class="note">The fragments overlap with multiply blending, the way translucent paper does when it is pasted onto paper. Where slate meets ochre, a third colour arrives that nobody painted.</p>
+    <div class="controls">
+      <button class="btn" type="button" id="shuffle">Shuffle</button>
+      <button class="btn" type="button" id="reset">Reset</button>
+      <button class="btn" type="button" id="blend">Blend: <b id="blendName">multiply</b></button>
+    </div>
+    <div class="plaque"><strong>Nature morte n&deg; 7</strong><br>Cut paper, gouache and printed matter, after a lost study. Collection of the imaginary Musee des Plans, gallery reconstruction in fourteen movable parts.</div>
+  </section>
+  <section>
+    <div class="frame"><div class="board" id="board" aria-label="Collage board with movable pieces"><div class="status" id="status" aria-live="polite"></div></div></div>
+  </section>
+</div>
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var wood='repeating-linear-gradient(100deg,#a8743f 0 6px,#9a6533 6px 9px,#b88350 9px 15px,#8f5c2e 15px 17px)';
+  var P=[
+    {n:'Slate plane',x:4,y:8,w:46,h:60,r:-4,bg:'#4b6a8a',clip:'polygon(10% 0,100% 12%,86% 100%,0 82%)',b:'multiply'},
+    {n:'Ochre wedge',x:36,y:3,w:46,h:54,r:6,bg:'#c8962e',clip:'polygon(48% 0,100% 100%,0 86%)',b:'multiply'},
+    {n:'Terracotta table edge',x:54,y:42,w:36,h:46,r:-12,bg:'#b5532f',clip:'polygon(0 0,100% 6%,94% 100%,4% 92%)',b:'multiply'},
+    {n:'Guitar body',x:18,y:30,w:42,h:42,r:3,bg:wood,clip:'polygon(18% 6%,62% 0,100% 30%,88% 78%,52% 100%,10% 88%,0 44%)',b:'multiply'},
+    {n:'Sound hole',x:32,y:42,w:15,h:0,r:0,bg:'radial-gradient(circle,#141210 0 55%,#2b2724 56% 64%,transparent 65%)',clip:'circle(50%)',b:'normal',sq:1},
+    {n:'Gazette fragment',x:6,y:62,w:38,h:26,r:5,bg:'',clip:'polygon(0 4%,96% 0,100% 92%,3% 100%)',b:'multiply',html:'gazette'},
+    {n:'Sheet music',x:58,y:8,w:32,h:28,r:-7,bg:'repeating-linear-gradient(0deg,#f6efdc 0 9%,#2b2724 9% 10%)',clip:'polygon(0 10%,100% 0,92% 100%,6% 90%)',b:'multiply'},
+    {n:'Sage arc',x:62,y:62,w:30,h:0,r:0,bg:'#8a9a74',clip:'circle(50% at 50% 100%)',b:'multiply',sq:1},
+    {n:'Charcoal sliver',x:47,y:16,w:7,h:70,r:9,bg:'#2b2724',clip:'polygon(30% 0,100% 0,70% 100%,0 100%)',b:'multiply'},
+    {n:'Dotted bottle',x:10,y:10,w:24,h:30,r:0,bg:'radial-gradient(circle,#2b2724 22%,transparent 24%) 0 0/14px 14px,#e3b85a',clip:'polygon(35% 0,65% 0,65% 25%,100% 45%,100% 100%,0 100%,0 45%,35% 25%)',b:'multiply'},
+    {n:'Stencil letters',x:68,y:84,w:26,h:13,r:-3,bg:'',clip:'polygon(0 0,100% 8%,100% 100%,2% 92%)',b:'multiply',html:'stencil'},
+    {n:'Guitar neck',x:44,y:2,w:7,h:50,r:-28,bg:'repeating-linear-gradient(180deg,#7a4b24 0 14px,#d9c39a 14px 16px)',clip:'inset(0 round 2px)',b:'normal'},
+    {n:'Night diamond',x:72,y:26,w:22,h:32,r:0,bg:'#1f3550',clip:'polygon(50% 0,100% 50%,50% 100%,0 50%)',b:'hard-light'},
+    {n:'Ivory shard',x:26,y:4,w:22,h:24,r:14,bg:'#f8f2e2',clip:'polygon(0 30%,80% 0,100% 100%)',b:'multiply'}
+  ];
+  var board=document.getElementById('board'),status=document.getElementById('status'),pieces=[],z=20,stTimer;
+  function say(t){status.textContent=t;status.classList.add('show');clearTimeout(stTimer);stTimer=setTimeout(function(){status.classList.remove('show');},1400);}
+  function place(p){
+    p.el.style.left=p.cx+'%';p.el.style.top=p.cy+'%';
+    p.el.style.transform='rotate('+p.cr+'deg)'+(p.el.classList.contains('grab')?' scale(1.04)':'');
+  }
+  function sizeSq(){
+    var r=board.getBoundingClientRect();
+    pieces.forEach(function(p){if(p.d.sq)p.el.style.height=(r.width*p.d.w/100)+'px';});
+  }
+  P.forEach(function(d,i){
+    var el=document.createElement('div');el.className='piece';el.tabIndex=0;el.setAttribute('role','button');
+    el.setAttribute('aria-label',d.n+'. Drag or use arrow keys to move, R to rotate.');
+    el.style.width=d.w+'%';if(!d.sq)el.style.height=d.h+'%';el.style.mixBlendMode=d.b;el.style.zIndex=i+1;
+    var f=document.createElement('div');f.className='face';f.style.clipPath=d.clip;f.style.webkitClipPath=d.clip;
+    if(d.bg)f.style.background=d.bg;
+    if(d.html==='gazette'){f.classList.add('gazette');f.innerHTML='<h3>La Gazette des Ateliers</h3><p>The cafe on the rue des Plans reports a shortage of lemons and an abundance of opinions.</p><p>A painter was seen carrying a table upside down, insisting it looked truer that way.</p><p>Concert tonight: one guitar, three viewpoints, no tickets required.</p><p>Weather: ochre in the morning, slate by evening.</p>';}
+    if(d.html==='stencil'){f.classList.add('stencil');f.textContent='VIOL';}
+    el.appendChild(f);board.appendChild(el);
+    var p={d:d,el:el,cx:d.x,cy:d.y,cr:d.r};pieces.push(p);
+    if(!reduce){p.cx=d.x+(Math.random()-.5)*60;p.cy=d.y+(Math.random()-.5)*60;p.cr=d.r+(Math.random()-.5)*120;el.style.transition='none';el.style.opacity='0';}
+    place(p);
+    var ox=0,oy=0,dragging=false;
+    el.addEventListener('pointerdown',function(e){
+      if(e.button!==0)return;
+      e.preventDefault();el.focus({preventScroll:true});
+      var r=board.getBoundingClientRect();dragging=true;el.classList.add('grab');el.style.zIndex=++z;
+      ox=(e.clientX-r.left)/r.width*100-p.cx;oy=(e.clientY-r.top)/r.height*100-p.cy;
+      el.setPointerCapture(e.pointerId);place(p);
+    });
+    el.addEventListener('pointermove',function(e){
+      if(!dragging)return;var r=board.getBoundingClientRect();
+      p.cx=Math.max(-p.d.w*.6,Math.min(100-p.d.w*.4,(e.clientX-r.left)/r.width*100-ox));
+      p.cy=Math.max(-20,Math.min(92,(e.clientY-r.top)/r.height*100-oy));
+      el.style.transition='none';place(p);
+    });
+    function up(){if(!dragging)return;dragging=false;el.classList.remove('grab');el.style.transition='';place(p);}
+    el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+    el.addEventListener('dblclick',function(){p.cr+=15;place(p);say(d.n+' turned');});
+    el.addEventListener('keydown',function(e){
+      var s=e.shiftKey?5:1,k=e.key,hit=true;
+      if(k==='ArrowLeft')p.cx-=s;else if(k==='ArrowRight')p.cx+=s;else if(k==='ArrowUp')p.cy-=s;else if(k==='ArrowDown')p.cy+=s;
+      else if(k==='r'||k==='R')p.cr+=e.shiftKey?-15:15;
+      else if(k==='Enter'||k===' '){el.style.zIndex=++z;say(d.n+' to front');}
+      else hit=false;
+      if(hit){e.preventDefault();place(p);}
+    });
+  });
+  sizeSq();window.addEventListener('resize',sizeSq);
+  if(!reduce){
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      pieces.forEach(function(p,i){
+        setTimeout(function(){p.el.style.transition='';p.el.style.opacity='';p.cx=p.d.x;p.cy=p.d.y;p.cr=p.d.r;place(p);},80+i*70);
+      });
+    });});
+  }
+  document.getElementById('shuffle').addEventListener('click',function(){
+    pieces.forEach(function(p){
+      p.cx=Math.random()*(100-p.d.w*.7)-p.d.w*.15;p.cy=Math.random()*(85-(p.d.sq?p.d.w:p.d.h)*.5);
+      p.cr=Math.round((Math.random()-.5)*50);p.el.style.zIndex=Math.ceil(Math.random()*30);place(p);
+    });
+    say('A new point of view');
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    pieces.forEach(function(p,i){p.cx=p.d.x;p.cy=p.d.y;p.cr=p.d.r;p.el.style.zIndex=i+1;place(p);});
+    say('Back to the first study');
+  });
+  var modes=['multiply','normal','difference'],mi=0;
+  document.getElementById('blend').addEventListener('click',function(){
+    board.classList.remove('m-'+modes[mi]);mi=(mi+1)%modes.length;
+    if(mi)board.classList.add('m-'+modes[mi]);
+    document.getElementById('blendName').textContent=modes[mi];say('Blend: '+modes[mi]);
+  });
+})();
+</script>
+</body>
+</html>

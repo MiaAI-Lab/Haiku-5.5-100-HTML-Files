@@ -1,0 +1,26 @@
+Prompt:
+Build a standalone HTML page called "Prismata Founders' Foil": a holographic foil trading card with a pointer-driven rainbow sheen. Prismata is an invented card game, and the card is "Aurelith, Prism Warden", founder's card 042 of 180. Palette: near-black indigo stage (#07060d) with a few tiny radial-gradient stars, a violet nebula glow (rgba 98,64,190) on the right and a teal haze bottom-left; pale lavender text (#ece8ff), muted violet labels (#8d86ad) and an antique gold (#e8c987) for the card frame accents. Typography: Copperplate / Copperplate Gothic / Palatino for the card name, stats and page headline; Avenir Next / Futura / Century Gothic for the UI; Georgia italic for flavor text. The page headline is filled with a slowly drifting pastel iridescent gradient clipped to the text.
+
+Layout: two columns, with copy and controls on the left and the card stage on the right. Under 820px they stack with the card on top. Left column: kicker "Prismata · Series III · Founders' Foil", the headline, a short paragraph, a pill segmented control for the foil pattern (Prism, Cosmos, Etched) plus a Flip button, a live readout row (Tilt degrees, Sheen percent and the name of the dominant color band) and a short instruction line.
+
+Card (63:88 aspect, up to 340px wide, container queries so all text scales in cqw): a 3D element with preserve-3d and two faces with hidden backfaces. Front: a brushed-gold gradient frame around a deep indigo inner panel holding a title bar with three glowing violet gem pips; a 4:3 art window with an inline SVG illustration (a crystalline winged warden built from gradient polygon shards in lilac and ice-blue, amber eyes, a four-point star above, halo rings, stars and two layers of mountain silhouette against a violet-to-navy sky); a gold-ruled type line "Celestial Warden / ✦ Founder"; ability text ("Refraction") with an italic flavor quote; and a stats row (Ward 9, Lumen 12, Reach 4) with the set number and an invented illustrator credit. Back: a conic sunburst of two indigos, a double gold inset border, a gold eight-point star emblem and the word PRISMATA.
+
+Holo layers on each face: (1) a foil div with mix-blend-mode color-dodge, filtered for brightness and contrast, holding a repeating 112-degree seven-band HSL rainbow at 400% size whose background-position follows the pointer (--mx, --my), with an opacity that rises with distance from the center (--hyp). Prism mode adds fine vertical micro-lines. Cosmos mode adds three tiled radial-gradient glitter layers drifting at different parallax rates. Etched mode adds a crosshatch of ±45-degree lines with higher contrast. (2) A glare div with overlay blend and a radial highlight at the pointer. (3) A one-time soft-light sheen sweep during the intro. A blurred violet floor shadow slides and narrows with the tilt.
+
+Motion: pointer position over the card sets target tilt (±15 degrees in Y, ±13 degrees in X) and the light position. All values follow a damped spring in JavaScript, which writes CSS variables every frame. The flip is also a slightly underdamped spring on a --fl variable, so the card overshoots a little as it turns. Intro: the card starts face-down and springs over to the front, then the sheen sweeps across. After about 1.8 seconds without input the card sways slowly in a Lissajous pattern so the foil keeps shimmering. Under prefers-reduced-motion the tilt range is halved, springs are stiffer, there is no idle sway, no intro flip or sweep, the flip snaps instantly and the headline gradient stops drifting.
+
+Title: Prismata Founders' Foil
+
+Description: A collector's showcase for one invented trading card. A gilt-framed founder's foil of a crystalline celestial warden floats in a violet night and tilts toward your pointer in real 3D, while a color-dodge rainbow foil, a moving glare and a sliding shadow all react to the angle of the light. You can switch between three foil stocks (prismatic micro-lines, cosmic glitter and an etched crosshatch) and flip the card to its gold-starred back.
+
+Visual techniques:
+- CSS 3D card with preserve-3d, two faces with hidden backfaces and perspective on the stage
+- Spring-damped JavaScript physics that writes CSS custom properties (--rx, --ry, --mx, --my, --hyp, --fl) every frame
+- Color-dodge foil layer: a repeating HSL rainbow whose background-position follows the light, with three pattern overlays chosen by a data attribute
+- Overlay-blended radial glare and a soft-light intro sheen sweep
+- Container-query units (cqw) so the card typography scales with the card
+- Inline SVG illustration made from gradient polygon shards, plus a gold emblem on the back
+- Iridescent clipped-gradient headline and a parallax shadow that follows the tilt
+- An idle Lissajous sway that keeps the foil alive without input
+
+Interaction model: Move the pointer, or drag a finger sideways, across the card to tilt it and steer the light over the foil. The tilt, sheen and band readouts update as you go. Click or tap the card, press Enter or Space while it is focused, or use the Flip button to turn it over. The arrow keys lean the focused card step by step. The Prism, Cosmos and Etched buttons swap the foil pattern immediately.

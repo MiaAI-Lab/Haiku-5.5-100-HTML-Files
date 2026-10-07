@@ -1,0 +1,31 @@
+PROMPT
+
+Build a single standalone HTML page for concept 093, "lunar-phase-calendar": a moon-phase calendar with SVG phases. Frame it as a page from "The Selenographic Almanac", published by a fictional "Tidewater Press". It should feel like a refined printed almanac rather than an app: light, cool, high-contrast serif.
+
+Palette: pale cool parchment #ebe7de with a faint lighter radial bloom in the top-left, deep indigo ink #1c2140 and a softer indigo #4a5072, indigo hairlines at 16% opacity, moon silver #f7f5ef against shadow indigo #262b4a, and an antique gold accent #b8893b for full and new moon tags and the month's moon name.
+
+Typography: high-contrast Didone stack ("Didot", "Bodoni 72", "Bodoni MT", Georgia) for the month title, phase name (italic), numerals, and verse; small widely spaced uppercase "Helvetica Neue" for labels, weekdays, and buttons.
+
+Layout: masthead rule with publication name and italic subtitle. Two columns on desktop (5fr / 7fr), stacked on phones. Left: a sticky panel with a large SVG moon (about 340px) ringed by a thin solid circle and a slowly rotating dashed orbit circle; below it the italic phase name, an uppercase date line, a three-cell stats strip (percent illumined, age in days, days to the next full or new moon), and a short italic verse describing that phase. Right: a giant month title with an invented moon name above it in gold italic (Hearth, Hollow, Thaw, Seedling, Lantern, Linden, Ember, Barley, Orchard, Rook, Frostbell, Long-Night Moon), round outlined nav buttons (previous, Today, next), a Monday-first weekday row over a heavy rule, and a 7-column grid of day buttons separated by hairlines. Each day shows a small SVG moon of that night and its date number; today has an ink pill on its number; the selected day is inverted to ink; days where the phase crosses full or new get a tiny gold "Full" / "New" tag. A legend and a footer note the synodic month constant.
+
+Astronomy: compute the moon's age at local noon from a reference new moon (2000-01-06 18:14 UTC) modulo 29.530588853 days. Illumination = (1 - cos(2*pi*f)) / 2. Phase names use windows around 0, 1/4, 1/2, 3/4. Each phase is drawn as one SVG path: an outer semicircle on the lit side plus a terminator elliptical arc with rx = r*|cos(2*pi*f)|, choosing arc sweep flags by waxing/waning and crescent/gibbous (lit on the right while waxing).
+
+Large moon detail: dark indigo base with faint "earthshine" maria, the lit path filled with an off-center radial gradient, and maria ellipses plus a few crater rings clipped to the lit shape so surface features appear only where sunlit. A CSS drop-shadow glow scales with illumination.
+
+Motion: selecting a day tweens the big moon's phase along the shortest way around the cycle with a quartic ease-out, so the terminator visibly sweeps. Month changes fade and lift the grid in. Hovering a day enlarges and tilts its small moon with a springy overshoot.
+
+Interaction: click a day to select it; arrow keys move one night or one week, crossing month boundaries automatically (roving tabindex); prev/next buttons change month; Today returns to the current date. Reduced motion: no orbit rotation, no grid fade, and the big moon jumps instantly.
+
+Title: Selenographic Almanac
+
+Description: A printed-almanac style lunar calendar in pale parchment and indigo ink. Every night of the month is drawn as an accurate miniature SVG phase computed from the synodic cycle, while a large, finely textured moon on the left shows the selected night, its terminator sweeping smoothly to the new phase. Didone headlines, invented moon names, small gold Full and New tags, and a short verse for each phase give it the feel of a collectible reference page.
+
+Visual techniques:
+- Single-path SVG phase rendering from an outer arc plus an elliptical terminator arc
+- clipPath that confines maria and crater details to the sunlit part of the large moon
+- Radial gradients for the lit limb and the shadowed disc, illumination-scaled drop-shadow glow
+- requestAnimationFrame tween of the phase fraction along the shortest path with quartic easing
+- Hairline almanac grid, Didone type, rotating dashed orbit ring, fade-in month transitions
+- Springy hover scale and tilt on the small moons
+
+Interaction model: Readers click any night, or use the arrow keys, to see that night's moon rendered large with its phase name, illumination, age, and countdown to the next full or new moon. The arrow buttons page through months and Today snaps back to the present. Keyboard focus is clearly marked, and reduced-motion users get instant, still updates.

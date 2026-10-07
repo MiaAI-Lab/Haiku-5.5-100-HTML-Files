@@ -1,0 +1,18 @@
+Prompt:
+Build "Wet on Wet", a standalone HTML page for slot 097 watercolor-bleed: watercolor wash built from SVG filters, bleeding on hover. Present it as studio notes from a fictional paint house, "Maison Aquarelle, Studio Notes No. 12". Palette: warm cotton paper #f6f0e4 with a full-page fractal-noise grain overlay multiplied on top; ink #2b2a33 for text; washes in cerulean #7fa9c4 / #5f93b8, rose #e6a39a / #d0708a, hansa yellow #e8c56f / #e8b94a, and sap green #8fb39a / #5f8d6c, all blended with mix-blend-mode multiply so overlaps darken like real glazes. Typography: Iowan Old Style / Palatino / Georgia for the huge italic hero ("Wet on / wet.") and body copy; Gill Sans / Trebuchet for small tracked uppercase labels. Layout: a thin header rule with two labels; a hero where four overlapping ellipses are pushed through an SVG filter chain (feTurbulence into feDisplacementMap for ragged edges, feGaussianBlur and arithmetic composite for soft cores, a second noise mask for granulation) plus a darker eroded-edge outline filter that mimics the pigment rim that forms as a wash dries; the giant italic title multiplies over it with a short paragraph aligned right. Below, a legend line with a live status ("Paper resting" / "Paper wet, pigment moving") and an auto-fit grid of four tall swatch buttons, each with its own turbulence filter, radial-gradient blot and caption (name in italic serif, pigment code in small caps). Finish with a two-column essay with a cerulean drop cap and a centred footer note. Motion: a requestAnimationFrame loop eases each filter's displacement scale: pointer movement over the hero raises the hero bleed and nudges the turbulence frequency by pointer position; hovering or focusing a swatch raises its displacement so the edge creeps outward while the blot scales up slowly (1.4s, soft cubic-bezier) and a descriptive sentence fades in; leaving lets the colour settle back slowly. Clicking a swatch toggles a persistent "wet" state. Reduced motion: no CSS transitions, slower easing, no turbulence drift.
+
+Title: Wet on Wet
+
+Description: A quiet, paper-toned page about watercolour where the colour itself is made from SVG filters rather than images. Translucent washes of blue, rose, yellow and green overlap behind an oversized italic title, their edges torn and granulated by turbulence noise and rimmed with darker pigment the way a drying wash pools at its border. Four swatch cards present a spring palette; each one blooms outward and reveals a note on the pigment's character when the viewer hovers, so the page appears to rewet under the pointer and dry again when left alone.
+
+Visual techniques:
+- SVG feTurbulence + feDisplacementMap chains for ragged, organic wash edges
+- Arithmetic feComposite and a noise-derived alpha mask for granulation
+- feMorphology erode with composite "out" to fake the dark drying rim
+- mix-blend-mode multiply for glaze-like overlaps and type over paint
+- Full-page fractal-noise paper grain overlay
+- JavaScript-eased filter attributes (displacement scale, base frequency) animated per frame
+- Generated per-swatch filters and radial gradients with unique ids
+- Drop cap and multi-column essay layout
+
+Interaction model: Moving the pointer across the hero makes the wash bleed further and shifts its texture with the cursor, then it slowly settles when the pointer leaves. Hovering, focusing or tapping a swatch rewets it: the edge spreads, the blot swells and a short pigment note appears. A click keeps a swatch wet until clicked again. A status label in the legend reports whether any paint on the page is still moving.

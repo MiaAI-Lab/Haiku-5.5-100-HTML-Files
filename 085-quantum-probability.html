@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probability Field</title>
+<style>
+:root{
+  --void:#07050f;
+  --fg:#e9e6ff;
+  --dim:#8a84ad;
+  --cyan:#4ff0e6;
+  --mag:#ff5fd2;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:radial-gradient(ellipse at 50% 40%,#140c2a 0%,var(--void) 70%);color:var(--fg);font-family:var(--sans);overflow:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:none;touch-action:none}
+header{position:fixed;top:24px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;pointer-events:none}
+h1{font-weight:200;font-size:clamp(26px,4.6vw,52px);letter-spacing:-.02em;line-height:1}
+h1 i{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--mag));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:300}
+.sub{font:400 11px/1.6 var(--mono);color:var(--dim);margin-top:10px;max-width:34ch}
+.stats{font:400 11px/1.8 var(--mono);color:var(--dim);text-align:right;white-space:nowrap}
+.stats b{color:var(--fg);font-weight:500}
+.panel{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:4px;padding:5px;border:1px solid rgba(233,230,255,.14);border-radius:12px;background:rgba(10,7,22,.66);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.panel button{font:500 12px/1 var(--mono);color:var(--dim);background:none;border:none;padding:11px 14px;border-radius:8px;cursor:pointer;position:relative;transition:color .25s,background .25s}
+.panel button:hover,.panel button:focus-visible{color:var(--fg);background:rgba(233,230,255,.06);outline:none}
+.panel button[aria-pressed="true"]{color:var(--void);background:linear-gradient(120deg,var(--cyan),var(--mag))}
+.panel .reset{border-left:1px solid rgba(233,230,255,.12);border-radius:0 8px 8px 0;margin-left:2px}
+.hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:400 12px/1.6 var(--mono);color:var(--dim);letter-spacing:.2em;text-transform:uppercase;text-align:center;pointer-events:none;transition:opacity .8s ease}
+.hint span{display:block;width:44px;height:44px;margin:0 auto 18px;border-radius:50%;border:1px solid var(--cyan);animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.7);opacity:.35}50%{transform:scale(1);opacity:1}}
+.hint.gone{opacity:0}
+@media(max-width:600px){.stats{display:none}.panel button{padding:10px 10px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.hint span{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Grid of dots showing a probability cloud around the pointer. Click to measure."></canvas>
+<header>
+  <div>
+    <h1>Probability <i>Field</i></h1>
+    <p class="sub">Every dot is a place the particle might be. Hover to let the wavefunction spread; click to measure and watch it collapse.</p>
+  </div>
+  <div class="stats" aria-live="polite">
+    state <b id="sState">1s</b><br>
+    &Delta;x <b id="sDx">&mdash;</b><br>
+    measurements <b id="sN">0</b>
+  </div>
+</header>
+<div class="hint" id="hint"><span></span>Move to observe</div>
+<div class="panel" role="toolbar" aria-label="Orbital state">
+  <button type="button" data-o="0" aria-pressed="true">1s</button>
+  <button type="button" data-o="1" aria-pressed="false">2p</button>
+  <button type="button" data-o="2" aria-pressed="false">3d</button>
+  <button type="button" data-o="3" aria-pressed="false">slit</button>
+  <button type="button" class="reset" id="reset">clear</button>
+</div>
+<script>
+(function(){
+  var cv = document.getElementById('c'), cx = cv.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W, H, dpr, G, cols, rows, dots = [];
+  var ptr = {x:0, y:0, in:false}, cloud = {x:0, y:0, amp:0, sig:90, rot:0};
+  var orb = 0, hits = [], rings = [], N = 0, t = 0;
+  var names = ['1s','2p','3d','slit'];
+
+  function size(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    G = W < 600 ? 17 : 22;
+    cols = Math.ceil(W / G) + 1; rows = Math.ceil(H / G) + 1;
+    var ox = (W - (cols - 1) * G) / 2, oy = (H - (rows - 1) * G) / 2;
+    dots = [];
+    for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) dots.push({x:ox + i * G, y:oy + j * G, p:0, h:0});
+    cloud.sig = Math.min(W, H) * (W < 600 ? .16 : .12);
+    if (!ptr.in){ cloud.x = W / 2; cloud.y = H / 2; }
+  }
+  size();
+  var rt; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(size, 100); });
+
+  function psi(dx, dy){
+    var s = cloud.sig, r2 = (dx * dx + dy * dy) / (s * s), r = Math.sqrt(r2), th = Math.atan2(dy, dx) + cloud.rot, g;
+    if (orb === 0) g = Math.exp(-r2);
+    else if (orb === 1){ var c = Math.cos(th); g = c * c * r2 * Math.exp(-r2 * .7) * 1.9; }
+    else if (orb === 2){ var c2 = Math.cos(2 * th); g = c2 * c2 * r2 * r2 * Math.exp(-r2 * .6) * 1.25; }
+    else { var c3 = Math.cos(dx / s * 5.2); g = c3 * c3 * Math.exp(-(dx * dx) / (s * s * 4.5) - (dy * dy) / (s * s * .9)); }
+    var ripple = reduce ? 1 : 0.82 + 0.18 * Math.cos(r * 6 - t * 2.2);
+    return g * ripple;
+  }
+
+  function measure(){
+    var tot = 0, i;
+    for (i = 0; i < dots.length; i++) tot += dots[i].p;
+    if (tot < 0.5) return;
+    var u = Math.random() * tot;
+    for (i = 0; i < dots.length; i++){ u -= dots[i].p; if (u <= 0) break; }
+    var d = dots[Math.min(i, dots.length - 1)];
+    d.h = Math.min(d.h + 1, 6);
+    rings.push({x:d.x, y:d.y, a:1});
+    hits.push(d);
+    N++; document.getElementById('sN').textContent = N;
+    cloud.amp = 0;
+  }
+
+  var hint = document.getElementById('hint');
+  cv.addEventListener('pointermove', function(e){ ptr.x = e.clientX; ptr.y = e.clientY; ptr.in = true; hint.classList.add('gone'); });
+  cv.addEventListener('pointerleave', function(){ ptr.in = false; });
+  cv.addEventListener('pointerdown', function(e){ ptr.x = e.clientX; ptr.y = e.clientY; ptr.in = true; hint.classList.add('gone'); if (cloud.amp > 0.25) measure(); });
+
+  var btns = document.querySelectorAll('.panel [data-o]');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      orb = +b.dataset.o; cloud.amp *= 0.3;
+      btns.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      document.getElementById('sState').textContent = names[orb];
+    });
+  });
+  document.getElementById('reset').addEventListener('click', function(){
+    dots.forEach(function(d){ d.h = 0; }); hits.length = 0; rings.length = 0; N = 0;
+    document.getElementById('sN').textContent = 0;
+  });
+
+  var dxEl = document.getElementById('sDx'), frame = 0;
+  function loop(){
+    t += 0.016; frame++;
+    var drift = reduce ? 0 : 1;
+    var tx = ptr.in ? ptr.x : W / 2 + Math.cos(t * .3) * W * .18 * drift, ty = ptr.in ? ptr.y : H / 2 + Math.sin(t * .4) * H * .12 * drift;
+    var k = reduce ? 1 : 0.09;
+    cloud.x += (tx - cloud.x) * k; cloud.y += (ty - cloud.y) * k;
+    var goal = ptr.in ? 1 : 0.42;
+    cloud.amp += (goal - cloud.amp) * (reduce ? .2 : .035);
+    if (!reduce) cloud.rot += 0.004;
+
+    cx.clearRect(0, 0, W, H);
+    var reach = cloud.sig * 3.2, sx = 0, sxx = 0, sp = 0;
+    for (var i = 0; i < dots.length; i++){
+      var d = dots[i], dx = d.x - cloud.x, dy = d.y - cloud.y, p = 0;
+      if (dx > -reach && dx < reach && dy > -reach && dy < reach) p = psi(dx, dy) * cloud.amp;
+      d.p = p; sp += p; sx += p * d.x; sxx += p * d.x * d.x;
+      var rad = 0.9 + p * 4.6 + d.h * 0.5;
+      if (p < 0.02 && !d.h){
+        cx.fillStyle = 'rgba(138,132,173,0.28)';
+        cx.fillRect(d.x - 0.75, d.y - 0.75, 1.5, 1.5);
+        continue;
+      }
+      var mix = Math.min(1, Math.sqrt(dx * dx + dy * dy) / (cloud.sig * 1.8));
+      var r = Math.round(79 + (255 - 79) * mix), g = Math.round(240 + (95 - 240) * mix), b = Math.round(230 + (210 - 230) * mix);
+      if (d.h && p < 0.05){ r = 255; g = 240; b = 200; }
+      cx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + Math.min(1, 0.3 + p * 1.1 + d.h * 0.15) + ')';
+      cx.beginPath(); cx.arc(d.x, d.y, rad, 0, 6.2832); cx.fill();
+      if (p > 0.5){
+        cx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',0.08)';
+        cx.beginPath(); cx.arc(d.x, d.y, rad * 3, 0, 6.2832); cx.fill();
+      }
+    }
+    for (var q = rings.length - 1; q >= 0; q--){
+      var R = rings[q];
+      R.a -= reduce ? 0.05 : 0.018;
+      if (R.a <= 0){ rings.splice(q, 1); continue; }
+      var rr = (1 - R.a) * 70 + 4;
+      cx.strokeStyle = 'rgba(255,240,200,' + R.a + ')'; cx.lineWidth = 1.2;
+      cx.beginPath(); cx.arc(R.x, R.y, rr, 0, 6.2832); cx.stroke();
+      cx.fillStyle = 'rgba(255,250,230,' + R.a + ')';
+      cx.beginPath(); cx.arc(R.x, R.y, 3 + R.a * 3, 0, 6.2832); cx.fill();
+    }
+    if (ptr.in){
+      cx.strokeStyle = 'rgba(233,230,255,.55)'; cx.lineWidth = 1;
+      cx.beginPath(); cx.moveTo(ptr.x - 9, ptr.y); cx.lineTo(ptr.x - 3, ptr.y); cx.moveTo(ptr.x + 3, ptr.y); cx.lineTo(ptr.x + 9, ptr.y);
+      cx.moveTo(ptr.x, ptr.y - 9); cx.lineTo(ptr.x, ptr.y - 3); cx.moveTo(ptr.x, ptr.y + 3); cx.lineTo(ptr.x, ptr.y + 9); cx.stroke();
+    }
+    if (frame % 10 === 0 && sp > 0.5){
+      var mean = sx / sp, v = Math.max(0, sxx / sp - mean * mean);
+      dxEl.textContent = (Math.sqrt(v) / G).toFixed(2) + ' cells';
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

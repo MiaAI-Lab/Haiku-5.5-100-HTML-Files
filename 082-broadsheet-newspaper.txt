@@ -1,0 +1,18 @@
+Prompt:
+Build a standalone HTML page for "broadsheet-newspaper": an old broadsheet front page with columns, headlines and a running ticker. Invent the paper "The Marlow Evening Courier", a seaside town daily est. 1871, with gently comic local news. Palette: aged newsprint cream (#f1ead9) with a deeper fold tone (#e7dec7), letterpress ink (#1b1814), a faded brown-grey for secondary text (#5b5246) and a single spot red (#a3261b) for kickers, stamp and ticker label. The sheet sits on a dark walnut desk (#2c2822) with a deep drop shadow, a faint horizontal fold line across its middle, and subtle paper texture from layered radial gradients and fine repeating lines. Typography: a blackletter masthead stack (Old English Text MT, Engravers Old English, fallback Georgia), body and headlines in Iowan Old Style / Palatino / Georgia, and condensed Arial Narrow / Franklin Gothic for bylines, datelines, ears and ticker. Layout: ear boxes either side of the price box; huge masthead; double-ruled dateline with an edition switcher (Morning, Late City, Extra); a centered lead headline with red kicker and italic deck; below, a two-part grid with the main story set in CSS multi-columns with column rules, justified hyphenated text, a bold drop cap and an inline SVG engraving of a lighthouse at dusk built from hatched lines; a sidebar of three collapsible news briefs and a boxed weather report. A fixed black ticker strip with a red "Wire" label runs headlines along the bottom. Motion: switching edition swaps the lead story with a press animation (scale-down from 1.18 with brief blur, overshoot easing) and slams a rotated red rubber stamp onto the header. Brief headlines get an ink underline that draws in on hover. The ticker loops seamlessly with a duplicated track and pauses on hover or focus. Collapses on phone to a single column. Reduced motion: ticker slows dramatically and press/stamp animations are skipped.
+
+Title: The Marlow Evening Courier
+
+Description: A lovingly typeset front page of a fictional seaside broadsheet, printed on warm newsprint and laid on a dark desk. A blackletter masthead crowns justified multi-column copy about a sea that has become unusually polite, complete with a drop cap, an engraved lighthouse illustration, side briefs about a stubborn clock tower and queueing gulls, and a weather box. Swapping editions re-presses the headline and stamps it in red, while a wire ticker crawls along the bottom of the screen.
+
+Visual techniques:
+- CSS multi-column layout with column rules, justified and hyphenated text, and a first-letter drop cap
+- Layered radial and repeating-linear gradients for newsprint texture and a fold line
+- Inline SVG engraving built from hatched strokes and flat ink shapes
+- Keyframed press-in animation with overshoot and a rotated stamp slam
+- Background-size underline draw on hover for brief headlines
+- Seamless infinite marquee with duplicated content, paused on hover or focus
+- Responsive grid that collapses columns at narrow widths
+- Reduced-motion handling for ticker speed and press effects
+
+Interaction model: Readers pick Morning, Late City or Extra in the dateline to swap the lead story, which re-prints with a press and stamp effect. Sidebar briefs are buttons that expand or collapse with a click, Enter or Space. Hovering or focusing the wire ticker pauses it so a headline can be read.

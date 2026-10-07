@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>torus.sh: Amber Terminal</title>
+<style>
+:root{
+  --bg:#120c06;--bg2:#1c130a;--amber:#ffb547;--amber-dim:#a8742a;--amber-deep:#5a3a12;
+  --ink:#f6e3c4;--chrome:#2a1d10;--chrome-hi:#3b2916;--red:#ff6a4d;--yel:#ffd36b;--grn:#9be36b;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:radial-gradient(120% 90% at 50% 0%,#2a1a0b 0%,var(--bg) 55%,#080503 100%);
+  color:var(--ink);font-family:var(--mono);overflow-x:hidden;
+  display:flex;flex-direction:column;align-items:center;padding:clamp(16px,4vw,48px) 16px 40px;
+}
+header{width:100%;max-width:860px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+header h1{font-size:clamp(13px,1.6vw,15px);letter-spacing:.32em;text-transform:uppercase;color:var(--amber);font-weight:600}
+header p{font-size:12px;color:var(--amber-dim);letter-spacing:.08em}
+.term{
+  width:100%;max-width:860px;border-radius:14px;background:linear-gradient(180deg,var(--chrome-hi),var(--chrome));
+  box-shadow:0 0 0 1px #4a3318,0 30px 80px -20px #000,0 0 120px -30px rgba(255,181,71,.25);
+  overflow:hidden;
+}
+.bar{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #0d0804}
+.dot{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 -2px 3px rgba(0,0,0,.35)}
+.dot:nth-child(1){background:var(--red)}.dot:nth-child(2){background:var(--yel)}.dot:nth-child(3){background:var(--grn)}
+.bar span{flex:1;text-align:center;font-size:12px;color:#c9a774;letter-spacing:.06em;margin-right:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.screen{position:relative;background:var(--bg2);padding:18px clamp(12px,3vw,26px) 16px;min-height:300px}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),
+  radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
+.log{font-size:12.5px;line-height:1.6;color:var(--amber-dim);min-height:3.2em}
+.log b{color:var(--amber);font-weight:500}
+.log .ok{color:var(--grn)}
+.stage{display:flex;justify-content:center;cursor:grab;touch-action:none;user-select:none;margin:6px 0 4px}
+.stage:active{cursor:grabbing}
+pre#donut{
+  font-family:var(--mono);color:var(--amber);font-size:clamp(7px,1.55vw,13px);line-height:1.02;
+  text-shadow:0 0 6px rgba(255,181,71,.65),0 0 18px rgba(255,140,30,.25);
+  white-space:pre;transition:color .4s ease,text-shadow .4s ease;
+}
+.loading pre#donut{opacity:.2}
+.prompt{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;flex-wrap:wrap}
+.prompt .ps{color:var(--grn)}
+.prompt .cmd{color:var(--ink)}
+.caret{display:inline-block;width:.6em;height:1.1em;background:var(--amber);vertical-align:-.18em;animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.keys{display:flex;flex-wrap:wrap;gap:8px;padding:14px clamp(12px,3vw,26px);background:#160f07;border-top:1px solid #0d0804}
+.keys button{
+  font:inherit;font-size:12px;color:var(--amber);background:transparent;border:1px solid var(--amber-deep);
+  padding:7px 12px;border-radius:6px;cursor:pointer;letter-spacing:.06em;
+  transition:background .25s cubic-bezier(.2,.8,.2,1),color .25s,border-color .25s,transform .15s;
+}
+.keys button:hover{background:rgba(255,181,71,.1);border-color:var(--amber)}
+.keys button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.keys button:active{transform:translateY(1px)}
+.keys button[aria-pressed="true"]{background:var(--amber);color:var(--bg);border-color:var(--amber)}
+.keys kbd{font:inherit;opacity:.6;margin-right:6px}
+.stats{margin-left:auto;font-size:11px;color:var(--amber-dim);align-self:center;letter-spacing:.08em}
+footer{max-width:860px;width:100%;margin-top:22px;font-size:12px;line-height:1.7;color:#8d6a3c;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+footer strong{color:var(--amber);font-weight:500;display:block;letter-spacing:.14em;text-transform:uppercase;font-size:11px;margin-bottom:4px}
+body.mono-green{--amber:#7dffa6;--amber-dim:#3f9a62;--amber-deep:#1d4a2e}
+body.mono-green pre#donut{text-shadow:0 0 6px rgba(125,255,166,.6),0 0 18px rgba(60,200,120,.25)}
+body.mono-ice{--amber:#9fd8ff;--amber-dim:#4f86ab;--amber-deep:#1d3a52}
+body.mono-ice pre#donut{text-shadow:0 0 6px rgba(159,216,255,.6),0 0 18px rgba(80,160,255,.25)}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}}
+@media (max-width:480px){.stats{margin-left:0;width:100%}.bar span{margin-right:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>torus.sh</h1>
+  <p>a ring of light, rendered one character at a time</p>
+</header>
+<main class="term loading" id="term">
+  <div class="bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>operator@kiln-07: ~/rings</span></div>
+  <div class="screen">
+    <div class="log" id="log"></div>
+    <div class="stage" id="stage" aria-label="Rotating ASCII torus. Drag to spin it." role="img"><pre id="donut"></pre></div>
+    <div class="prompt"><span class="ps">kiln-07 $</span><span class="cmd" id="cmd">./torus --spin</span><span class="caret"></span></div>
+  </div>
+  <div class="keys">
+    <button type="button" id="bPause" aria-pressed="false"><kbd>space</kbd>hold</button>
+    <button type="button" id="bRamp"><kbd>r</kbd>ramp</button>
+    <button type="button" id="bTint"><kbd>t</kbd>phosphor</button>
+    <button type="button" id="bFast"><kbd>f</kbd>tempo</button>
+    <span class="stats" id="stats">-- fps</span>
+  </div>
+</main>
+<footer>
+  <div><strong>Drag</strong>Grab the ring and fling it. It keeps your momentum, then settles back into its own lazy orbit.</div>
+  <div><strong>Shade</strong>Every glyph is a lighting value. Luminance is computed per point from a single lamp above and behind you.</div>
+  <div><strong>Phosphor</strong>Amber, green, ice. Three tubes from three imaginary decades, all of them still warm.</div>
+</footer>
+<script>
+(function(){
+  var pre=document.getElementById('donut'),term=document.getElementById('term'),logEl=document.getElementById('log');
+  var stats=document.getElementById('stats'),cmd=document.getElementById('cmd');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W=72,H=30;
+  var ramps=['.,-~:;=!*#$@','  .:-=+*#%@','·∙•◦○◎●','░▒▓█'];
+  var rampI=0,ramp=ramps[0];
+  var tints=['','mono-green','mono-ice'],tintI=0;
+  var A=1,B=0.6,vA=0.04,vB=0.02,baseA=0.04,baseB=0.02,tempo=1,paused=reduce;
+  var dragging=false,lx=0,ly=0;
+  var out=new Array(W*H),zb=new Float32Array(W*H);
+
+  function frame(){
+    out.fill(' ');zb.fill(0);
+    var cA=Math.cos(A),sA=Math.sin(A),cB=Math.cos(B),sB=Math.sin(B);
+    for(var j=0;j<6.283;j+=0.07){
+      var ct=Math.cos(j),st=Math.sin(j);
+      for(var i=0;i<6.283;i+=0.02){
+        var sp=Math.sin(i),cp=Math.cos(i);
+        var h=ct+2,D=1/(sp*h*sA+st*cA+5),t=sp*h*cA-st*sA;
+        var x=(W/2+W*0.42*D*(cp*h*cB-t*sB))|0;
+        var y=(H/2+H*0.78*D*(cp*h*sB+t*cB))|0;
+        var o=x+W*y;
+        var N=(st*sA-sp*ct*cA)*cB-sp*ct*sA-st*cA-cp*ct*sB;
+        if(y>=0&&y<H&&x>=0&&x<W&&D>zb[o]){
+          zb[o]=D;
+          var L=Math.max(0,N)/1.42;
+          out[o]=ramp.charAt(Math.min(ramp.length-1,(L*ramp.length)|0));
+        }
+      }
+    }
+    var s='';
+    for(var r=0;r<H;r++){s+=out.slice(r*W,r*W+W).join('')+'\n'}
+    pre.textContent=s;
+  }
+
+  var last=performance.now(),acc=0,frames=0,fpsT=last;
+  function loop(now){
+    var dt=Math.min(50,now-last)/16.67;last=now;
+    if(!paused&&!dragging){
+      vA+=(baseA*tempo-vA)*0.03;vB+=(baseB*tempo-vB)*0.03;
+      A+=vA*dt;B+=vB*dt;
+    }
+    frame();frames++;
+    if(now-fpsT>500){stats.textContent=Math.round(frames*1000/(now-fpsT))+' fps · '+(W*H)+' cells';frames=0;fpsT=now}
+    requestAnimationFrame(loop);
+  }
+
+  var stage=document.getElementById('stage');
+  stage.addEventListener('pointerdown',function(e){dragging=true;lx=e.clientX;ly=e.clientY;stage.setPointerCapture(e.pointerId)});
+  stage.addEventListener('pointermove',function(e){
+    if(!dragging)return;
+    var dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;
+    B+=dx*0.012;A+=dy*0.012;vB=dx*0.012;vA=dy*0.012;
+  });
+  function up(){dragging=false}
+  stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+
+  var bP=document.getElementById('bPause');
+  function setPause(v){paused=v;bP.setAttribute('aria-pressed',String(v));cmd.textContent=v?'kill -STOP torus':'./torus --spin'}
+  bP.addEventListener('click',function(){setPause(!paused)});
+  function nextRamp(){rampI=(rampI+1)%ramps.length;ramp=ramps[rampI];cmd.textContent='./torus --ramp="'+ramp.trim()+'"'}
+  function nextTint(){document.body.classList.remove(tints[tintI]);tintI=(tintI+1)%tints.length;if(tints[tintI])document.body.classList.add(tints[tintI]);cmd.textContent='setterm --tube '+['amber','p1-green','ice'][tintI]}
+  function nextTempo(){tempo=tempo>=3?0.5:tempo*2;cmd.textContent='./torus --tempo='+tempo+'x'}
+  document.getElementById('bRamp').addEventListener('click',nextRamp);
+  document.getElementById('bTint').addEventListener('click',nextTint);
+  document.getElementById('bFast').addEventListener('click',nextTempo);
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+    if(e.key===' '){e.preventDefault();setPause(!paused)}
+    else if(e.key==='r')nextRamp();else if(e.key==='t')nextTint();else if(e.key==='f')nextTempo();
+  });
+
+  function fit(){W=window.innerWidth<520?52:72;H=window.innerWidth<520?24:30;out=new Array(W*H);zb=new Float32Array(W*H)}
+  window.addEventListener('resize',fit);fit();
+
+  var boot=['<b>kiln-07</b> boot sequence v3.1','mounting /dev/phosphor ... <span class="ok">ok</span>','loading torus geometry (R=2, r=1) ... <span class="ok">ok</span>'];
+  var bi=0;
+  function bootStep(){
+    if(bi<boot.length){logEl.innerHTML+=(bi?'<br>':'')+boot[bi++];setTimeout(bootStep,reduce?0:320)}
+    else{term.classList.remove('loading');if(reduce)setPause(true)}
+  }
+  bootStep();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
